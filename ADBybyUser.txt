@@ -1,0 +1,64 @@
+!  ------------------------------ ADByby 自定义过滤语法简表---------------------------------
+!  --------------  规则基于abp规则，并进行了字符替换部分的扩展-----------------------------
+!  ABP规则请参考https://adblockplus.org/zh_CN/filters，下面为大致摘要
+!  "!" 为行注释符，注释行以该符号起始作为一行注释语义，用于规则描述
+!  "*" 为字符通配符，能够匹配0长度或任意长度的字符串，该通配符不能与正则语法混用。
+!  "^" 为分隔符，可以是除了字母、数字或者 _ - . % 之外的任何字符。
+!  "|" 为管线符号，来表示地址的最前端或最末端
+!  "||" 为子域通配符，方便匹配主域名下的所有子域。
+!  "~" 为排除标识符，通配符能过滤大多数广告，但同时存在误杀, 可以通过排除标识符修正误杀链接。
+!  "##" 为元素选择器标识符，后面跟需要隐藏元素的CSS样式例如 #ad_id  .ad_class
+!!  元素隐藏暂不支持全局规则和排除规则
+!! 字符替换扩展
+!  文本替换选择器标识符，后面跟需要替换的文本数据，格式：$s@模式字符串@替换后的文本@
+!  支持通配符*和？
+!  -------------------------------------------------------------------------------------------
+
+##.ad-container
+##.video-ads
+##.ytp-ad-progress-list
+
+! youtube 右侧广告
+###adContent
+###video-wall-container-v2
+###player-ads
+###google_companion_ad_div
+###google_ads_frame1
+###adContent-clickOverlay
+###companion
+##div[class*="adDisplay extra-padding"]
+###video-ads
+youtube.com##iframe[width="370"][height="210"][frameborder="0"][marginheight="0"]
+
+=adunit&
+||flashtalking.com$domain=youtube.com
+||googleadservices.com
+||googlesyndication.com^
+||s0.2mdn.net/ads
+||www.google.*/pagead$domain=youtube.com
+||www.youtube.com/[[computeEmptyGif_()]]$image
+||www.youtube.com/[[computeThumbnailUrl_(data.thumbnail)]]
+||www.youtube.com/api/stats
+||www.youtube.com/pagead
+||www.youtube.com/ptracking
+||www.youtube.com/ad_companion
+||*.doubleclick.net^
+
+||www.youtube.com/annotations_invideo?$xmlhttprequest
+||s.youtube.com/api/stats/
+
+!-------------------新浪--------------------
+||sinaimg.cn/unipro/$domain=~video.sina.com.cn|~weibo.com
+||sina.com.cn/iframe/76/$subdocument
+||sina.com.cn/litong/
+||adbox.sina.com.cn/
+||beacon.sina.com.cn/
+||d1.sina.com.cn/
+||d2.sina.com.cn/
+||d3.sina.com.cn/
+||pfp.sina.com.cn/
+||rm.sina.com.cn/$script,subdocument
+||sax.sina.
+blog.sina.cn##div.item_hide+div,#pl-blog-artad
+||dmp.sina.cn/
+||sina.com.cn###sinaAD_type_blogbf
