@@ -13,6 +13,10 @@
 !  文本替换选择器标识符，后面跟需要替换的文本数据，格式：$s@模式字符串@替换后的文本@
 !  支持通配符*和？
 !  -------------------------------------------------------------------------------------------
+# Specific cosmetic filters for Youtube home page
+youtube.com##.masthead-ad-control
+youtube.com##.ad-div
+youtube.com##.pyv-afc-ads-container
 
 ##.ad-container
 ##.video-ads
