@@ -1,0 +1,7 @@
+# Just type something (optional), then press up/down arrow key to search through history for commands that begin with what you typed.
+# Key bindings, up/down arrow searches through history
+# "\e[A": history-search-backward
+# "\e[B": history-search-forward
+# "\eOA": history-search-backward
+# "\eOB": history-search-forward
+#
