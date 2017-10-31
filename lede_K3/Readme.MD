@@ -1,2 +1,4 @@
 LEDE R7.3.2
+
+
 adupdate.sh替换adbyby目录下同名的脚本，可以正常升级adbyby规则。
