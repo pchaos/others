@@ -4,3 +4,5 @@
 http://www.gatherproxy.com/proxylist/anonymity/?t=Anonymous
 
 https://www.socks-proxy.net/
+
+https://www.proxynova.com/proxy-server-list/anonymous-proxies/
