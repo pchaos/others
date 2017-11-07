@@ -1,3 +1,4 @@
+conda install -y matplotlib
 
 #设置matplotlib的backend（没有图形化界面的情况下）
 echo "backend: Agg" > ~/.config/matplotlib/matplotlibrc
