@@ -7,4 +7,13 @@ conda install numexpr numpy pandas lxml matplotlib beautifulsoup4 scrapy
 conda install sqlalchemy sqlite
 conda install bcolz
 
-pip install fake-useragent TA-Lib
+# install talib
+wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+tar -xzf ta-lib-0.4.0-src.tar.gz or sudo tar -xzf ta-lib-0.4.0-src.tar.gz
+cd ta-lib
+./configure
+make
+sudo make install
+pip install TA-Lib
+
+pip install fake-useragent 
