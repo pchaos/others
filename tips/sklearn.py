@@ -1,3 +1,6 @@
+# 基于sklearn的股票预测
+# http://blog.csdn.net/u012315428/article/details/53340037
+
 import pandas as pd
 import numpy as np
 import datetime
