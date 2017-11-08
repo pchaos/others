@@ -5,6 +5,7 @@ conda update --all
 
 conda install numexpr numpy pandas lxml matplotlib beautifulsoup4 scrapy
 conda install sqlalchemy sqlite
+conda install scikit-learn
 conda install bcolz
 
 # install talib
@@ -17,3 +18,5 @@ sudo make install
 pip install TA-Lib
 
 pip install fake-useragent 
+pip install pandas_datareader
+
