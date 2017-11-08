@@ -1,0 +1,6 @@
+40 * * * * /usr/share/update_netassist.sh > /tmp/gfwupdate.log 2>&1
+50 7 * * * /usr/share/adbyby/adblock.sh > /tmp/adupdate.log 2>&1
+0 5 * * * /etc/shadowsocksr/up-gfwlist.sh > /tmp/gfwupdate.log 2>&1
+0 */1 * * * /etc/shadowsocksr/ssr-watchdog >> /tmp/shadowsocksr_watchdog.log 2>&1
+0 1 * * 0 echo "" > /tmp/shadowsocksr_watchdog.log
+
