@@ -1,0 +1,18 @@
+# 创建 conda 虚拟环境（ :code:`env_name` 是您希望创建的虚拟环境名）
+$ conda create --name env_name python=3.5
+
+# 如您想创建一个名为rqalpha的虚拟环境
+$ conda create --name rqalpha python=3.5
+
+# 使用 conda 虚拟环境
+$ source activate env_name
+# 如果是 Windows 环境下 直接执行 activcate
+$ activate env_name
+
+# 退出 conda 虚拟环境
+$ source deactivate env_name
+# 如果是 Windows 环境下 直接执行 deactivate
+$ deactivate env_name
+
+# 删除 conda 虚拟环境
+$ conda-env remove --name env_name
