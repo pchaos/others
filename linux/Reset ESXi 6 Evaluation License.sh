@@ -1,4 +1,5 @@
 #!/bin/sh
+# https://calvin.me/reset-esxi-evaluation-license/
 ## remove license
 echo 'Removing License'
 rm -r /etc/vmware/license.cfg
