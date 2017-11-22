@@ -9,3 +9,6 @@ yum clean all && rm -rf /var/cache/yum, && yum makecache
 
 # CentOS 7添加官方的 Remi 源
 yum localinstall --nogpgcheck http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+
+yum update -y
+um install -y mate-*
