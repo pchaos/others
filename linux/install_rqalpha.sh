@@ -12,3 +12,4 @@ pip install rqalpha
 rqalpha version
 
 rqalpha update_bundle
+rqalpha examples -d ./
