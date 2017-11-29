@@ -8,6 +8,9 @@ pip install -U pip setuptools cython
 sudo yum install gcc-c++
 pip install bcolz
 
+# install TA-lib
+
+
 pip install rqalpha
 
 rqalpha version
