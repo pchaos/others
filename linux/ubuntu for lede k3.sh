@@ -21,3 +21,6 @@ cd lede && git pull
 ./scripts/feeds install -a
 
 #make menuconfig
+
+make -j1 V=s 
+
