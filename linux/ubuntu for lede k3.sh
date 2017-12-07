@@ -1,4 +1,5 @@
-
+#！/bin/bash
+# 源码主页见 https://github.com/coolsnowwolf/lede
 sudo apt-get update --fix-missing
 sudo apt-get install -y apt-utils
 mkdir ~/lede
