@@ -8,3 +8,5 @@ ls /mnt/cdrom
 tar xzvf $(ls /mnt/cdrom/VMwareTools-*.gz) -C /tmp
 cd /tmp/vmware-tools-distrib/
 sudo ./vmware-install.pl
+
+sudo umount /dev/cdrom
