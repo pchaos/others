@@ -23,6 +23,8 @@ cd lede && git pull
 
 make menuconfig
 
+# screen下编译，后台处理
+screen
 make -j4 V=s
 make -j1 V=s 
 
