@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# https://segmentfault.com/a/1190000010520835
+# python爬虫实战二——股票数据定向爬虫
 
 import requests
 from bs4 import BeautifulSoup
