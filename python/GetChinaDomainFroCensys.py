@@ -3,7 +3,7 @@
 # Author: Sky
 # Time: 2017/7/16 09:57
 # File: GetChinaDomainFroCensys.py
-
+# https://threathunter.org/topic/596aebf1dff9e14c40b6193f
 
 import requests
 import json
