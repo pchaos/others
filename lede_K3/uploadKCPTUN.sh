@@ -13,4 +13,7 @@ mv /tmp/upload/client_linux_arm5 /var/kcptun_client
 opkg install /tmp/upload/luci-app-kcptun_*.ipk
 
 /etc/adhosts
+usr/share/kcptun/kcptun_client
+
+/etc/adhosts
 /var/kcptun_client
