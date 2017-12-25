@@ -96,6 +96,7 @@ def createForeCast(tree, testData):
 
 # 绘图
 def draw(dataSet, tree):
+    plt.figure(figsize=[15,10]) # 改变画布大小
     plt.scatter(dataSet[:,0], dataSet[:,1], s=5) # 在图中以点画收盘价
     yHat = createForeCast(tree, dataSet[:,0])
     plt.plot(dataSet[:,0], yHat, linewidth=2.0, color='red')
