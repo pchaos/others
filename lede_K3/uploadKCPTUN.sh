@@ -17,3 +17,7 @@ usr/share/kcptun/kcptun_client
 
 /etc/adhosts
 /var/kcptun_client
+
+
+/etc/adhosts
+/usr/share/kcptun/
