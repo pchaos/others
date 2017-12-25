@@ -14,8 +14,10 @@ SHSZStockCode.getStockList(slist, stock_list_url)
 
 rightCode=[]
 falseCode=[]
+kickpoint=[]
 ri=0
 fii=0
+kii=0
 for st in slist:
     if st[:3] not in {'sh2', 'sh5', 'sh9',  'sz1', 'sz2'}:
         df = ts.get_k_data(code = st, start = '2017-01-01') # 获取股票数据
@@ -27,13 +29,16 @@ for st in slist:
             arr = np.array(e)
             tree = treeForeCast.createTree(np.mat(arr), 100, 10)
             yHat = treeForeCast.createForeCast(tree, arr[:,0])
-            d=yHat[-2:]
-            if d[0]<= d[1]:
+            d=yHat[-3:]
+            if d[1]<= d[2]:
                 rightCode.append(st)
                 ri+=1
-                print(ri)
+                if d[1]< d[0]:
+                    # 转折点
+                    kickpoint.append(st)
+                    kii+=1
             else:
                 falseCode.append(st)
                 fii+=1
-            print(ri, fii, st)
+            print(ri, fii, kii, st)
             #sleep(0.5)
