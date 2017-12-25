@@ -124,6 +124,6 @@ if __name__ == '__main__':
     e['close'] = df['close'] # 用收盘价作为分类标准Y轴, 以Y轴高低划分X成段，并分段拟合
     arr = np.array(e)
     tree = createTree(np.mat(arr), 100, 10)
-draw(arr, tree)
+    draw(arr, tree)
 
 
