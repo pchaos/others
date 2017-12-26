@@ -118,12 +118,19 @@ def createTree(dataSet, rate, dur):
 
 if __name__ == '__main__':
 #    df = ts.get_k_data(code = '002230', start = '2017-01-01') # 科大讯飞今年的股票数据
-    df = ts.get_k_data(code = '300344', start = '2016-01-01') # 太空板业的股票数据
+    # df = ts.get_k_data(code = 'sz300024', start = '2016-01-01', ktype='30') # 太空板业的股票数据
+    cons=ts.get_apis()
+    df = ts.bar( '300344', conn=cons, freq='30min')
+    if cons:
+        df.index = pd.RangeIndex(len(df.index))
     e = pd.DataFrame()
     e['idx'] = df.index # 用索引号保证顺序X轴
     e['close'] = df['close'] # 用收盘价作为分类标准Y轴, 以Y轴高低划分X成段，并分段拟合
     arr = np.array(e)
     tree = createTree(np.mat(arr), 100, 10)
     draw(arr, tree)
+    if cons:
+        ts.close_apis(cons)
+
 
 
