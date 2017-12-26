@@ -119,10 +119,13 @@ def createTree(dataSet, rate, dur):
 
 if __name__ == '__main__':
 #    df = ts.get_k_data(code = '002230', start = '2017-01-01') # 科大讯飞今年的股票数据
-    # df = ts.get_k_data(code = 'sz300024', start = '2016-01-01', ktype='30') # 太空板业的股票数据
+    # df = ts.get_k_data(code = '6003766', start = '2016-01-01', ktype='30') # 太空板业的股票数据
     cons=ts.get_apis()
-    df = ts.bar( '300344', conn=cons, freq='30min')
+    df = ts.bar( '603766', conn=cons, freq='60min',adj='qfq', start_date='2016-01-01')
+    # df = ts.bar( '603766', conn=cons, adj='qfq', start_date='2016-01-01')
     if cons:
+        # 使用ts.bar的数据，需要reverse
+        df = df.iloc[::-1]
         df.index = pd.RangeIndex(len(df.index))
     e = pd.DataFrame()
     e['idx'] = df.index # 用索引号保证顺序X轴

@@ -7,10 +7,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # 获取股票代码
+# todo 使用ts.get_stock_basics()获取股票代码
 stock_list_url = 'http://quote.eastmoney.com/stocklist.html'
 output_file = 'BaiduStockInfo.txt'
 slist=[]
 SHSZStockCode.getStockList(slist, stock_list_url)
+
+def saveList(filename, thelist):
+    thefile = open(filename, 'w')
+    for item in thelist:
+        thefile.write("%s\n" % item)
 
 uptrend=[] # 上升趋势
 downtrend=[] # 下降趋势
@@ -21,7 +27,7 @@ kii=0
 eii=0
 for st in slist:
     if st[:3] not in {'sh2', 'sh5', 'sh9',  'sz1', 'sz2'}:
-        df = ts.get_k_data(code = st, start = '2017-01-01') # 获取股票数据
+        df = ts.get_k_data(code = st, start = '2016-01-01') # 获取股票数据
         if len(df) > 100: # 剔除新股
             # 股票有数据
             e = pd.DataFrame()
@@ -48,3 +54,7 @@ for st in slist:
                 print( ex)
             print(ri, fii, kii, eii, st)
             #sleep(0.5)
+
+saveList("uptrend.txt",uptrend)
+saveList("downtrend.txt",downtrend)
+saveList("kickpoint.txt",kickpoint)
