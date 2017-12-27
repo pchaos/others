@@ -97,7 +97,7 @@ def createForeCast(tree, testData):
 
 # 绘图
 def draw(dataSet, tree):
-    plt.figure(figsize=[15,10]) # 改变画布大小
+    plt.figure(figsize=[20,11]) # 改变画布大小
     plt.scatter(dataSet[:,0], dataSet[:,1], s=5) # 在图中以点画收盘价
     yHat = createForeCast(tree, dataSet[:,0])
     plt.plot(dataSet[:,0], yHat, linewidth=2.0, color='red')
@@ -118,10 +118,15 @@ def createTree(dataSet, rate, dur):
     return retTree
 
 if __name__ == '__main__':
+    stCode='600051'
+    idx=0
+    stDate='2007-01-01'
 #    df = ts.get_k_data(code = '002230', start = '2017-01-01') # 科大讯飞今年的股票数据
-    # df = ts.get_k_data(code = '6003766', start = '2016-01-01', ktype='30') # 太空板业的股票数据
-    cons=ts.get_apis()
-    df = ts.bar( '603766', conn=cons, freq='60min',adj='qfq', start_date='2016-01-01')
+    # df = ts.get_k_data(code = '600026', start = '2016-01-01', ktype='30') # 股票数据
+    df = ts.get_k_data(code = stCode, start = stDate, index=(idx!=0))
+    cons=None
+    #cons=ts.get_apis()
+    #df = ts.bar( '603766', conn=cons, freq='60min',adj='qfq', start_date='2016-01-01')
     # df = ts.bar( '603766', conn=cons, adj='qfq', start_date='2016-01-01')
     if cons:
         # 使用ts.bar的数据，需要reverse
