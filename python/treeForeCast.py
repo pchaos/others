@@ -5,6 +5,7 @@ import tushare as ts
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 # 用feature把dataSet按value分成两个子集
 def binSplitDataSet(dataSet, feature, value):
@@ -96,8 +97,11 @@ def createForeCast(tree, testData):
     return yHat
 
 # 绘图
-def draw(dataSet, tree):
+def draw(dataSet, tree, title, loc='left'):
     plt.figure(figsize=[20,11]) # 改变画布大小
+    plt.title(title, loc=loc);
+    plt.xlabel('Time')
+    plt.ylabel('收盘价')
     plt.scatter(dataSet[:,0], dataSet[:,1], s=5) # 在图中以点画收盘价
     yHat = createForeCast(tree, dataSet[:,0])
     plt.plot(dataSet[:,0], yHat, linewidth=2.0, color='red')
@@ -120,7 +124,8 @@ def createTree(dataSet, rate, dur):
 if __name__ == '__main__':
     stCode='600051'
     idx=0
-    stDate='2007-01-01'
+    stDate='2017-01-01'
+    start = time.time()
 #    df = ts.get_k_data(code = '002230', start = '2017-01-01') # 科大讯飞今年的股票数据
     # df = ts.get_k_data(code = '600026', start = '2016-01-01', ktype='30') # 股票数据
     df = ts.get_k_data(code = stCode, start = stDate, index=(idx!=0))
@@ -137,7 +142,8 @@ if __name__ == '__main__':
     e['close'] = df['close'] # 用收盘价作为分类标准Y轴, 以Y轴高低划分X成段，并分段拟合
     arr = np.array(e)
     tree = createTree(np.mat(arr), 100, 10)
-    draw(arr, tree)
+    end = time.time()
+    draw(arr, tree, stCode + ' start: ' + stDate + " TotalTime:" + str(end-start) + " " + str((end-start)/len(df)))
     if cons:
         ts.close_apis(cons)
 
