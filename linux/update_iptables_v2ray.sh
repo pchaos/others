@@ -1,4 +1,5 @@
-#!/bin/bash 
+#!/bin/bash
+# https://cryptopunk.me/posts/27406/
 chnroute_url=http://ftp.apnic.net/apnic/stats/apnic/delegated-apnic-latest
 curl $chnroute_url | grep ipv4 | grep CN | awk -F\| '{ printf("%s/%d\n", $4, 32-log($5)/log(2)) }' > /tmp/chnroute.txt //所有中国 IP 不走 V2Ray，可能会更稳定一些
 iptables -t nat -N V2RAY
