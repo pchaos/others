@@ -1,0 +1,6 @@
+// 导入脚本时快速取消checkbox
+ck=document.querySelectorAll("input[type='checkbox']");ck=document.querySelectorAll("input[type='checkbox']");
+var i;
+for (i=0; i<ck.length; i++) {
+    ck[i].checked=false;
+}
