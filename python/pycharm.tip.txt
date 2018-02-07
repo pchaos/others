@@ -1,0 +1,14 @@
+
+File->settings->Editor->File and Code Templates->Python Script
+
+添加以下代码：
+# -*- coding: utf-8 -*-
+"""
+@Time    : ${DATE} ${TIME}
+
+@File    : ${NAME}.py
+
+@author  : pchaos
+@license : Copyright(C), yglib
+@Contact : p19992003@gmail.com
+"""
