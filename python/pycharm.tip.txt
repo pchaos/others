@@ -10,5 +10,17 @@ File->settings->Editor->File and Code Templates->Python Script
 
 @author  : pchaos
 @license : Copyright(C), yglib
-@Contact : p19992003@gmail.com
+@Contact : p19992003#gmail.com
+"""
+
+
+# -*- coding: utf-8 -*-
+"""
+@Time    : ${DATE}
+
+@File    : ${NAME}.py
+
+@author  : pchaos
+@license : Copyright(C), yglib
+@Contact : p19992003#gmail.com
 """
