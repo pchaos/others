@@ -21,3 +21,5 @@ npm install
 #start mongodb
 [ ! -d /tmp/mongodb ] && mkdir /tmp/mongodb
 mongod --dbpath /tmp/mongodb
+# shutdown mongodb
+mongod --dbpath /tmp/mongodb --shutdown
