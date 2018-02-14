@@ -13,7 +13,7 @@ def sum1( a,  b):
 %timeit sum
 %timeit sum1
 
-#测试结果，用cython的时候反而更慢
+#测试结果，用cython的时候反而更慢???? 深层原因时啥？？？？
 30 ns ± 2.33 ns per loop (mean ± std. dev. of 7 runs, 10000000 loops each)
 24.7 ns ± 4.29 ns per loop (mean ± std. dev. of 7 runs, 10000000 loops each)
 
