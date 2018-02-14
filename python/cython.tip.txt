@@ -1,0 +1,7 @@
+cython加速：
+%load_ext Cython
+
+%%cython
+cdef int add(int x, int y):
+    return x + y
+
