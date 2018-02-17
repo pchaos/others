@@ -6,7 +6,7 @@ File->settings->Editor->File and Code Templates->Python Script
 """
 @Time    : ${DATE} ${TIME}
 
-@File    : ${NAME}.py
+@File    : ${NAME}
 
 @author  : pchaos
 @license : Copyright(C), yglib
@@ -18,7 +18,7 @@ File->settings->Editor->File and Code Templates->Python Script
 """
 @Time    : ${DATE}
 
-@File    : ${NAME}.py
+@File    : ${NAME}
 
 @author  : pchaos
 @license : Copyright(C), yglib
