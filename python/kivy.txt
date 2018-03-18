@@ -1,0 +1,28 @@
+install 
+
+git clone https://github.com/kivy/kivy
+cd kivy
+make
+This should compile kivy, to make it accessible in your python env just point your PYTHONPATH to this dir:
+
+export PYTHONPATH=~/code/kivy:$PYTHONPATH
+To check if kivy is installed, type the following command in your terminal:
+
+python -c "import kivy"
+
+
+以下方式不需要添加PYTHONPATH
+Alternatively, if you don’t want to make any changes to Kivy itself, you can also run (as admin, e.g. with sudo):
+
+$ python setup.py install
+
+
+Running the test suite¶
+To help detect issues and behaviour changes in Kivy, a set of unittests are provided. A good thing to do is to run them just after your Kivy installation, and every time you intend to push a change. If you think something was broken in Kivy, perhaps a test will show this. (If not, it might be a good time to write one.)
+
+Kivy tests are based on nosetest, which you can install from your package manager or using pip:
+
+$ pip install nose
+To run the test suite, do:
+
+$ make test
