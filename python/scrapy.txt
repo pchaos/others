@@ -1,0 +1,5 @@
+
+scrapy startproject zizhitongjian
+cd zizhitongjian
+scrapy genspider zztj https://www.sbkk88.com/mingzhu/gudaicn/zizhitongjian/
+
