@@ -14,3 +14,9 @@ class ZizhitongjianItem(scrapy.Item):
     title = scrapy.Field()
     link = scrapy.Field()
     desc = scrapy.Field()
+
+class ZizhitongjianContentItem(scrapy.Item):
+    # define the fields for your item here like:
+    # name = scrapy.Field()
+    subtitile = scrapy.Field()
+    desc = scrapy.Field()
