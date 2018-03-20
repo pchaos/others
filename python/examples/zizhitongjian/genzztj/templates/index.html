@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 align="center" class="title"> {{title}}</h1>
+<table align="center" border="1" cellpadding="2" cellspacing="0" width="98%">
+  <tr align="left">
+    {% for item in atc_titles %} {% if (loop.index - 1) is divisibleby 4 %}
+  </tr>
+  <tr>
+    {% endif%}
+    <td><a href="{{ item['href'] }}">{{ item.string }}--{{loop.index}}</a></td>
+    {% endfor %}
+  </tr>
+</table>
+
+
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %} {% block content %}
+<div class='articlebody' style="width: 95%;" align="center">
+  <div class='articleTitle'>
+    <h1 align="center" class="title"> {{title}}</h1>
+	{{title2}}
+  </div>
+  <div class="articleContents" style="width: 95%;" align="left">
+    {{ articalContents }}
+<a href="index.html">回首页</a>
+  </div>
+  <div class="article_comment_list" style="width: 95%;" align="left">
+    {{ article_comment_list }}
+  </div>
+</div>
+{% endblock %}
