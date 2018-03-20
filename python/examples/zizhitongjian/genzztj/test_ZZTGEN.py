@@ -90,9 +90,9 @@ class TestZZTGEN(TestCase):
             return onlyfiles
 
         urlStartnum = 0
-        articleStartnum = 280
+        articleStartnum = 0
         thepath = os.path.join(tempfile.gettempdir(), 'zztj')
-        articleList = self.theTarget.getarticleList()
+        articleList = self.theTarget.getarticleList(None, 1)
         for a in articleList[articleStartnum::]:
             logging.info('articleList: {0}'.format(a.text))
             saveCharset = 'GB2312'

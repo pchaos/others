@@ -220,10 +220,10 @@ class ZZTGEN(BASEGEN):
         # del title
         # body = _delTag(body, 'articalTitle')
         # # del 标签
-        body = self._delTag(body, 'BNE_like')
+        body = self._delTag(body, 'c')
         body = self._delTag(body, 'dashang')
-        body = self._delTag(body, 'clearfix BNE_opera')
-        body = self._delTag(body, 'BNE_review')
+        body = self._delTag(body, 'banner960Ad1 mt5')
+        body = self._delTag(body, 'mingzhuPage')
         body = self._delTag(body, 'turnBoxzz')
         body = self._delTag(body, 'img2', defaultTAG='span')
         body = self._delTag(body, 'titName SG_txta', defaultTAG='h2')
@@ -308,7 +308,7 @@ class ZZTGEN(BASEGEN):
                 soup = BeautifulSoup(a.get('desc'), 'lxml')
                 title = a.get('title')
                 title2 = " "
-                article_comment_list = "article_comment_list"
+                article_comment_list = " "
                 body = soup.find('div', {'id': 'f_article'})
                 if body is None:
                     return title
@@ -453,8 +453,6 @@ class ZZTGEN(BASEGEN):
 
     # 缠论108课标题
     tilesContain = ["上证大底的必然性", '', '']
-
-    copyRight = '本文摘自谷为陵的博客，整理： chaos，感谢： 坐看云起, mail: drifthua # gmail . com'
 
     saveCharset = 'GB2312'
 
