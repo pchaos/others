@@ -90,7 +90,7 @@ class TestZZTGEN(TestCase):
             return onlyfiles
 
         urlStartnum = 0
-        articleStartnum = 0
+        articleStartnum = 280
         thepath = os.path.join(tempfile.gettempdir(), 'zztj')
         articleList = self.theTarget.getarticleList()
         for a in articleList[articleStartnum::]:
@@ -131,7 +131,7 @@ class TestZZTGEN(TestCase):
 
     def test_saveToFile(self):
         # 保存index.html
-        articleList = self.theTarget.getarticleList(self.mainurl)
+        articleList = self.theTarget.getarticleList()
         fn = self.theTarget.getFilePath('index', self.theTarget.getMainPath())
         self.theTarget.saveToFile(fn,
                                   self.theTarget.alterMainIndex(articleList, self.theTarget.indexTitle, self.theTarget.copyRight))

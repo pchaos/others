@@ -307,7 +307,7 @@ class ZZTGEN(BASEGEN):
             if url == a.get('link'):
                 soup = BeautifulSoup(a.get('desc'), 'lxml')
                 title = a.get('title')
-                title2 = "title2"
+                title2 = " "
                 article_comment_list = "article_comment_list"
                 body = soup.find('div', {'id': 'f_article'})
                 if body is None:
@@ -431,7 +431,7 @@ class ZZTGEN(BASEGEN):
         '''
         修整index.html
         '''
-        template = self.getTemplate()
+        template = self.getTemplate('', 'genzztj/templates')
         return template.render(title=title, atc_titles=alist, remark=remark)
 
     def alterArticalContents(self, articalContents=None, title="", title2="", article_comment_list='', remark=""):
@@ -443,7 +443,7 @@ class ZZTGEN(BASEGEN):
                                article_comment_list=article_comment_list, remark=remark)
 
     def getMainPath(self):
-        self.thepath = os.path.join(tempfile.gettempdir(), 'guweiling')
+        self.thepath = os.path.join(tempfile.gettempdir(), maindir)
         return self.thepath
 
     # 下载目录
