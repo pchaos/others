@@ -12,6 +12,10 @@ The postgresql server is turned off and disabled by default. You can enable its 
 # sudo systemctl enable postgresql
 sudo systemctl start postgresql
 
+sudo su postgres
+psql
+
+
 > I`m change the default passwod, and not conect for this user. What the 
 > default password?
 
