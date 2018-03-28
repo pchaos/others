@@ -1,0 +1,14 @@
+https://fedoraproject.org/wiki/PostgreSQL#Installation
+
+dnf install postgresql-server postgresql-contrib
+
+The database initialization could be done using following command. It creates the configuration files postgresql.conf and pg_hba.conf
+
+postgresql-setup --initdb --unit postgresql
+
+# 启动postgresql
+The postgresql server is turned off and disabled by default. You can enable its start during the boot using following command:
+
+sudo systemctl enable postgresql
+sudo systemctl start postgresql
+
