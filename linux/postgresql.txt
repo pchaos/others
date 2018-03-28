@@ -9,7 +9,7 @@ postgresql-setup --initdb --unit postgresql
 # 启动postgresql
 The postgresql server is turned off and disabled by default. You can enable its start during the boot using following command:
 
-sudo systemctl enable postgresql
+# sudo systemctl enable postgresql
 sudo systemctl start postgresql
 
 > I`m change the default passwod, and not conect for this user. What the 
