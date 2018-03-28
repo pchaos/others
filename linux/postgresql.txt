@@ -12,3 +12,29 @@ The postgresql server is turned off and disabled by default. You can enable its 
 sudo systemctl enable postgresql
 sudo systemctl start postgresql
 
+> I`m change the default passwod, and not conect for this user. What the 
+> default password?
+
+there is no default password.  on most unix and linux distributions, the 
+default authentication mode is set to 'ident' which means a given unix 
+user X can only connect as the postgres user X.   initially, the only 
+postgres user is 'postgres', so...
+
+(assuming you're on the typical unix/linux system, you didn't say)
+
+     $ sudo -u postgres psql
+
+     postgres=> alter user postgres password 'apassword';
+     postgres=> create user yerusername createdb createuser password 
+'somepass';
+     postgres=> create database yerusername owner yerusername;
+     postgres=> \q
+
+     $ ...
+
+now as your regular user 'yerusername' you can connect to postgres, and 
+have the privileges to create new users and databases.
+
+That sequence also modified the postgres user's password in case you 
+change the default authentication method to md5 (this is set in 
+pg_hba.conf, see the documentation for more details)
