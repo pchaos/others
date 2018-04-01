@@ -1,0 +1,17 @@
+如何在 PyCharm 中设置 Python 代码模板
+设置 File > Settings > File and Code Template > Python Script
+
+# -*- coding: utf-8 -*-
+"""
+-------------------------------------------------
+   File Name：     ${NAME}
+   Description :
+   Author :       ${USER}
+   date：          ${DATE}
+-------------------------------------------------
+   Change Activity:
+                   ${DATE}:
+-------------------------------------------------
+"""
+__author__ = '${USER}'
+
