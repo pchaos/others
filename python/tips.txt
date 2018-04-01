@@ -1,0 +1,11 @@
+What is the difference between __init__ and __call__ in Python?
+
+class A:
+      def __init__(self):
+          print("init")
+          
+      def __call__(self):
+          print("call")
+a=A()
+a()
+A()()
