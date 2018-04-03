@@ -1,0 +1,14 @@
+
+pip install django
+pip install djangorestframework
+
+cd tutorial
+django-admin.py startapp quickstart
+cd ..
+python manage.py migrate
+
+python manage.py createsuperuser --email admin@example.com --username admin
+
+
+
+python manage.py runserver
