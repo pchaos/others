@@ -1,0 +1,8 @@
+adb devices
+
+adb reboot bootloader
+
+adb reboot recovery 
+
+# 不用sudo会报错： fastboot waiting for device
+sudo fastboot reboot
