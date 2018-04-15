@@ -3,3 +3,7 @@ conda update -y conda
 conda create -name wangge
 
 pywinauto, lxml,bs4,tushare,
+
+
+
+https://github.com/westoncampbell/SpyPlusPlus.git
