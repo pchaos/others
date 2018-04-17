@@ -40,4 +40,205 @@ This fix should work as long as you don't upgrade or reinstall PyInstaller. So y
 
 Maybe they will include the fix sooner for us! :)
 
+-----------------------------------------------------------------------------
+PyInstaller 3.3.1 does not work with Pywinauto lib import
+
+need help with PyInstaller and Pywinauto lib.
+
+test.py file (one liner):
+
+from pywinauto.application import Application
+Create EXE file based on test.py file:
+
+> pyinstaller test.py
+PyInstaller output:
+
+201 INFO: PyInstaller: 3.3.1
+202 INFO: Python: 3.6.4
+202 INFO: Platform: Windows-7-6.1.7601-SP1
+203 INFO: wrote D:\test.spec
+205 INFO: UPX is not available.
+208 INFO: Extending PYTHONPATH with paths
+['D:\\', 'D:\\']
+208 INFO: checking Analysis
+209 INFO: Building Analysis because out00-Analysis.toc is non existent
+209 INFO: Initializing module dependency graph...
+217 INFO: Initializing module graph hooks...
+221 INFO: Analyzing base_library.zip ...
+5616 INFO: running Analysis out00-Analysis.toc
+5620 INFO: Adding Microsoft.Windows.Common-Controls to dependent assemblies of f
+inal executable
+  required by d:\users\rkorniic\appdata\local\programs\python\python36-32\python
+.exe
+6620 INFO: Caching module hooks...
+6629 INFO: Analyzing D:\test.py
+9430 INFO: Processing pre-find module path hook   distutils
+11349 INFO: Processing pre-find module path hook   site
+11350 INFO: site: retargeting to fake-dir 'd:\\users\\rkorniic\\appdata\\local\\
+programs\\python\\python36-32\\lib\\site-packages\\PyInstaller\\fake-modules'
+11412 INFO: Processing pre-safe import module hook   win32com
+14395 INFO: Loading module hooks...
+14395 INFO: Loading module hook "hook-certifi.py"...
+14400 INFO: Loading module hook "hook-distutils.py"...
+14405 INFO: Loading module hook "hook-encodings.py"...
+14653 INFO: Loading module hook "hook-lib2to3.py"...
+14673 INFO: Loading module hook "hook-PIL.Image.py"...
+15448 INFO: Loading module hook "hook-PIL.py"...
+15449 INFO: Loading module hook "hook-PIL.SpiderImagePlugin.py"...
+15450 INFO: Loading module hook "hook-pkg_resources.py"...
+16741 INFO: Loading module hook "hook-pycparser.py"...
+17094 INFO: Loading module hook "hook-pydoc.py"...
+17096 INFO: Loading module hook "hook-pythoncom.py"...
+17829 INFO: Loading module hook "hook-pywintypes.py"...
+18552 INFO: Loading module hook "hook-setuptools.py"...
+18592 INFO: Loading module hook "hook-sysconfig.py"...
+18594 INFO: Loading module hook "hook-win32com.py"...
+18728 INFO: Loading module hook "hook-xml.etree.cElementTree.py"...
+18729 INFO: Loading module hook "hook-xml.py"...
+19103 INFO: Loading module hook "hook-_tkinter.py"...
+19726 INFO: checking Tree
+19726 INFO: Building Tree because out00-Tree.toc is non existent
+19726 INFO: Building Tree out00-Tree.toc
+19945 INFO: checking Tree
+19946 INFO: Building Tree because out01-Tree.toc is non existent
+19946 INFO: Building Tree out01-Tree.toc
+20045 INFO: Looking for ctypes DLLs
+20063 WARNING: library Shcore.dll required via ctypes not found
+20464 WARNING: library coredll required via ctypes not found
+20620 INFO: Analyzing run-time hooks ...
+20628 INFO: Including run-time hook 'pyi_rth_win32comgenpy.py'
+20632 INFO: Including run-time hook 'pyi_rth__tkinter.py'
+20635 INFO: Including run-time hook 'pyi_rth_pkgres.py'
+20638 INFO: Including run-time hook 'pyi_rth_multiprocessing.py'
+20658 INFO: Looking for dynamic libraries
+22051 INFO: Looking for eggs
+22051 INFO: Using Python library d:\users\rkorniic\appdata\local\programs\python
+\python36-32\python36.dll
+22052 INFO: Found binding redirects:
+[]
+22060 INFO: Warnings written to D:\build\test\warntest.txt
+22247 INFO: Graph cross-reference written to D:\build\test\xref-test.html
+22341 INFO: checking PYZ
+22341 INFO: Building PYZ because out00-PYZ.toc is non existent
+22341 INFO: Building PYZ (ZlibArchive) D:\build\test\out00-PYZ.pyz
+24150 INFO: Building PYZ (ZlibArchive) D:\build\test\out00-PYZ.pyz completed suc
+cessfully.
+24185 INFO: checking PKG
+24185 INFO: Building PKG because out00-PKG.toc is non existent
+24185 INFO: Building PKG (CArchive) out00-PKG.pkg
+24221 INFO: Building PKG (CArchive) out00-PKG.pkg completed successfully.
+24223 INFO: Bootloader d:\users\rkorniic\appdata\local\programs\python\python36-
+32\lib\site-packages\PyInstaller\bootloader\Windows-32bit\run.exe
+24223 INFO: checking EXE
+24224 INFO: Building EXE because out00-EXE.toc is non existent
+24224 INFO: Building EXE from out00-EXE.toc
+24226 INFO: Appending archive to EXE D:\build\test\test.exe
+24234 INFO: Building EXE from out00-EXE.toc completed successfully.
+24242 INFO: checking COLLECT
+24243 INFO: Building COLLECT because out00-COLLECT.toc is non existent
+24244 INFO: Building COLLECT out00-COLLECT.toc
+27043 INFO: Building COLLECT out00-COLLECT.toc completed successfully.
+Run created test.exe file. Output:
+
+Traceback (most recent call last):
+  File "test.py", line 1, in <module>
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "d:\users\rkorniic\appdata\local\programs\python\python36-32\lib\site-pac
+kages\PyInstaller\loader\pyimod03_importers.py", line 631, in exec_module
+    exec(bytecode, module.__dict__)
+  File "site-packages\pywinauto\__init__.py", line 40, in <module>
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "d:\users\rkorniic\appdata\local\programs\python\python36-32\lib\site-pac
+kages\PyInstaller\loader\pyimod03_importers.py", line 631, in exec_module
+    exec(bytecode, module.__dict__)
+  File "site-packages\pywinauto\findwindows.py", line 42, in <module>
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "d:\users\rkorniic\appdata\local\programs\python\python36-32\lib\site-pac
+kages\PyInstaller\loader\pyimod03_importers.py", line 631, in exec_module
+    exec(bytecode, module.__dict__)
+  File "site-packages\pywinauto\controls\__init__.py", line 36, in <module>
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "d:\users\rkorniic\appdata\local\programs\python\python36-32\lib\site-pac
+kages\PyInstaller\loader\pyimod03_importers.py", line 631, in exec_module
+    exec(bytecode, module.__dict__)
+  File "site-packages\pywinauto\controls\uiawrapper.py", line 44, in <module>
+  File "<frozen importlib._bootstrap>", line 971, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 955, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 665, in _load_unlocked
+  File "d:\users\rkorniic\appdata\local\programs\python\python36-32\lib\site-pac
+kages\PyInstaller\loader\pyimod03_importers.py", line 631, in exec_module
+    exec(bytecode, module.__dict__)
+  File "site-packages\pywinauto\uia_defines.py", line 175, in <module>
+  File "site-packages\pywinauto\uia_defines.py", line 163, in _build_pattern_ids
+_dic
+  File "site-packages\pywinauto\uia_defines.py", line 50, in __call__
+  File "site-packages\pywinauto\uia_defines.py", line 60, in __init__
+  File "site-packages\comtypes\client\_generate.py", line 110, in GetModule
+  File "site-packages\comtypes\client\_generate.py", line 169, in _CreateWrapper
+
+FileNotFoundError: [Errno 2] No such file or directory: 'D:\\dist\\test\\comtype
+s\\gen\\_944DE083_8FB8_45CF_BCB7_C477ACB2F897_0_1_0.py'
+[6308] Failed to execute script test
+So, error is:
+
+FileNotFoundError: [Errno 2] No such file or directory: 'D:\\dist\\test\\comtype
+s\\gen\\_944DE083_8FB8_45CF_BCB7_C477ACB2F897_0_1_0.py'
+[6308] Failed to execute script test
+test.spec file:
+
+# -*- mode: python -*-
+
+block_cipher = None
+
+
+a = Analysis(['test.py'],
+             pathex=['D:\\'],
+             binaries=[],
+             datas=[],
+             hiddenimports=[],
+             hookspath=[],
+             runtime_hooks=[],
+             excludes=[],
+             win_no_prefer_redirects=False,
+             win_private_assemblies=False,
+             cipher=block_cipher)
+pyz = PYZ(a.pure, a.zipped_data,
+             cipher=block_cipher)
+exe = EXE(pyz,
+          a.scripts,
+          exclude_binaries=True,
+          name='test',
+          debug=False,
+          strip=False,
+          upx=True,
+          console=True )
+coll = COLLECT(exe,
+               a.binaries,
+               a.zipfiles,
+               a.datas,
+               strip=False,
+               upx=True,
+               name='test')
+Environment:
+
+Windows 7 Professional. Service Pack 1
+Python 3.6.4
+pyinstaller 3.3.1
+pywinauto 0.6.3
+comtypes 1.1.4
+
+answer:
+Create folder comtypes/gen/ in the same folder of your test.py, and copy file _944DE083_8FB8_45CF_BCB7_C477ACB2F897_0_1_0.py and UIAutomationClient.py (under Lib/site-packages/comtypes/gen/) into this folder.
+
+Then use 
+
+pyinstaller --hidden-import comtypes.gen._944DE083_8FB8_45CF_BCB7_C477ACB2F897_0_1_0 --hidden-import comtypes.gen.UIAutomationClient test.py
 
