@@ -1,0 +1,43 @@
+
+No module named 'pandas._libs.tslibs.timedeltas' in PyInstaller
+
+I am trying to wrap a Python script into an exe using PyInstaller (development version) for windows.
+
+The script uses Pandas and I have been running into an error when running the exe.
+
+Traceback (most recent call last):   File "site-packages\pandas\__init__.py", line 26, in <module>   File "C:\Users\Eddie\Anaconda3\lib\site-packages\PyInstaller\loader\pyimod03_importers.py", line 631, in exec_module
+    exec(bytecode, module.__dict__)   File "site-packages\pandas\_libs\__init__.py", line 4, in <module>   File "C:\Users\Eddie\Anaconda3\lib\site-packages\PyInstaller\loader\pyimod03_importers.py", line 714, in load_module
+    module = loader.load_module(fullname)   File "pandas/_libs/tslib.pyx", line 1, in init pandas._libs.tslib ModuleNotFoundError: No module named 'pandas._libs.tslibs.timedeltas'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):   File "G5k Version file Extract (with tkinter).py", line 15, in <module>   File "C:\Users\Eddie\Anaconda3\lib\site-packages\PyInstaller\loader\pyimod03_importers.py", line 631, in exec_module
+    exec(bytecode, module.__dict__)   File "site-packages\pandas\__init__.py", line 35, in <module> ImportError: C extension: No module named 'pandas._libs.tslibs.timedeltas' not built. If you want to import pandas from the source directory, you may need to run 'python setup.py build_ext --inplace --force' to build the C extensions first.
+I have tried doing this for programs without pandas and everything was fine.
+
+This is very similar to another question already solved for Python 2, but I am using Python 3 and that solution does not apply the same way due to the changed .spec file format.
+
+Python 3.6
+PyInstaller - version 3.3
+Pandas - version 0.20.3
+
+PyInstaller 3.3, Pandas 0.21.0, Python 3.6.1.
+
+I was able to solve this thanks to not-yet published/committed fix to PyInstaller, see this and this. AND keeping the ability to pack it into one executable file.
+
+Basicly:
+
+Locate PyInstaller folder..\hooks, e.g. C:\Program Files\Python\Lib\site-packages\PyInstaller\hooks.
+
+Create file hook-pandas.py with contents (or anything similar based on your error):
+
+hiddenimports = ['pandas._libs.tslibs.timedeltas']
+Save it + I deleted .spec file, build and dist folders just to be sure.
+
+Run pyinstaller -F my_app.py.
+
+This fix should work as long as you don't upgrade or reinstall PyInstaller. So you don't need to edit .spec file.
+
+Maybe they will include the fix sooner for us! :)
+
+
