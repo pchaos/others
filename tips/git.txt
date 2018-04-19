@@ -1,0 +1,14 @@
+永久忽略某个文件
+
+Permanently ignore changes to a file
+If a file is already tracked by Git, adding that file to your .gitignore is not enough to ignore changes to the file. You also need to remove the information about the file from Git's index:
+
+These steps will not delete the file from your system. They just tell Git to ignore future updates to the file.
+
+Add the file in your .gitignore.
+
+Run the following:
+
+> git rm --cached <file>
+Commit the removal of the file and the updated .gitignore to your repo.
+
