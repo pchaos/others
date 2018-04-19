@@ -1,0 +1,49 @@
+parse command line arguments?
+
+
+Using python-fire
+Since 2017 python-fire has another cool module which can give a CLI interface to your code with you doing zero argument parsing. Here's a simple example from the documentation (this small program exposes function double to the command line):
+
+import fire
+
+class Calculator(object):
+
+  def double(self, number):
+    return 2 * number
+
+if __name__ == '__main__':
+  fire.Fire(Calculator)
+From the command line, you can run:
+
+> calculator.py double 10
+20
+> calculator.py double --number=15
+30
+----------------------------------------------------------------
+
+import click
+
+@click.command()
+@click.option('--count', default=1, help='Number of greetings.')
+@click.option('--name', prompt='Your name',
+              help='The person to greet.')
+def hello(count, name):
+    """Simple program that greets NAME for a total of COUNT times."""
+    for x in range(count):
+        click.echo('Hello %s!' % name)
+
+if __name__ == '__main__':
+    hello()
+It also automatically generates nicely formatted help pages:
+
+$ python hello.py --help
+Usage: hello.py [OPTIONS]
+
+  Simple program that greets NAME for a total of COUNT times.
+
+Options:
+  --count INTEGER  Number of greetings.
+  --name TEXT      The person to greet.
+  --help           Show this message and exit.
+  
+  
