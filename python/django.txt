@@ -12,3 +12,56 @@ python manage.py createsuperuser --email admin@example.com --username admin
 
 
 python manage.py runserver
+
+
+
+This is how the ORM maps blank & null fields for Django 1.8
+
+class Test(models.Model):
+    charNull        = models.CharField(max_length=10, null=True)
+    charBlank       = models.CharField(max_length=10, blank=True)
+    charNullBlank   = models.CharField(max_length=10, null=True, blank=True)
+
+    intNull         = models.IntegerField(null=True)
+    intBlank        = models.IntegerField(blank=True)
+    intNullBlank    = models.IntegerField(null=True, blank=True)
+
+    dateNull        = models.DateTimeField(null=True)
+    dateBlank       = models.DateTimeField(blank=True)
+    dateNullBlank   = models.DateTimeField(null=True, blank=True)        
+The database fields created for PostgreSQL 9.4 are :
+
+CREATE TABLE Test (
+  id              serial                    NOT NULL,
+
+  "charNull"      character varying(10),
+  "charBlank"     character varying(10)     NOT NULL,
+  "charNullBlank" character varying(10),
+
+  "intNull"       integer,
+  "intBlank"      integer                   NOT NULL,
+  "intNullBlank"  integer,
+
+  "dateNull"      timestamp with time zone,
+  "dateBlank"     timestamp with time zone  NOT NULL,
+  "dateNullBlank" timestamp with time zone,
+  CONSTRAINT Test_pkey PRIMARY KEY (id)
+)
+The database fields created for MySQL 5.6 are :
+
+CREATE TABLE Test (
+     `id`            INT(11)     NOT  NULL    AUTO_INCREMENT,
+
+     `charNull`      VARCHAR(10) NULL DEFAULT NULL,
+     `charBlank`     VARCHAR(10) NOT  NULL,
+     `charNullBlank` VARCHAR(10) NULL DEFAULT NULL,
+
+     `intNull`       INT(11)     NULL DEFAULT NULL,
+     `intBlank`      INT(11)     NOT  NULL,
+     `intNullBlank`  INT(11)     NULL DEFAULT NULL,
+
+     `dateNull`      DATETIME    NULL DEFAULT NULL,
+     `dateBlank`     DATETIME    NOT  NULL,
+     `dateNullBlank` DATETIME    NULL DEFAULT NULL
+)
+
