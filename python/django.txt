@@ -65,3 +65,4 @@ CREATE TABLE Test (
      `dateNullBlank` DATETIME    NULL DEFAULT NULL
 )
 
+In other words, blank has no effect on the database, and null controls whether the database column allows NULL values. This answer is a really long way of saying that, and doesn't provide any useful information about blank. 
