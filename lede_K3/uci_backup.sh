@@ -52,3 +52,9 @@ dhcp.@host[9]
 dhcp.@domain[6]
 dhcp.lan
 
+# Radio1 choices are 36, 40, 44, 48, 149, 153, 157, 161, 165
+#    The default HT40+ settings bond 36&40, 44&48, etc.
+#    Choose 36 or 44 and it'll work fine
+# echo 'Setting 2.4 & 5 GHz channels'
+# uci set wireless.radio0.channel=6
+# uci set wireless.radio1.channel=44
