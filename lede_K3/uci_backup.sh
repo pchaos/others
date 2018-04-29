@@ -1,3 +1,14 @@
+# === Update root password =====================
+# Update the root password. Supply new password for NEWPASSWD and
+# uncomment six lines.
+#
+# echo 'Updating root password'
+# NEWPASSWD=your-new-root-password
+# passwd <<EOF
+# $NEWPASSWD
+# $NEWPASSWD
+# EOF
+
 uci show wireless
 uci show shadowsocksr
 
