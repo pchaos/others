@@ -66,3 +66,7 @@ youtube.com##iframe[width="370"][height="210"][frameborder="0"][marginheight="0"
 blog.sina.cn##div.item_hide+div,#pl-blog-artad
 ||dmp.sina.cn/
 ||sina.com.cn###sinaAD_type_blogbf
+
+! 斐讯T1广告
+http://asimgs.cp61.ott.cibntv.net/*
+http://hoisin.coocaatv.com/*
