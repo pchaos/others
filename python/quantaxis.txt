@@ -23,3 +23,7 @@ npm install
 mongod --dbpath /tmp/mongodb
 # shutdown mongodb
 mongod --dbpath /tmp/mongodb --shutdown
+
+# 
+mongod --dbpath /home/yg/install/mongodb
+mongod --dbpath /home/yg/install/mongodb --shutdown
