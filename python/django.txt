@@ -66,3 +66,19 @@ CREATE TABLE Test (
 )
 
 In other words, blank has no effect on the database, and null controls whether the database column allows NULL values. This answer is a really long way of saying that, and doesn't provide any useful information about blank. 
+
+# 重置数据库
+The project is still in the development environment and you want to perform a full clean up. You don’t mind throwing the whole database away.
+
+1. Remove the all migrations files within your project
+Go through each of your projects apps migration folder and remove everything inside, except the __init__.py file.
+
+Or if you are using a unix-like OS you can run the following script (inside your project dir):
+
+find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+find . -path "*/migrations/*.pyc"  -delete
+2. Drop the current database, or delete the db.sqlite3 if it is your case.
+3. Create the initial migrations and generate the database schema:
+python manage.py makemigrations
+python manage.py migrate
+And you are good to go.
