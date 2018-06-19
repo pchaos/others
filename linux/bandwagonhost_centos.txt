@@ -1,0 +1,12 @@
+
+yum -y yum-utils
+# 清理老的kernel
+package-cleanup --oldkernels --count=1
+
+find ./ -size +50M
+
+ du -csh /var
+ 
+ # 删除clientmqueue目录下的文件；系统中有用户开启了cron，而cron中执行的程序有输出内容，输出内容会以邮件形式发给cron的用户，而sendmail没有启动所以就产生了这些文件；
+ find /var/spool/clientmqueue -type f -print -exec rm -f {} \;
+ 
