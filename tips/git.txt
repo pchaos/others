@@ -30,3 +30,10 @@ git remote add upstream https://github.com/scaphilo/koalixcrm
 git fetch upstream
 git pull upstream master
 git push
+
+
+# 更新QUANTAXIS.git
+git clone https://github.com/pchaos/QUANTAXIS.git && cd quantaxis/
+git remote add upstream https://github.com/QUANTAXIS/QUANTAXIS.git && git fetch upstream
+git pull upstream master
+git push
