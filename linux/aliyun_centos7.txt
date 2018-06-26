@@ -1,0 +1,35 @@
+
+# mongodb
+Configure the package management system (yum).
+Create a /etc/yum.repos.d/mongodb-org-3.6.repo file so that you can install MongoDB directly, using yum.
+
+Changed in version 3.0: MongoDB Linux packages are in a new repository beginning with 3.0.
+
+For MongoDB 3.6
+Use the following repository file:
+
+[mongodb-org-3.6]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.6/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-3.6.asc
+
+yum install -y mongodb-org
+
+
+sudo service mongod start
+
+sudo service mongod stop
+
+
+Remove Packages.¶
+Remove any MongoDB packages that you had previously installed.
+
+sudo yum erase $(rpm -qa | grep mongodb-org)
+3
+Remove Data Directories.
+Remove MongoDB databases and log files.
+
+sudo rm -r /var/log/mongodb
+sudo rm -r /var/lib/mongo
