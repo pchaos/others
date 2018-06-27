@@ -41,3 +41,5 @@ cd software/python3rd && git clone https://github.com/huyng/bashmarks.git && cd 
 make install
 cd && echo 'source ~/.local/bin/bashmarks.sh' >> .bashrc
 
+# 获取公网ip
+ curl iiip.co
