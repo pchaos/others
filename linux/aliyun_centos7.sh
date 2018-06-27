@@ -2,6 +2,8 @@
 yum update -y
 yum install -y screen upx git bzip2
 yum install -y tk-devel tcl-devel sqlite-devel gdbm-devel xz-devel readline-devel 
+# 清理AliYun国内版后台服务
+sudo bash -c "$(curl -sS https://raw.githubusercontent.com/FanhuaCloud/AliYunServicesClear/master/uninstall.sh)"
 reboot
 
 useradd yg && passwd yg
@@ -58,3 +60,4 @@ your_user_name ALL=(ALL) NOPASSWD: ALL
 tar -czf /tmp/db.tar.gz db.sqlite3 
 # 解压
 tar -xzvf db.tar.gz
+
