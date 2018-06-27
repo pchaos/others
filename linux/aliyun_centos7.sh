@@ -35,3 +35,9 @@ pip install mkl
 pip install tushare quantaxis
 
 
+
+# bashmarks
+cd software/python3rd && git clone https://github.com/huyng/bashmarks.git && cd bashmarks/
+make install
+cd && echo 'source ~/.local/bin/bashmarks.sh' >> .bashrc
+
