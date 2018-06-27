@@ -1,4 +1,4 @@
-#/usr/bin/bash
+#!/bin/bash
 yum update -y
 yum install -y screen upx git bzip2
 yum install -y tk-devel tcl-devel sqlite-devel gdbm-devel xz-devel readline-devel 
