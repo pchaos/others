@@ -33,3 +33,12 @@ Remove MongoDB databases and log files.
 
 sudo rm -r /var/log/mongodb
 sudo rm -r /var/lib/mongo
+
+# bashmarks
+git clone https://github.com/huyng/bashmarks.git
+cd bashmarks/
+make install
+cd
+echo 'source ~/.local/bin/bashmarks.sh' >> .bashrc
+
+
