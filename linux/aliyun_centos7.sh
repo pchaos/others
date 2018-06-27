@@ -47,3 +47,9 @@ cd && echo 'source ~/.local/bin/bashmarks.sh' >> .bashrc
 
 # 获取公网ip
  curl iiip.co
+ 
+# 添加sudoer
+visudo
+"""
+your_user_name ALL=(ALL) NOPASSWD: ALL
+"""
