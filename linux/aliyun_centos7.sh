@@ -53,3 +53,8 @@ visudo
 """
 your_user_name ALL=(ALL) NOPASSWD: ALL
 """
+
+# 压缩db文件
+tar -czf /tmp/db.tar.gz db.sqlite3 
+# 解压
+tar -xzvf db.tar.gz
