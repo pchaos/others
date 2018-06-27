@@ -18,6 +18,6 @@ conda update --all
 conda create --name stock
 
 source activate stock
-pip install bs4 requests lxml cython pandas django
+pip install bs4 requests lxml==4.1.1 cython pandas pyecharts pexpect numpy django
 pip install mkl
 pip install tushare quantaxis
