@@ -5,7 +5,19 @@ reboot
 
 useradd yg && passwd yg
 
+vim /etc/yum.repos.d/mongodb-org-3.6.repo 
+"""
+[mongodb-org-3.6]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.6/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-3.6.asc
+
+"""
 screen
+yum install -y mongodb-org && service mongod start
+
 su yg
 cd 
 mkdir download && cd download
@@ -21,3 +33,5 @@ source activate stock
 pip install bs4 requests lxml==4.1.1 cython pandas pyecharts pexpect numpy django
 pip install mkl
 pip install tushare quantaxis
+
+
