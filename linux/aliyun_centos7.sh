@@ -1,9 +1,11 @@
 #/usr/bin/bash
 yum update -y
 yum install -y screen upx git bzip2
+yum install -y tk-devel tcl-devel sqlite-devel gdbm-devel xz-devel readline-devel 
 reboot
 
 useradd yg && passwd yg
+
 
 vim /etc/yum.repos.d/mongodb-org-3.6.repo 
 """
@@ -16,6 +18,7 @@ gpgkey=https://www.mongodb.org/static/pgp/server-3.6.asc
 
 """
 screen
+
 yum install -y mongodb-org && service mongod start
 
 su yg
@@ -33,6 +36,7 @@ source activate stock
 pip install bs4 requests lxml==4.1.1 cython pandas pyecharts pexpect numpy django pytz
 pip install mkl
 pip install tushare quantaxis
+
 
 
 
