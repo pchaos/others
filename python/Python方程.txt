@@ -1,0 +1,12 @@
+
+Python解一元一次方程简单方法
+用Python来解数学问题还是很简单的，例如：>>> solve("x - 2*x + 5*x - 46*(235-24) = x + 2")
+
+3236.0
+
+看来来python是如何来解的，代码只有三行。
+
+def solve(eq,var='x'):
+    eq1 = eq.replace("=","-(")+")"
+    c = eval(eq1,{var:1j})
+    return -c.real/c.imag
