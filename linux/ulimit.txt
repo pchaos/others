@@ -1,0 +1,19 @@
+Increase the open files limit on Linux
+see all limits, run
+
+ulimit -Sa # soft limits
+ulimit -Ha # hard limits
+
+systemd
+If you are on a systemd-based system, try editing both /etc/systemd/system.conf and /etc/systemd/user.conf and adding the following line under the [Manager] section (see systemd-system.conf(5)):
+
+DefaultLimitNOFILE=16384
+
+# user.conf
+DefaultLimitNOFILE=8192:8192
+
+Then reboot the system.
+
+I found out about this setting from a comment by Ewan Leith, but changing user.conf alone didn’t work for me; 
+I had to change both user.conf and system.conf.
+
