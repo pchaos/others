@@ -82,3 +82,18 @@ find . -path "*/migrations/*.pyc"  -delete
 python manage.py makemigrations
 python manage.py migrate
 And you are good to go.
+
+# i18n chrome正常 firefox不识别中文标识 
+i18n is not working in firefox web extension after changing the browser language
+
+I have written a web extension plugin for firefox. I want to support i18n for that. But it does not work if I changed the language from the following option
+
+about:preferences#content -> From language setting I have added fr -> Move UP and I restarted the browser.
+
+After the above setting the browser locale got change but the web-extension pop-up locale didn't change.
+
+If i change from the about:config -> general.useragent.locale and changed the locale to fr and then restarted the browser, the i18n worked for the web-extension pop-up.
+
+So is there any way to support i18n for web-extension by changing the language from about:preferences#content option.
+
+Any help will be appreciated. Thanks in advance.
