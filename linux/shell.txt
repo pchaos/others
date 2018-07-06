@@ -1,0 +1,2 @@
+linux定时任务如何每隔0.5秒执行一次呢？
+for i in `seq 120`; do awesome_scripts& sleep 0.5; done
