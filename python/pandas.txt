@@ -63,3 +63,9 @@ df.max()：返回每一列的最大值
 df.min()：返回每一列的最小值
 df.median()：返回每一列的中位数
 df.std()：返回每一列的标准差```
+--------------------------------------------------
+Understanding the Transform Function in Pandas
+
+http://pbpython.com/pandas_transform.html
+transform 流程：http://pbpython.com/images/transform-example.png
+--------------------------------------------------
