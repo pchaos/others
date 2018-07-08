@@ -69,3 +69,9 @@ Understanding the Transform Function in Pandas
 http://pbpython.com/pandas_transform.html
 transform 流程：http://pbpython.com/images/transform-example.png
 --------------------------------------------------
+# 计算（MA）均线
+df =pd.DataFrame(np.arange(100), columns=['close'])
+ma_list = [5, 20, 60]
+for ma in ma_list:
+    df['MA_' + str(ma)] = df['close'].rolling(ma).mean()
+df
