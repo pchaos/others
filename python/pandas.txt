@@ -75,3 +75,25 @@ ma_list = [5, 20, 60]
 for ma in ma_list:
     df['MA_' + str(ma)] = df['close'].rolling(ma).mean()
 df
+--------------------------------------------------
+# 中位数；中值
+median() – Median Function in python pandas is used to calculate the median or middle value of a given set of numbers, Median of a data frame, median of column and median of rows, let’s see an example of each. We need to use the package name “statistics” in calculation of median. In this tutorial we will learn,
+import statistics
+print(statistics.median([1,9,5,6,8,7]))
+print(statistics.median([4,-11,-5,16,5,7,9]))
+import pandas as pd
+import numpy as np
+ 
+#Create a DataFrame
+d = {
+    'Name':['Alisa','Bobby','Cathrine','Madonna','Rocky','Sebastian','Jaqluine',
+   'Rahul','David','Andrew','Ajay','Teresa'],
+   'Score1':[62,47,55,74,31,77,85,63,42,32,71,57],
+   'Score2':[89,87,67,55,47,72,76,79,44,92,99,69],
+   'Score3':[56,86,77,45,73,62,74,89,71,67,97,68]}
+ 
+df = pd.DataFrame(d)
+df
+# median of the specific column
+df.loc[:,"Score1"].median()
+
