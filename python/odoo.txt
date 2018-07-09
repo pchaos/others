@@ -1,0 +1,10 @@
+
+https://www.odoo.com/documentation/11.0/setup/install.html
+
+Enterprise Edition
+If you have access to the Enterprise repository (see Editions if you wish to get access), you can use this command to fetch the addons:
+
+$ git clone https://github.com/odoo/enterprise.git
+The Enterprise git repository does not contain the full Odoo source code. It is only a collection of extra add-ons. The main server code is in the Community version. Running the Enterprise version actually means running the server from the Community version with the addons-path option set to the folder with the Enterprise version.
+
+You need to clone both the Community and Enterprise repository to have a working Odoo installation
