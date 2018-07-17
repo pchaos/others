@@ -8,3 +8,6 @@ $ git clone https://github.com/odoo/enterprise.git
 The Enterprise git repository does not contain the full Odoo source code. It is only a collection of extra add-ons. The main server code is in the Community version. Running the Enterprise version actually means running the server from the Community version with the addons-path option set to the folder with the Enterprise version.
 
 You need to clone both the Community and Enterprise repository to have a working Odoo installation
+
+
+git clone -b 11.0 --single-branch https://github.com/OCA/OCB.git odoo 
