@@ -10,8 +10,8 @@ The Enterprise git repository does not contain the full Odoo source code. It is 
 You need to clone both the Community and Enterprise repository to have a working Odoo installation
 
 
-git clone -b 11.0 --single-branch https://github.com/OCA/OCB.git odoo
-git clone -b 11.0 --single-branch https://gitee.com/pchaos/OCB.git odoo
+git clone --depth 1 -b 11.0 --single-branch https://github.com/OCA/OCB.git odoo
+git clone --depth 1 -b 11.0 --single-branch https://gitee.com/pchaos/OCB.git odoo
 
 
 How can I download and install Odoo 11?
