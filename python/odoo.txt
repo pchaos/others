@@ -10,4 +10,25 @@ The Enterprise git repository does not contain the full Odoo source code. It is 
 You need to clone both the Community and Enterprise repository to have a working Odoo installation
 
 
-git clone -b 11.0 --single-branch https://github.com/OCA/OCB.git odoo 
+git clone -b 11.0 --single-branch https://github.com/OCA/OCB.git odoo
+git clone -b 11.0 --single-branch https://gitee.com/pchaos/OCB.git odoo
+
+
+How can I download and install Odoo 11?
+Odoo can be found on Github, you can find Odoo 11 here.
+You can find the official downloads (for Windows, Debian, RPM and the sources) at https://www.odoo.com/page/download
+To install it on Ubuntu you can follow the following steps:
+
+1. Download my installation script from Github and copy it locally:
+
+sudo wget https://raw.githubusercontent.com/Yenthe666/InstallScript/11.0/odoo_install.sh
+2. Edit the file and modify the parameters that you'd like to change:
+
+sudo nano odoo_install.sh
+Tip: If you'd like the enterprise version you should set IS_ENTERPRISE to True instead of false.
+3. Make the file executable:
+
+sudo chmod +x odoo_install.sh
+4. Execute the script and wait a few minutes for Odoo to install:
+
+./odoo_install.sh
