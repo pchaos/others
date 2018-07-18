@@ -1,0 +1,105 @@
+tryton
+
+Install - Demo
+Setuptools
+You can directly install Tryton using pip command-line tool:
+
+$ pip install trytond
+$ pip install tryton
+$ pip install trytond_module_name
+Replace module_name with the name of the module to install
+
+This downloads and installs the latest versions of Tryton packages.
+
+If you have an older Tryton release installed and would like to upgrade, add the "-U" option to the above commands.
+
+You can find more modules on Python Package Index.
+
+Development
+Development Source Code
+You can browse the source code repository or get a copy using Mercurial with following commands:
+
+$ hg clone https://hg.tryton.org/trytond/
+$ hg clone https://hg.tryton.org/tryton/
+git clone -b 4.8 https://github.com/tryton/trytond.git
+git clone -b 4.8 https://github.com/tryton/sao.git
+
+The modules must be put in the trytond/modules directory:
+
+$ hg clone https://hg.tryton.org/modules/module_name
+
+You can download the list of modules: https://downloads.tryton.org/modules.txt
+
+Install an official release. Once you’ve downloaded and unpacked a trytond source release, enter the directory where the archive was unpacked, and run: python setup.py install
+
+
+Demo
+To try out the latest Tryton server, you can connect with the latest Tryton client to:
+
+server: demo.tryton.org
+port: 8000
+With the user/password:
+
+English: demo/demo
+Español: demo_es/demo
+Français: demo_fr/demo
+РУССКИЙ: demo_ru/demo
+Deutsch: demo_de/demo
+Administrator: admin/admin
+
+
+Configuration file for Tryton
+The configuration file controls some aspects of the behavior of Tryton. The file uses a simple ini-file format. It consists of sections, led by a [section] header and followed by name = value entries:
+
+[database]
+uri = postgresql://user:password@localhost/
+path = /var/lib/trytond
+
+
+Create a database
+Depending of the database backend choosen, you must create a database (see the documentation of the choosen backend). The user running trytond must be granted the priviledge to create tables. For backend that has the option, the encoding of the database must be set to UTF-8.
+
+Initialize a database
+A database can be initialized using this command line:
+
+trytond-admin -c <config file> -d <database name> --all
+At the end of the process, trytond-admin will ask to set the password for the admin user.
+
+Update a database
+To upgrade to a new series, the command line is:
+
+trytond-admin -c <config file> -d <database name> --all
+Warning
+
+Prior to upgrade see if there is no manual action to take on the migration topic.
+
+To activate a new language on an existing database, the command line is:
+
+trytond-admin -c <config file> -d <database name> --all -l <language code>
+Once activated, the language appears in the user preferences.
+
+When installing new modules, the list of modules must be updated with:
+
+trytond-admin -c <config file> -d <database name> --update-modules-list
+Once updated, the new modules can be activated from the client or activated with:
+
+trytond-admin -c <config file> -d <database name> -u <module name> --install-dependencies
+
+# psycopg2会报错，需要重新安装
+pip uninstall psycopg2
+pip install --no-binary :all: psycopg2
+pip install PyGObject
+
+# 初始化数据库
+cd trytond
+trytond-admin -c config.ini -d trytontest --all
+
+trytond-admin -c config.ini -d tryton01 --all -v
+trytond-admin -c config.ini -d tryton01 --all --update-modules-list -v
+
+
+How to start the server¶
+Web service
+You can start the default web server bundled in Tryton with this command line:
+
+trytond -c config.ini
