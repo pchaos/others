@@ -47,6 +47,8 @@ pg_hba.conf, see the documentation for more details)
 # 重置密码
 Reset Forgotten Password For postgres User
 
+Fedora 26       /var/lib/pgsql/data/pg_hba.conf
+
 PostgreSQL uses the  pg_hba.conf configuration file that is stored in the database data directory to control the client authentication. HBA means host-based authentication. To reset the password for the postgres user, you need to modify some parameters in this configuration file.
 
 Step 1. Backup the pg_dba.conf file by copying it to a different location or just rename it to pg_dba_bk.conf
@@ -66,6 +68,7 @@ sudo /etc/init.d/postgresql restart
 Step 4. Connect to PostgreSQL database server and change the password of the postgres user.
 
 sudo -u postgres psql
+ create database tryton01 owner good;
 
 ALTER USER postgres with password 'very_secure_password';
 
