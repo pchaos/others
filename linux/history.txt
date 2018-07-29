@@ -1,0 +1,15 @@
+
+If you type history, you'll see a numbered list flash by, showing you the previous 500 commands you've used.
+
+You probably don't need to see all of the last 500 commands, so the command history 20 might be useful. This way, only the previous 20 commands you'd typed will display (you can use any number with this command).
+
+Other Shortcuts
+Here are other command history shortcuts which may be useful to you:
+
+"Bang, bang": Typing !! (called "bang bang") executes the last command in the history.
+
+"Bang number": Typing !number (as in !302) will execute the command which is numbered 302 in the history file.
+
+"Bang string": Typing !string (as in !rpm) will execute a command with the most recent matching string from the history file.
+
+[Up arrow] and[ down arrow]: At the shell prompt, you can simply press the up arrow to move back through previous commands in your history list (the down arrow will move you forward through the commands) until you find the command you want. Press [Enter] to execute the command, just as if you had typed it on the command line.
