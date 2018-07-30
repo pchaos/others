@@ -23,6 +23,10 @@ $ hg clone https://hg.tryton.org/trytond/
 $ hg clone https://hg.tryton.org/tryton/
 git clone -b 4.8 https://github.com/tryton/trytond.git
 git clone -b 4.8 https://github.com/tryton/sao.git
+cd sao
+npm install
+sudo npm install -g grunt-cli
+grunt
 
 The modules must be put in the trytond/modules directory:
 
@@ -78,7 +82,7 @@ To activate a new language on an existing database, the command line is:
 trytond-admin -c <config file> -d <database name> --all -l <language code>
 Once activated, the language appears in the user preferences.
 
-When installing new modules, the list of modules must be updated with:
+When installing new modules, modulesthe list of modules must be updated with:
 
 trytond-admin -c <config file> -d <database name> --update-modules-list
 Once updated, the new modules can be activated from the client or activated with:
@@ -88,6 +92,7 @@ trytond-admin -c <config file> -d <database name> -u <module name> --install-dep
 # psycopg2会报错，需要重新安装
 pip uninstall psycopg2
 pip install --no-binary :all: psycopg2
+# import gi 报错
 pip install PyGObject
 
 # 初始化数据库
