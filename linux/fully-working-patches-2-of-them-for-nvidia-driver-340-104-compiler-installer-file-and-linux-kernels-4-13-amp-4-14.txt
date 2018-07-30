@@ -1,0 +1,286 @@
+
+For those who would like to immediately begin using Nvidia Driver 340.104 with Linux Kernel 4.13 & Linux Kernel 4.14, apply the fully working patches provided here:
+
+Name of the patch files are: 
+- "nv_patch_340.104_linux_kernel_4.13", see direct links or extract from attached "patch_4.13.zip" file below
+- "nv_patch_340.104_linux_kernel_4.14", see direct links or extract from attached "patch_4.14.zip" file below
+
+- I have thoroughly tested both patches and they work well without any issues
+
+- Deserved Mentions & Thanks to: Alberto Milone, Michael Marley, & milhouse
+
+Instructions for Applying Patches [nv_patch_340.104_linux_kernel_4.13] & [nv_patch_340.104_linux_kernel_4.14] to Nvidia Driver Compiler/Installer 340.104 used with Linux Kernels 4.13 & 4.14 in CLI/Terminal [2 Methods]:
+
+Method 1:
+1) Download the following NVIDIA Driver Compiler/Installer file from NVIDIA website for Linux: NVIDIA-Linux-x86_64-340.104.run
+2) Go into CLI/Terminal, and SU into root(#)
+3) Completely Exit Xorg Server: The command "systemctl isolate multi-user.target" usually followed by "CTL+ALT+[F1 to F6]" will do this
+4) In CLI, go into root then provide execution permissions: "chmod 755 NVIDIA-Linux-x86_64-340.104.run"
+5) Extract the Nvidia Driver Compiler/Installer Contents & Source Files: "./NVIDIA-Linux-x86_64-340.104.run --extract-only"
+6) Copy [cp] Patch File "nv_patch_340.104_linux_kernel_4.13" or "nv_patch_340.104_linux_kernel_4.14" into "NVIDIA-Linux-x86_64-340.104" directory
+7) Go into [cd] "NVIDIA-Linux-x86_64-340.104" directory where patch file is now located
+8) Apply Patch in that directory: "patch -p0 < nv_patch_340.104_linux_kernel_4.13" or "patch -p0 < nv_patch_340.104_linux_kernel_4.14"
+9) Proceed with NVIDIA Driver Compilation & Installation by running "./nvidia-installer". Important: Make sure the Nouveau Driver is disabled-blacklisted and modeset set to 0 in /etc/modprobe.d with "blacklist nouveau" & "options nouveau modeset=0", and the Initial RAM Disk (initrd) is created AFTER compiling & installing the NVIDIA driver and PRIOR to rebooting. Enjoy!
+
+Note 1: You may wish to test out the patch first by executing a Dry-Run with:
+"patch --dry-run -p0 < nv_patch_340.104_linux_kernel_4.13" or "patch --dry-run -p0 < nv_patch_340.104_linux_kernel_4.14"
+
+Method 2:
+1) Download the following NVIDIA Driver Compiler/Installer file from NVIDIA website for Linux: NVIDIA-Linux-x86_64-340.104.run
+2) Go into CLI/Terminal, and SU into root(#)
+3) Completely Exit Xorg Server: The command "systemctl isolate multi-user.target" usually followed by "CTL+ALT+[F1 to F6]" will do this
+4) In CLI, go into root then provide execution permissions: "chmod 755 NVIDIA-Linux-x86_64-340.104.run"
+5)
+./NVIDIA-Linux-x86_64-340.104.run --apply-patch nv_patch_340.104_linux_kernel_4.13
+or
+./NVIDIA-Linux-x86_64-340.104.run --apply-patch nv_patch_340.104_linux_kernel_4.14
+
+Note: This applies the patch 'Patch' to the kernel interface files included in the .run file, remove any precompiled kernel interfaces and then repackage the .run file. The new .run file will be placed in the current directory and the string "-custom" appended to its name, unless already present, to distinguish it from the original .run file.
+
+6) Proceed with NVIDIA Driver Compilation & Installation by running the new patched "./NVIDIA-Linux-x86_64-340.104.run" -custom file. Important: Make sure the Nouveau Driver is disabled-blacklisted and modeset set to 0 in /etc/modprobe.d with "blacklist nouveau" & "options nouveau modeset=0", and the Initial RAM Disk (initrd) is created AFTER compiling & installing the NVIDIA driver and PRIOR to rebooting. Enjoy!
+
+Note 2: If you are getting a "gcc/cc-version-check failed" error, please run "./nvidia-installer --no-cc-version-check" after applying patch
+
+Google link for patch "nv_patch_340.104_linux_kernel_4.13" on Pastebin: https://goo.gl/9MSsCL
+Google link for patch "nv_patch_340.104_linux_kernel_4.14" on Pastebin: https://goo.gl/eVTUkj
+ Attachments
+patch_4.13.zip
+
+patch_4.14.zip
+
+#1
+Posted 10/12/2017 05:59 PM   
+ 
+anton38386
+  
+nv_patch_340.104_linux_kernel_4.14 makes driver unusable for some older kernels (4.4 for example). so I suggest to add some check version code:
+
+--- kernel/nv-drm.c	2017-11-14 14:12:44.033673870 +0300
++++ kernel/nv-drm.c	2017-11-14 13:47:04.700081448 +0300
+@@ -173,7 +173,11 @@
+ {
+     int ret = 0;
+ #if defined(NV_DRM_AVAILABLE)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
+     ret = drm_pci_init(&nv_drm_driver, pci_driver);
++#else
++    ret = drm_legacy_pci_init(&nv_drm_driver, pci_driver);
++#endif
+ #endif
+     return ret;
+ }
+@@ -183,7 +189,11 @@
+ )
+ {
+ #if defined(NV_DRM_AVAILABLE)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 14, 0)
+     drm_pci_exit(&nv_drm_driver, pci_driver);
++#else
++    drm_legacy_pci_exit(&nv_drm_driver, pci_driver);
++#endif
+ #endif
+ }
+
+
+Installation:
+1) download original NVIDIA-Linux-x86_64-340.104.run from Nvidia website.
+2) save above patch code to patch file "my_patch_up_to_4.14"
+3) apply it: ./NVIDIA-Linux-x86_64-340.104.run --apply-patch my_patch_up_to_4.14
+4) use patched run-file "NVIDIA-Linux-x86_64-340.104-custom.run"
+#2
+Posted 11/14/2017 12:44 PM   
+ 
+ejmarkow
+  
+said:
+nv_patch_340.104_linux_kernel_4.14 makes driver unusable for some older kernels (4.4 for example). so I suggest to add some check version code:
+
+
+Both patches 4.14 & 4.13 which I had provided here work only for those specific Linux Kernel versions.
+
+The patches were NEVER meant to work on any kernel version other than those mentioned here explicitly.
+
+No claims were ever made that they work on any other kernels besides those.
+
+For kernel versions lower than 4.14 & 4.13, there are already patches available which I had already provided on this forum a while ago.
+#3
+Posted 11/14/2017 10:24 PM   
+ 
+aginfo
+  
+HI!
+
+"./NVIDIA-Linux-x86_64-340.104.run --apply-patch my_patch_up_to_4.14" is very easy mode.
+
+Thanks!!
+
+Work fine, but don't work with cuda 9.0.
+
+
+my steps:
+- install driver with patch
+- install cuda (RPM, in Cent OS 7.4, kernel 4.14.0, use yum for dependency solution auto)
+*** the driver 384.81 embeded is installed
+- reinstall driver with patch
+
+Do you have same patch for 384.81 driver?
+
+Thank you in advanced!!!
+#4
+Posted 11/22/2017 10:14 AM   
+ 
+manigorgeous
+  
+is ther a patch for 64bit version ubuntu 14.04
+
+Linux ns3042797.ip-51-255-93.eu 4.14.0-041400-generic #201711122031 SMP Sun Nov 12 20:32:29 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+
+i tried the nv patch for 4.14 and got custom installer and get this error in log file . any solution
+
+logerror
+
+nvidia-installer log file '/var/log/nvidia-installer.log'
+creation time: Wed Nov 22 21:30:06 2017
+installer version: 340.104
+
+PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+nvidia-installer command line:
+./nvidia-installer
+--no-cc-version-check
+
+Unable to load: nvidia-installer ncurses v6 user interface
+
+Using: nvidia-installer ncurses user interface
+-> License accepted.
+-> Installing NVIDIA driver version 340.104.
+-> Performing CC sanity check with CC="/usr/bin/cc".
+-> Kernel source path: '/lib/modules/4.14.0-041400-generic/build'
+-> Kernel output path: '/lib/modules/4.14.0-041400-generic/build'
+-> Performing rivafb check.
+-> Performing nvidiafb check.
+-> Performing Xen check.
+-> Performing PREEMPT_RT check.
+-> Cleaning kernel module build directory.
+executing: 'cd ./kernel; /usr/bin/make clean'...
+-> Building NVIDIA kernel module:
+executing: 'cd ./kernel; /usr/bin/make module SYSSRC=/lib/modules/4.14.0-041400-generic/build SYSOUT=/lib/modules/4.14.0-041400-generic/build NV_BUILD_MODULE_INSTANCES='...
+NVIDIA: calling KBUILD...
+make[1]: Entering directory `/usr/src/linux-headers-4.14.0-041400-generic'
+test -e include/generated/autoconf.h -a -e include/config/auto.conf || (	\
+echo >&2;	\
+echo >&2 " ERROR: Kernel configuration is invalid.";	\
+echo >&2 " include/generated/autoconf.h or include/config/auto.conf are missing.";\
+echo >&2 " Run 'make oldconfig && make prepare' on kernel src to fix it.";	\
+echo >&2 ;	\
+/bin/false)
+mkdir -p /tmp/selfgz6327/NVIDIA-Linux-x86_64-340.104-custom/kernel/.tmp_versions ; rm -f /tmp/selfgz6327/NVIDIA-Linux-x86_64-340.104-custom/kernel/.tmp_versions/*
+/usr/bin/make -f ./scripts/Makefile.build obj=/tmp/selfgz6327/NVIDIA-Linux-x86_64-340.104-custom/kernel
+cc -Wp,-MD,/tmp/selfgz6327/NVIDIA-Linux-x86_64-340.104-custom/kernel/.nv.o.d -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.8/include -I./arch/x86/include -I./arch/x86/include/generated -I./include -I./arch/x86/include/uapi -I./arch/x86/include/generated/uapi -I./include/uapi -I./i
+nclude/generated/uapi -include ./include/linux/kconfig.h -D__KERNEL__ -fno-pie -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -fshort-wchar -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -fno-PIE -fno-pie -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -m64 -falign-jumps=1 -falign-loops=1 -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -DCONFIG_X86_X32_ABI -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_SSSE3=1 -DCONFIG_AS_CRC32=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -DCONFIG_AS_SHA1_NI=1 -DCONFIG_AS_SHA256_NI=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -fno-delete-null-pointer-checks -O2 -Wno-maybe-uninitialized --param=allow-store-data-races=0 -DCC_HAVE_ASM_GOTO -Wframe-larger-than=1024 -fstack-protector-strong -fno-omit-frame-pointer -fno-optimize-sibling-calls -pg -DNV_MODULE_INSTANCE=0 -DNV_BUILD_MODU
+LE_INSTANCES=0 -UDEBUG -U_DEBUG -DNDEBUG -I/tmp/selfgz6327/NVIDIA-Linux-x86_64-340.104-custom/kernel -Wall -MD -Wsign-compare -Wno-cast-qual -Wno-error -D__KERNEL__ -DMODULE -DNVRM -DNV_VERSION_STRING=\"340.104\" -Wno-unused-function -Wuninitialized -fno-strict-aliasing -mno-red-zone -mcmodel=kernel -DNV_UVM_ENABLE -D__linux__ -DNV_DEV_NAME=\"nvidia\" -DMODULE -DKBUILD_BASENAME='"nv"' -DKBUILD_MODNAME='"nvidia"' -c -o /tmp/selfgz6327/NVIDIA-Linux-x86_64-340.104-custom/kernel/nv.o /tmp/selfgz6327/NVIDIA-Linux-x86_64-340.104-custom/kernel/nv.c
+cc: error: unrecognized command line option â€˜-fstack-protector-strongâ€™
+make[2]: *** [/tmp/selfgz6327/NVIDIA-Linux-x86_64-340.104-custom/kernel/nv.o] Error 1
+make[1]: *** [_module_/tmp/selfgz6327/NVIDIA-Linux-x86_64-340.104-custom/kernel] Error 2
+make[1]: Leaving directory `/usr/src/linux-headers-4.14.0-041400-generic'
+NVIDIA: left KBUILD.
+nvidia.ko failed to build!
+make: *** [nvidia.ko] Error 1
+-> Error.
+ERROR: Unable to build the NVIDIA kernel module.
+ERROR: Installation has failed. Please see the file '/var/log/nvidia-installer.log' for details. You may find suggestions on fixing installation problems in the README available on the Linux driver download page at www.nvidia.com.
+#5
+Posted 11/22/2017 08:48 PM   
+ 
+manigorgeous
+  
+stuck on 43% . is it support 64bit?
+#6
+Posted 11/22/2017 08:53 PM   
+ 
+matstegner
+  
+I'm using the patched 340.104 under Slackware 64-bit running kernel 4.14.1, so yes it should work on 64-bit.
+#7
+Posted 11/23/2017 12:06 AM   
+ 
+ejmarkow
+  
+Both patches I provided, for Linux Kernels 4.13 & 4.14, work perfectly well, have been thoroughly tested, for 32-bit & 64-bit, and successfully build two designated modules: nvidia & nvidia_uvm.
+
+Please check your procedures again, make sure you have Nouveau blacklisted, and that you rebuild your initrd [boot loader initialized RAM disk] after you compile the Nvidia Kernel drivers with patch applied but before you reboot using your new Nvidia video drivers.
+#8
+Posted 11/23/2017 10:21 AM   
+ 
+manigorgeous
+  
+/etc/modprobe.d/nvidia-driver-disable-nouveau.conf
+
+added this to conf
+
+blacklist nouveau
+blacklist lbm-nouveau
+options nouveau modeset=0
+alias nouveau off
+alias lbm-nouveau off
+
+
+sudo update-initramfs -u
+update-initramfs: Generating /boot/initrd.img-4.14.0-041400-generic
+W: Possible missing firmware /lib/firmware/isci/isci_firmware.bin for module isci
+getting that error. 
+
+doing first time might be i am missing some thing if u please update the procedure of updating boot loader initializing
+#9
+Posted 11/23/2017 10:51 AM   
+ 
+manigorgeous
+  
+df -h
+Filesystem Size Used Avail Use% Mounted on
+udev 7.9G 4.0K 7.9G 1% /dev
+tmpfs 1.6G 860K 1.6G 1% /run
+/dev/md1 20G 2.7G 16G 15% /
+none 4.0K 0 4.0K 0% /sys/fs/cgroup
+none 5.0M 0 5.0M 0% /run/lock
+none 7.9G 0 7.9G 0% /run/shm
+none 100M 0 100M 0% /run/user
+/dev/md2 201G 60M 190G 1% /home
+
+
+is that the issue too no volume group found
+
+update-grub
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-4.14.0-041400-generic
+Found initrd image: /boot/initrd.img-4.14.0-041400-generic
+Found linux image: /boot/bzImage-4.9.58-xxxx-std-ipv6-64
+No volume groups found
+#10
+Posted 11/23/2017 11:18 AM   
+ 
+ejmarkow
+  
+said:
+doing first time might be i am missing some thing if u please update the procedure of updating boot loader initializing 
+
+
+I did include the procedure.
+
+Please read carefully Method 1 (Step 9) and / or Method 2 (Step 6).
+
+Anyway, in the end, did the Nvidia Driver 340.104 compile for you on Linux Kernel 4.14.0-041400, building the modules nvidia & nvidia_uvm? Does it all work now?
+#11
+Posted 11/23/2017 05:15 PM   
+ 
+taomarku
+  
+Hi, is there any patch for 4.8 kernel?
+#12
+Posted 01/04/2018 12:27 PM   
+ 
+ledonov
+  
+The new driver is released 340.106. Release Date: 2018.1.16. Is this driver patched? Somebody knows? From page, Release highlights: Fixed a compatibility problem between the nvidia.ko's Page Attribute Table (PAT) support and the kernel Page Table Isolation (PTI) patches.
+#13
+Posted 02/05/2018 09:15 AM   
