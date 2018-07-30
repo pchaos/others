@@ -35,3 +35,6 @@ sudo chmod +x odoo_install.sh
 4. Execute the script and wait a few minutes for Odoo to install:
 
 ./odoo_install.sh
+
+FIX: odoo: symbol __res_maybe_init, version GLIBC_PRIVATE not defined in file libc.so.6 with link time reference
+pip install psycopg2 --upgrade
