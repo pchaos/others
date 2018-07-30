@@ -1,3 +1,4 @@
+https://devtalk.nvidia.com/default/topic/1025051/fully-working-patches-2-of-them-for-nvidia-driver-340-104-compiler-installer-file-and-linux-kernels-4-13-amp-4-14/
 
 For those who would like to immediately begin using Nvidia Driver 340.104 with Linux Kernel 4.13 & Linux Kernel 4.14, apply the fully working patches provided here:
 
