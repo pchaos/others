@@ -2,12 +2,16 @@ https://blog.csdn.net/mrzhouxiaofei/article/details/79140435
 
 wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.14.59.tar.xz
 tar xvJf linux-4.14.59.tar.xz
-ls
+l
 cd linux-4.14.59/
-ls
 make menuconfig
 yum install elfutils-libelf-devel
 screen
-make -j 4
+make -j4
+
+make -j4 modules
+
+make modules_install
+make install
 
 
