@@ -1,0 +1,81 @@
+﻿Odoo Web Service API之xmlrpclib应用案例：”Odoo导入联系人的Python脚本”
+
+转帖及整理：Odoo Web Service API之xmlrpclib应用案例："Odoo导入联系人的Python脚本"
+原文来自：http://cn.openerp.cn/openerp_import_image_by_xmlrpc/#comment-83613
+原文作者： Joshuajian
+
+参考官方文档：https://www.odoo.com/documentation/10.0/api_integration.html
+”XML-RPC是一个远程过程调用（remote procedure call，RPC)的分布式计算协议，通过XML将调用函数封装，并使用HTTP协议作为传送机制。“
+需求： 想通过一个script来将一个excel表格的partner连同他们的联系人及名片图片一起导入。
+
+代码：
+
+# -*- encoding: utf-8 -*-
+
+import xmlrpclib  #注意，测试代码需要运行odoo服务
+import xlrd  #注意，需要额外安装
+import base64
+
+db = ´testdb´#帐套名
+username = ´admin´#用户名
+password = ´1´#密码
+
+imagelocation=´E:\IMG´ #图片的根目录地址
+#读取excel文件
+fname = "E:TEST.xls"  #excel表格地址
+bk = xlrd.open_workbook(fname)
+#按名字取sheet
+sh = bk.sheet_by_name("JOSHUA")
+#登陆取uid
+sock_common = xmlrpclib.ServerProxy (´http://localhost:8069/xmlrpc/common´)
+uid = sock_common.login(db, username, password)
+sock = xmlrpclib.ServerProxy(´http://%s:%s/xmlrpc/object´ % (´localhost´,8069))
+
+for i in range(1,sh.nrows):
+    row_data = sh.row_values(i)
+    #通过国家名找到国家的id
+    country_id = sock.execute(db, uid, password, ´res.country´,´search´,[(´name´,´=´,row_data[8])])
+    value = {
+             ´name´:row_data[0],#第一格是partner名字，下如此类推
+             ´lang´:row_data[1],
+             ´address´:[(0,0,{´title´:row_data[2],
+                              ´name´:row_data[3],
+                              ´email´:row_data[4],
+                              ´phone´:row_data[5],
+                              ´mobile´:row_data[6],
+                              ´street´:row_data[7],
+                              ´country_id´:country_id[0],
+                              ´city´:row_data[9],
+                              ´zip´:row_data[10],
+                              })],
+
+              }
+    if row_data[11]:
+        #在openerp里面图片是以二进制来存档，所以要用base64转换，row_data[11]是图片的文件名。
+        value[´logo´]=base64.encodestring(open(IMAGELOCATION+row_data[11], ´rb´).read())
+    print value
+    ids = sock.execute(db, uid, password, ´res.partner´,´create´,value)
+    print ids
+
+ids = sock.execute(db, uid, password, ´res.partner´,´create´,value)
+这句是向res.partner执行create的方法，value就是对应的参数
+
+因为partner 和address的关系是one2many，在OpenERP的ORM里面可以直接添加，修改这些one2many,many2many和many2one的值有一个特殊的格式。
+many2many
+(0,0,{values}) 根据values里面的信息新建一个记录。
+(1,ID,{values})更新id=ID的记录（写入values里面的数据）
+(2,ID) 删除id=ID的数据（调用unlink方法，删除数据以及整个主从数据链接关系）
+(3,ID) 切断主从数据的链接关系,但不删除这个数据
+(4,ID) 为id=ID的数据添加主从链接关系。
+(5) 删除所有的从数据的链接关系,向所有的从数据调用(3,ID)
+(6,0,[IDs]) 用IDs里面的记录替换原来的记录（就是先执行(5)再执行循环IDs执行（4,ID））
+例如：[(6, 0, [8, 5, 6, 4])] 设置 many2many to ids [8, 5, 6, 4]
+one2many
+(0, 0,{ values })根据values里面的信息新建一个记录。
+(1,ID,{values}) 更新id=ID的记录（对id=ID的执行write 写入values里面的数据）
+(2,ID) 删除id=ID的数据（调用unlink方法，删除数据以及整个主从数据链接关系）
+例子：
+[(0,0,{‘field_name’:field_value_record1,…}),(0,0,{‘field_name’:field_value_record})]
+many2one的字段比较简单，直接填入已经存在的数据的id或者填入False删除原来的记录。
+
+
