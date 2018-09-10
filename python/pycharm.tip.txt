@@ -28,7 +28,7 @@ File->settings->Editor->File and Code Templates->Python Script
 
 
 This text is the activation-code (copy and paste it in the activation code part).
-This is another way to activate PHPstorm(pycharm) instead of using license server.
+This is another way to activate PHPstorm(PyCharm) instead of using license server.
 
 For Windows Users:
 go to C:\Windows\System32\drivers\etc
