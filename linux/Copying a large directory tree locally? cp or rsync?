@@ -1,0 +1,12 @@
+Copying a large directory tree locally? cp or rsync?
+
+https://serverfault.com/questions/43014/copying-a-large-directory-tree-locally-cp-or-rsync
+
+(cd /run/media/yg/2c98a2b5-6e9a-4d85-915d-ff3f3e8f70f6/backup201512/myDocs; tar cf - .) | (cd /home/yg/myDocs; tar xpf -)
+
+
+Definitely what I always do is use cpio:
+
+find . -print | cpio -pdm /target/folder
+This is almost fast than CP, definitely faster than tar and without pipeing anything.
+
