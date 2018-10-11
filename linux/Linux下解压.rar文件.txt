@@ -1,0 +1,7 @@
+
+下载rar在linux环境下的安装包
+
+wget https://www.rarlab.com/rar/rarlinux-x64-5.6.1.tar.gz
+tar -zxf rarlinux-x64-5.6.1.tar.gz 
+cd rar
+sudo make
