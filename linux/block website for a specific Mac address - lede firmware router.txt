@@ -1,0 +1,22 @@
+block website for a specific Mac address - lede firmware router
+
+It is possible using the firewall/iptables rules. The downside is that IP addresses might change and you would have to adopt the iptables configuration.
+
+In the web GUI of Lede, navigate to
+
+Network -> Firewall -> "Traffic Rules"
+In the New forward rule section give the new rule a name and verify that
+
+Source zone: lan
+Destination zone: wan
+which is the default. Then press Add and edit.
+
+Then adopt the settings as follows to your needs.
+
+Source MAC address
+Destination address ( the IP address of the site you want to block )
+Action: Reject
+Finally press Save & Apply.
+
+Another possibility would be to use an adblocker and configure it in a way that the websites you want to block are blocked by the adblocker. The downside is, that this would affect all computers on your network.
+If the users can change the DNS server, they can easily configure a different DNS server and bypass this method.
