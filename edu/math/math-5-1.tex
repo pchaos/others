@@ -1,7 +1,10 @@
-\documentclass[a4paper,11pt]{article}
+\documentclass[UTF8,a4paper,11pt]{article}
+% \usepackage[UTF8]{ctex}
+
 \usepackage{CJKutf8} %支持中文
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+% \usepackage{unicode-math}
 \usepackage{lmodern}
 \usepackage{listings}
 \usepackage{amsmath} %提供\begin{equation}
@@ -9,13 +12,13 @@
 \usepackage{latexsym}
 \usepackage{cite}
 \usepackage{bm} %在需要加粗的数学公式前使用\bm命令
-%\usepackage{tabularx}
-%\usepackage{dcolumn}
+% \usepackage{tabularx}
+% \usepackage{dcolumn}
 
 \title{小学五年级数学（上） }
 \author{俞书心}
 
-%begin 选择题选项排版
+% begin 选择题选项排版
 \usepackage{lipsum}
 \usepackage{enumitem}
 \usepackage{tikz} %
@@ -45,6 +48,7 @@
 \lxxmax\wd\xxboxd\relax
 \fi
 }
+
 
 %四选项自动排版，用法 \xx{选项}{选项}{选项}{选项}
 \newcommand\xx[4]{\par
@@ -141,7 +145,8 @@ images too big! please change width to less than 0.5linewidth-1em.
 
 % 正文区
 \begin{document}
-\begin{CJK}{UTF8}{gkai}
+% \begin{CJK}{UTF8}{gkai}
+\begin{CJK}{UTF8}{gbsn}
 \maketitle
 \tableofcontents
 
@@ -156,7 +161,7 @@ images too big! please change width to less than 0.5linewidth-1em.
 \makeatletter 
 \def\zdyxh#1{\expandafter\@zdyxh\csname c@#1\endcsname} 
 \def\@zdyxh#1{% 
-\ifcase#1\or 1\or 2\or 3\or 4\or 5\or 6\or 7\or 8\or 9\or 10\or 11\or 12\or 13\or 14\or 15\or 5\else 超了\fi} 
+\ifcase#1\or 1\or 2\or 3\or 4\or 5\or 6\or 7\or 8\or 9\or 10\or 11\or 12\or 13\or 14\or 15\or 16\else 超了\fi} 
 \makeatother 
 \AddEnumerateCounter*{\zdyxh}{\@zdyxh}{1} 
 % 没搞懂下面这句是干啥用的
@@ -164,28 +169,37 @@ images too big! please change width to less than 0.5linewidth-1em.
 \begin{enumerate}[label=\zdyxh*.] 
 \item \begin{math}
  7.8\div1.6\ (\qquad  )\ 78 \div16 
- \end{math}
-\item $49\mbox{克}= (\qquad )\mbox{千克}$
+\end{math}
+\item $145.6\div 4 = \underline{\qquad}$
+\item $49\mbox{克}= (\qquad )\mbox{千克} \qquad 0.28\mbox{千克}=(  \qquad)\mbox{克} \qquad 12cm^2=( \qquad)dm^2 $
 \item $\dfrac{1}{2}=1\underline{\qquad     }2$
 \item 45分钟=\underline{\qquad     }时
+\item $1.32m^2=\underline{\qquad     }dm^2 $
+\item 一个四位小数用四舍五入法保留两位小数是5.047，这个四位小数最大是\underline{\qquad\qquad }，最小是\underline{\qquad\qquad }，最大和最小差是\underline{\qquad\qquad }。 
 \item 内容 
 \item 内容 
-\item 内容 
-\item 内容 
+\item 内容
+\item 内容
 
 %\lipsum[101] 
 \end{enumerate}
 
+
 \section{选择题}
 
- \section{计算题(除不尽的保留两位小数)}
- $0.62\div3.1=$ \\
+
+
+\section{计算题(除不尽的保留两位小数)}
+ $0.62\div3.1=$ \qquad\qquad $37.12\times6.4\approx $\\
 竖式计算\\
-$30.1\div 33\approx $ \qquad $17.4\div1.6\approx$
+$30.1\div 33\approx $ \qquad\qquad $17.4\div1.6\approx$
 \\ \\ \\ \\ \\ 
 
+武汉$\rightarrow$蔡甸128公里，武汉$\rightarrow$孝感192公里，孝感$\rightarrow$蔡甸156公里，小明开车从蔡甸到武汉用了1小时36分钟，小明开车从武汉到孝感要多少小时？（用两种方式以上计算）
+\\ \\ \\ \\ \\ \\
 
-
+爸爸带了12000元人民币去银行兑换日元，能兑换多少日元？（每100日元兑换人民币6.15元）
+\\ \\ \\ \\ \\ \\
 
 \section{问答题}
 \begin{tabular}{lr}
@@ -194,85 +208,16 @@ $30.1\div 33\approx $ \qquad $17.4\div1.6\approx$
 +&654\\
 +&24\\
 \hline
-=&\small$\square\!\square\!\square$
+=&\small$\square\!\square\!\square$ \\ \\
 \end{tabular}
 
-%$\polylongdiv{25.3}{23}$
-\begin{equation}
-	f(x) = \sum_{i=1}^{n} {x_i}
-\end{equation}
+% $\polylongdiv{25.3}{23}$
 
-\begin{equation}
-	f(x) = x_1 + x_2 + x_3 + ...... + x_n
-\end{equation}
 
-\begin{equation}
-	f(x) = \int_{i=1}^{n} {x_i}
-\end{equation}
+这是一张小胖家今年6月的电费帐单,有些数据看不清楚,你能根据我们学的知识把它补完整吗? \\ 
+\includegraphics{./pic/5-1-1.jpg}
 
-\begin{equation}
-	X=
-	\begin{cases}
-	5, \text{if X is divisible by 5}
-	\\
-	10, \text{if X is divisible by 10}
-	\\
-	-1, \text{otherwise}
-	\end{cases}
-\end{equation}
-
-\begin{equation}
-	X = 
-	\frac{\substack{\sum{X_i}}}
-	{\substack{\sum{X_j}}}
-\end{equation}
-
-\begin{equation}
-	X \leqslant y %x<=y
-\end{equation}
-
-\begin{equation}
-	X \geqslant y %x>=y
-\end{equation}
-
-\[ E=mc^2 \]
-$8\div4=2$
-
-$8\div4=2$
-
-  $ 8\div 4\equiv 2 $
-
- 
-分数
-$ \frac{1}2{} \dfrac{1}{3}$
-
-代数
-$ x = a_0 + \frac{1}{a_1 + \frac{1}{a_2 + \frac{1}{a_3 + a_4}}} $
-
-微积分 $\frac{d}{dx}\ln(x)=\frac{1}{x}$
-
-几何
-$ \widehat{AB} $
-
-三角
-$\left(\frac{\pi}{2}-\theta \right )$
-
-矩阵
-$\begin{pmatrix}
- a_{11} & a_{12} & a_{13}\\ 
- a_{21} & a_{22} & a_{23}\\ 
- a_{31} & a_{32} & a_{33}
- \end{pmatrix}$
- 
- 多行  \begin{gather}
- 5^2+12^2=13^2\\
- a^2 + b^2 = c^2
- \end{gather}
- 
- 无编号 \begin{gather}
- 5^2+12^2=13^2 \notag\\
- a^2 + b^2 = c^2\notag
-\end{gather}
- 
+\clearpage % 防止\tableofcontents和section{汉字}共用时编译报错
 \end{CJK}
+% \newpage
 \end{document}
