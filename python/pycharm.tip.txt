@@ -26,7 +26,7 @@ File->settings->Editor->File and Code Templates->Python Script
 """
 
 
-
+离线注册pycharm
 This text is the activation-code (copy and paste it in the activation code part).
 This is another way to activate PHPstorm(PyCharm) instead of using license server.
 
