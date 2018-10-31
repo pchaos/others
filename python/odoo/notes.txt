@@ -1,0 +1,9 @@
+
+Creating a tour in Odoo
+https://www.odoo.yenthevg.com/creating-user-tour-odoo/
+Testing Odoo
+https://www.odoo.com/documentation/11.0/reference/testing.html#integration-testing
+odoo官方文档第八章 Testing in odoo （odoo的测试）
+https://www.cnblogs.com/myt2000/p/9680697.html
+Odoo调试与自动化测试
+https://alanhou.org/odoo-debug-automate/#unittest
