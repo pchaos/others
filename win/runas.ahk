@@ -52,6 +52,16 @@ Return TaskName, ErrorLevel := 0
 } ; _____________________________________________________________________________________________________
 
 
+
+RunAsTask_CreateShortcut( TaskName := "", Folder := "", ShcName := "" ) { ; by SKAN, http://goo.gl/yG6A1F
+Local LINK, Description
+IfEqual, TaskName,, Return
+LINK := ( FileExist( Folder ) ? Folder : A_ScriptDir ) "\" ( ShcName ? ShcName : A_ScriptName ) ".lnk"
+FileGetShortcut, %LINK%,,,, Description
+If ( Description <> Taskname )
+FileCreateShortcut, schtasks.exe, %LINK%, %A_WorkingDir%,/run /tn "%TaskName%", %TaskName%,,,, 7
+}
+
 /*
 Usage example:
 Code: Select all
@@ -59,4 +69,16 @@ Code: Select all
 #NoTrayIcon
 RunAsTask() ; self elevate
 Run RegEdit.exe
+
+Usage example:
+Code: Select all
+
+TaskName := RunAsTask()
+RunAsTask_CreateShortcut( TaskName ) ; Places a shortcut in Script folder
+Parameter examples:
+Code: Select all
+
+RunAsTask_CreateShortcut( TaskName, A_Desktop ) ; Shortcut on desktop
+RunAsTask_CreateShortcut( Taskname, A_Startup, "My Admin Script" ) ; Place in Startup. Force link name to avoid multiple startup entries.
+
 */
