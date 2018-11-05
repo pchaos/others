@@ -1,0 +1,25 @@
+在Linux系统中使用WPS查看Windows系统中撰写的文章，因字体缺失，在显示Visio图时经常会显示一些方框，导致无法正确理解图片内容。下面以Linux系统中使用较多的Ubuntu 16.04系统为例，阐述Linux系统使用Windows系统字体的方法。
+
+1. 复制Windows系统字体
+一般而言，使用Ubuntu 16.04系统的电脑都安装了双系统，因此可以直接在Ubuntu系统中进行复制。若电脑仅安装了Ubuntu系统，则需自行找一台安装了Windows系统的电脑将字体复制过来。Windows系统里的字体目录为：C:\Windows\Fonts，注意：该文件夹里有三种后缀的文件：.fon，.ttf，.ttc，我们只需要复制.ttf和.ttc后缀的文件。现在假设电脑安装了双系统，介绍在Ubuntu系统里的复制字体的命令。
+按快捷键”Ctrl+Alt+T“打开终端，输入如下命令：
+
+# 在/usr/share/fonts/下新建目录：win_fonts
+sudo mkdir /usr/share/fonts/win_fonts
+# 将Windows系统Fonts目录里的所有文件全部复制到Ubuntu系统，注意我的挂载点：/media/david/OS，你的电脑不会是该目录，注意自己查询。
+sudo cp /media/david/OS/Windows/Fonts/*.* /usr/share/fonts/win_fonts
+# 删除.fon文件
+sudo rm -f /usr/share/fonts/win_fonts/*.fon
+
+2. 生成字体的索引信息
+
+sudo mkfontscale
+sudo mkfontdir
+
+
+3. 更新字体缓存
+
+sudo fc-cache
+
+4. 重启wps，字体缺失的提示不再出现。
+---------------------
