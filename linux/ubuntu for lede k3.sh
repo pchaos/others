@@ -36,3 +36,5 @@ screen
 make -j4 V=s
 make -j1 V=s 
 
+默认登陆IP 192.168.1.1, 密码 password
+
