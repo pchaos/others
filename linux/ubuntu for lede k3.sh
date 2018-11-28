@@ -38,3 +38,6 @@ make -j1 V=s
 
 默认登陆IP 192.168.1.1, 密码 password
 
+# 2018 11 28 shadowsocksr不kill v2ray
+sed -i 's/killall -q -9 v2ray/#killall -q -9 v2ray/g' shadowsocksr
+
