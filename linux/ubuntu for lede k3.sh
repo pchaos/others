@@ -40,4 +40,6 @@ make -j1 V=s
 
 # 2018 11 28 shadowsocksr不kill v2ray,路由器上执行
 sed -i 's/killall -q -9 v2ray/#killall -q -9 v2ray/g' /etc/init.d/shadowsocksr
+复制geoip.dat    geosite.dat  v2ctl        v2ray到 /usr/bin/v2ray/
+
 
