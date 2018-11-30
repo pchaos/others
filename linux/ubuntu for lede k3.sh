@@ -42,4 +42,5 @@ make -j1 V=s
 sed -i 's/killall -q -9 v2ray/#killall -q -9 v2ray/g' /etc/init.d/shadowsocksr
 复制geoip.dat    geosite.dat  v2ctl        v2ray到 /usr/bin/v2ray/
 
-
+# testing....
+sed -i 's/7070/1081/g' /etc/init.d/v2raypro
