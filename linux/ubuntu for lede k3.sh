@@ -42,5 +42,8 @@ make -j1 V=s
 sed -i 's/killall -q -9 v2ray/#killall -q -9 v2ray/g' /etc/init.d/shadowsocksr
 复制geoip.dat    geosite.dat  v2ctl        v2ray到 /usr/bin/v2ray/
 
+# 更新默认dns
+sed -i 's/ip = 192.168.0.1/ip = 192.168.100.1/g' /etc/pdnsd.conf
+
 # testing....
 sed -i 's/7070/1081/g' /etc/init.d/v2raypro
