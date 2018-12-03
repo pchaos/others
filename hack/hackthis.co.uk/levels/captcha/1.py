@@ -34,8 +34,9 @@ def solve(captcha):
         image = Image.open(captcha)
         # 转成灰度图
         imgry = image.convert('L')
+        # imgry.show()
         # 二值化，阈值可以根据情况修改
-        threshold = 60
+        threshold = 65
         table = []
         for i in range(256):
             if i < threshold:
@@ -43,9 +44,12 @@ def solve(captcha):
             else:
                 table.append(1)
         out = imgry.point(table, '1')
+        out.show()
         return out
 
-    return pytesseract.image_to_string(grayImage(captcha))[::-1]
+    config = '-psm 7'
+    # config = '-psm 6 tessedit_char_whitelist abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$*+-? '
+    return pytesseract.image_to_string(grayImage(captcha), config=config)[::-1]
 
 def postSolution():
     url = "https://www.hackthis.co.uk/levels/captcha/1"
@@ -78,7 +82,7 @@ def postSolution():
         #
         solution = solve(captchaFileName)
         # silentremove(captchaFileName)
-        print('captcha: {}'.format(solution))
+        print('captcha: {} , 识别长度：{}'.format(solution, len(solution)))
         payload = {"answer": solution}
         s.post(url, data=payload) # Post data
         response = s.get(url).text
@@ -98,7 +102,7 @@ def getLoginEnv():
     if "username" in os.environ:
         username = os.getenv('username', 'username not set')
     else:
-        print('请先 export username')
+        print('请先 export username， password')
     if "password" in os.environ:
         password = os.getenv('password', 'password not set')
     return password, username
