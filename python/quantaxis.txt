@@ -1,6 +1,7 @@
 # 安装 quantaxis
 cd ~/install
-git clone https://github.com/yutiansut/quantaxis
+# git clone https://github.com/yutiansut/quantaxis
+git clone https://github.com/quantaxis/quantaxis --depth 1
 cd quantaxis
 python -m pip install -r requirements.txt
 pip install -e .
