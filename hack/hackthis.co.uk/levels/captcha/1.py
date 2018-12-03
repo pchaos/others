@@ -3,6 +3,14 @@ import pytesseract  # pip install pytesseract && sudo  dnf install tesseract
 import requests
 import os, errno
 import tempfile
+# from multiprocessing import Pool
+
+'''
+运行程序前先设置登录用户名、密码
+export username=''
+export password=''
+
+'''
 
 def silentremove(filename):
     '''
@@ -22,14 +30,29 @@ def solve(captcha):
     :param captcha: 图形路径
     :return: 识别的数字
     '''
-    return pytesseract.image_to_string(Image.open(captcha))[::-1]
+    def grayImage(captcha):
+        image = Image.open(captcha)
+        # 转成灰度图
+        imgry = image.convert('L')
+        # 二值化，阈值可以根据情况修改
+        threshold = 60
+        table = []
+        for i in range(256):
+            if i < threshold:
+                table.append(0)
+            else:
+                table.append(1)
+        out = imgry.point(table, '1')
+        return out
+
+    return pytesseract.image_to_string(grayImage(captcha))[::-1]
 
 def postSolution():
     url = "https://www.hackthis.co.uk/levels/captcha/1"
-    # captchaFileName = '/tmp/captcha.png'
-    tf =tempfile.NamedTemporaryFile(delete=False)
-    tf.close()
-    captchaFileName = tf.name
+    captchaFileName = '/tmp/captcha.png'
+    # tf =tempfile.NamedTemporaryFile(delete=False)
+    # tf.close()
+    # captchaFileName = tf.name
     url_login = "https://www.hackthis.co.uk/?login"
     password, username = getLoginEnv()
     try:
@@ -54,7 +77,7 @@ def postSolution():
 
         #
         solution = solve(captchaFileName)
-        silentremove(captchaFileName)
+        # silentremove(captchaFileName)
         print('captcha: {}'.format(solution))
         payload = {"answer": solution}
         s.post(url, data=payload) # Post data
@@ -68,6 +91,10 @@ def postSolution():
 
 
 def getLoginEnv():
+    '''
+    从环境变量获取用户名、密码
+    :return:
+    '''
     if "username" in os.environ:
         username = os.getenv('username', 'username not set')
     else:
