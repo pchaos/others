@@ -24,15 +24,15 @@ def getRandomImg(imgFolder=None):
     captcha_image_files = glob.glob(os.path.join(CAPTCHA_IMAGE_FOLDER, "*.png"))
     return captcha_image_files[int(random.random()*len(captcha_image_files))]
 
-def preprocess(gray):
+def preprocess(gray, ksize1=(30, 9), ksize2=(24, 6)):
     # 1. Sobel算子，x方向求梯度
     sobel = cv2.Sobel(gray, cv2.CV_8U, 1, 0, ksize=3)
     # 2. 二值化
     ret, binary = cv2.threshold(sobel, 0, 255, cv2.THRESH_OTSU + cv2.THRESH_BINARY)
 
     # 3. 膨胀和腐蚀操作的核函数
-    element1 = cv2.getStructuringElement(cv2.MORPH_RECT, (30, 9))
-    element2 = cv2.getStructuringElement(cv2.MORPH_RECT, (24, 6))
+    element1 = cv2.getStructuringElement(cv2.MORPH_RECT, ksize1)
+    element2 = cv2.getStructuringElement(cv2.MORPH_RECT, ksize2)
 
     # 4. 膨胀一次，让轮廓突出
     dilation = cv2.dilate(binary, element2, iterations=1)
@@ -57,7 +57,7 @@ def findTextRegion(img):
     region = []
 
     # 1. 查找轮廓
-    contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    im2, contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     # 2. 筛选那些面积小的
     for i in range(len(contours)):
@@ -79,7 +79,7 @@ def findTextRegion(img):
         print(rect)
 
         # box是四个点的坐标
-        box = cv2.cv.BoxPoints(rect)
+        box = cv2.boxPoints(rect)
         box = np.int0(box)
 
         # 计算高和宽
@@ -100,7 +100,7 @@ def detect(sourceImg, targetImage='/tmp/contours.png'):
     gray = cv2.cvtColor(sourceImg, cv2.COLOR_BGR2GRAY)
 
     # 2. 形态学变换的预处理，得到可以查找矩形的图片
-    dilation = preprocess(gray)
+    dilation = preprocess(gray, (10, 9), (15,6))
 
     # 3. 查找和筛选文字区域
     region = findTextRegion(dilation)
@@ -122,7 +122,8 @@ def detect(sourceImg, targetImage='/tmp/contours.png'):
 if __name__ == '__main__':
     # 读取文件
     try:
-        imagePath = sys.argv[1]
+        # imagePath = sys.argv[1]
+        imagePath = 'textDetection.png'
     except Exception as e:
         imagePath = getRandomImg()
     img = cv2.imread(imagePath)
