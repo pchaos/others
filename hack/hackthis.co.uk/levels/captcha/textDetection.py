@@ -100,7 +100,7 @@ def detect(sourceImg, targetImage='/tmp/contours.png'):
     gray = cv2.cvtColor(sourceImg, cv2.COLOR_BGR2GRAY)
 
     # 2. 形态学变换的预处理，得到可以查找矩形的图片
-    dilation = preprocess(gray, (10, 9), (15,6))
+    dilation = preprocess(gray, (5, 3), (5,3))
 
     # 3. 查找和筛选文字区域
     region = findTextRegion(dilation)
@@ -115,7 +115,7 @@ def detect(sourceImg, targetImage='/tmp/contours.png'):
     # 带轮廓的图片
     cv2.imwrite(targetImage, sourceImg)
 
-    cv2.waitKey(0)
+    cv2.waitKey(1800)
     cv2.destroyAllWindows()
 
 
@@ -128,3 +128,14 @@ if __name__ == '__main__':
         imagePath = getRandomImg()
     img = cv2.imread(imagePath)
     detect(img)
+
+    for i in range(10):
+        try:
+            imagePath = sys.argv[1]
+            # imagePath = 'textDetection.png'
+        except Exception as e:
+            imagePath = getRandomImg()
+            print('image name: {}'.format(imagePath))
+        img = cv2.imread(imagePath)
+        detect(img)
+
