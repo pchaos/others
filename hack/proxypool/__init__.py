@@ -1,2 +1,2 @@
 
-from . import proxybase
+from .proxybase import getUserAgent

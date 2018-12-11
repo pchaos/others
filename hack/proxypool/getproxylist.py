@@ -4,9 +4,8 @@ import requests
 
 from bs4 import BeautifulSoup
 import random
-
 from retrying import retry
-from proxybase import get
+from hack.proxypool import getUserAgent
 
 '''
 来源：CSDN 
