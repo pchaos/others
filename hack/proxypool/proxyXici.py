@@ -77,4 +77,5 @@ def scraw_proxies(page_num, scraw_url="http://www.xicidaili.com/nt/"):
 
 
 if __name__ == "__main__":
-    available_ip = scraw_proxies(3)
+    url = "http://www.xicidaili.com/nn/"
+    available_ip = scraw_proxies(3, url)
