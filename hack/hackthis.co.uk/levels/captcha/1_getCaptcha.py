@@ -2,6 +2,8 @@ from PIL import Image
 import requests
 import os, errno
 import tempfile
+# from .configs import *
+from dotenv import load_dotenv
 
 '''
 获取https://www.hackthis.co.uk/levels/captcha/1中的验证码
@@ -82,12 +84,21 @@ def getLoginEnv():
     从环境变量获取用户名、密码
     :return:
     '''
+
+    def loadEnv(envFileName="../config.env"):
+        load_dotenv(envFileName)
+
+    username = 1
     if "username" in os.environ:
         username = os.getenv('username', 'username not set')
     else:
         print('请先 export username， password')
     if "password" in os.environ:
         password = os.getenv('password', 'password not set')
+
+    if not isinstance(username, str):
+        loadEnv()
+        return getLoginEnv()
     return password, username
 
 
