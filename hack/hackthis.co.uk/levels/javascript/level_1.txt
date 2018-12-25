@@ -1,0 +1,22 @@
+[HackThis!] JavaScript Level 1
+We are now ready to kick off another hacking exploration. The level we examine today is the JavaScript Level 1.
+
+There is no assignment, however, nor are there hints. What can we do? Let us look at the source code to hopefully find out.
+
+This is what we see on line 29:
+
+<script type='text/javascript'>
+$(function(){ $('.level-form').submit(function(e){
+e.preventDefault();
+if(document.getElementById('pass').value == correct){
+document.location = '?pass=' + correct;}
+else{
+alert('Incorrect password')}})})
+</script>
+It appears to be a password check. What it does is compare the password string to another, stored in the variable “correct”. Next, we Ctrl + F browse for “correct”. At the very end of the page, we see:
+
+
+<script type='text/javascript'>
+var correct = 'jrules'
+</script>
+There goes our solution.
