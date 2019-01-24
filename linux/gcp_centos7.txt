@@ -9,3 +9,11 @@ bash <(curl -L -s https://install.direct/go.sh)
 /etc/v2ray/config.json：配置文件；
 /usr/bin/v2ray/geoip.dat：IP 数据文件
 /usr/bin/v2ray/geosite.dat：域名数据文件
+
+
+# 免密码登录
+ssh-keygen -t rsa -C p19992003
+You may try edit in /etc/ssh/sshd_config
+PasswordAuthentication yes
+
+service sshd restart
