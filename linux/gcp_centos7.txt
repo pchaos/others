@@ -20,7 +20,7 @@ service sshd restart
 
 wget https://github.com/txthinking/brook/releases/download/v20181212/brook && chmod +x brook
 # Run as a brook server
-brook server -l :22999 -p password
+screen -dmS mybrook brook server -l :22999 -p password
 
 # Run as multiple brook servers
 brook servers -l ":9999 password" -l ":8888 password"
