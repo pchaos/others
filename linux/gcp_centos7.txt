@@ -1,5 +1,5 @@
 yum update
-yum install -y wget screen
+yum install -y wget screen upx
 bash <(curl -L -s https://install.direct/go.sh)
 
 此脚本会自动安装以下文件：
