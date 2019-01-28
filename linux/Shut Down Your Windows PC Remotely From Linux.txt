@@ -1,0 +1,17 @@
+Shut Down Your Windows PC Remotely From Linux
+
+If you've ever wanted to remotely reboot a Windows box from your Linux machine, the Command-Line Fu web site has you covered with the quick and easy command to use.
+
+In order to actually use this command, you'll need to make sure that you have the samba-common package installed for Ubuntu, or the corresponding package for your Linux distribution. The simple sudo apt-get install samba-common command will do it for any Debian-based Linux.
+
+Now you can reboot a machine remotely with the following syntax, making sure to use a username that has administrative privileges on the Windows box:
+
+net rpc shutdown -I IPADDRESS -U USERNAME%PASSWORD
+
+If you omit the password section, you'll be prompted on the command line for the password—which might be more secure if you are worried about somebody looking through your terminal history. You can add the -f parameter to force a shutdown, which might be necessary to make sure the remote machine actually shuts down.
+
+Readers should note that a number of factors may influence whether this technique actually works—if the machine has a desktop firewall installed or the file sharing services are disabled it probably won't work, but it's still a very helpful technique that might come in handy.
+
+
+
+net rpc shutdown -I 192.168.103.118 -U yg%PASSWORD
