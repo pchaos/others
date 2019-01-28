@@ -1,0 +1,4 @@
+
+SuperBench.sh 一键测试服务器的基本参数
+
+wget -qO- --no-check-certificate https://raw.githubusercontent.com/oooldking/script/master/superbench.sh | bash
