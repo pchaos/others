@@ -15,6 +15,7 @@ bash <(curl -L -s https://install.direct/go.sh)
 ssh-keygen -t rsa -C p19992003
 # You may try edit in /etc/ssh/sshd_config
 # PasswordAuthentication yes
+PubkeyAuthentication yes
 
 service sshd restart
 
