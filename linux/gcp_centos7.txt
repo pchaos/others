@@ -1,3 +1,4 @@
+sudo su
 yum update
 yum install -y wget screen upx
 bash <(curl -L -s https://install.direct/go.sh)
