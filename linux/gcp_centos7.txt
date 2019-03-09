@@ -1,6 +1,6 @@
 sudo su
 yum update
-yum install -y wget screen upx
+yum install -y wget screen upx vim
 bash <(curl -L -s https://install.direct/go.sh)
 
 此脚本会自动安装以下文件：
@@ -20,7 +20,7 @@ PubkeyAuthentication yes
 
 service sshd restart
 
-wget https://github.com/txthinking/brook/releases/download/v20181212/brook && chmod +x brook
+mkdir brook && cd brook && wget https://github.com/txthinking/brook/releases/download/v20181212/brook && chmod +x brook
 # Run as a brook server
 screen -dmS mybrook brook server -l :22999 -p password
 
