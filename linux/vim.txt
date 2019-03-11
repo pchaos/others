@@ -1,0 +1,30 @@
+查看Vim实例中当前的颜色主题
+
+打开一个Vim窗口，输入命令:color或:colorscheme后回车查看当前的颜色主题。
+
+得到Vim示例当前的颜色主题
+
+可以看到当前的颜色主题为default。
+
+Vim实例中设置颜色主题
+
+输入命令"colorscheme 主题名字"，即可设置当前vim实例的颜色主题。
+
+查看Vim的运行目录
+
+vim的颜色主题文件放在Vim运行目录下的color目录下，所以我们首先需要知道vim的运行目录。
+
+在vim中输入命令:echo $VIMRUNTIME 来查看Vim的运行目录。
+
+得到vim的运行目录
+
+从图中可以看到，vim的运行路径为/usr/share/vim/vim74
+
+进入vim的运行目录，查看color目录下以“.vim”为结尾的文件
+
+这些文件即是颜色主题文件，文件名就是主题名字。
+
+修改vim配置文件，更改默认颜色主题
+
+打开/etc/vim/vimrc文件，在其中加入一行"colorscheme 颜色主题名字"，之后保存更改即可。
+colorscheme torte
