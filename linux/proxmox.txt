@@ -1,0 +1,67 @@
+List of Proxmox important configuration files directory
+
+=== OpenVZ Section ===
+ 
+config: /etc/vz/conf/xxx.conf
+data: /var/lib/vz/root/xxx
+template: /var/lib/vz/template/cache
+snapshot: /var/lib/vz/dump
+OpenVZ config: /etc/vz/vz.conf
+ 
+=== KVM Section ===
+ 
+config: /etc/pve/qemu-server/xxx.conf
+data: /var/lib/vz/images/xxx
+template: /var/lib/vz/template/iso
+snapshot: /var/lib/vz/dump
+ 
+ 
+=== LXC Section ===
+ 
+config: /var/lib/lxc/xxx/config
+data: /var/lib/vz/images/xxx
+template: /var/lib/vz/template/cache
+snapshot: /var/lib/vz/dump
+ 
+=== Cluster Section ===
+config: /etc/pve/cluster.conf
+nodes vm config: /etc/pve/nodes/xxx/xxx/qemu-server/xxx.conf
+=== Files ===
+ 
+ corosync.conf  => corosync/cman cluster configuration file (previous to PVE 4.x this file was called cluster.conf)
+ storage.cfg   => PVE storage configuration
+ user.cfg      => PVE access control configuration (users/groups/...)
+ domains.cfg   => PVE Authentication domains 
+ authkey.pub   => public key used by ticket system
+ 
+ priv/shadow.cfg  => shadow password file
+ priv/authkey.key => private key used by ticket system
+ 
+ nodes/${NAME}/pve-ssl.pem                 => public ssl key for web server
+ nodes/${NAME}/priv/pve-ssl.key            => private ssl key
+ nodes/${NAME}/qemu-server/${VMID}.conf    => VM configuration data for KVM VMs
+ nodes/${NAME}/openvz/${VMID}.conf         => VM configuratin data for OpenVZ containers
+ 
+=== Symbolic links ===
+ 
+ local => nodes/${LOCALNAME}
+ qemu-server => nodes/${LOCALNAME}/qemu-server/
+ openvz => nodes/${LOCALNAME}/openvz/
+ 
+=== Special status files for debugging (JSON) ===
+ 
+ .version    => file versions (to detect file modifications)
+ .members    => Info about cluster members
+ .vmlist     => List of all VMs
+ .clusterlog => Cluster log (last 50 entries)
+ .rrd        => RRD data (most recent entries)
+ 
+ 
+=== Enable/Disable debugging ====
+ 
+ # enable verbose syslog messages
+ echo "1" >/etc/pve/.debug 
+ 
+ # disable verbose syslog messages
+ echo "0" >/etc/pve/.debug 
+ 
