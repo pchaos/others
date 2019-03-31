@@ -1,0 +1,95 @@
+python实现本地缓存 
+python简单模拟的本地轻量级缓存
+
+思路：
+
+字典的形式保存缓存数据，同时增加增加过期时间，如{'key':{'expire': 1524363282, 'data': 2}}，但这样的话何时回收呢，如果单独起个程序扫描过期的数据清除key，貌似又过于复杂了，这里采用弱引用。
+WeakValueDictionary的特性：如果value值没有强引用了，那么对应的记录就会被回收
+所以还需要定义strongRef来强引用，并放入collections.deque来保持强引用，deque队列可定义大小，那么超过阀值的老元素就会被弹出，也就消除了强引用，也就会被马上回收
+ 
+
+# coding: utf-8
+
+import weakref, collections
+
+
+class LocalCache():
+    notFound = object()
+
+    # list dict等不支持弱引用，但其子类支持，故这里包装了下
+    class Dict(dict):
+        def __del__(self):
+            pass
+
+    def __init__(self, maxlen=10):
+        self.weak = weakref.WeakValueDictionary()
+        self.strong = collections.deque(maxlen=maxlen)
+
+    @staticmethod
+    def nowTime():
+        return int(time.time())
+
+    def get(self, key):
+        value = self.weak.get(key, self.notFound)
+        if value is not self.notFound:
+            expire = value[r'expire']
+            if self.nowTime() > expire:
+                return self.notFound
+            else:
+                return value
+        else:
+            return self.notFound
+
+    def set(self, key, value):
+        # strongRef作为强引用避免被回收
+        self.weak[key] = strongRef = LocalCache.Dict(value)
+        # 放入定大队列，弹出元素马上被回收
+        self.strong.append(strongRef)
+
+
+# 装饰器
+from functools import wraps
+def funcCache(expire=0):
+    caches = LocalCache()
+
+    def _wrappend(func):
+        @wraps(func)
+        def __wrapped(*args, **kwargs):
+            key = str(func) + str(args) + str(kwargs)
+            result = caches.get(key)
+            if result is LocalCache.notFound:
+                result = func(*args, **kwargs)
+                caches.set(key, {r'result': result, r'expire': expire + caches.nowTime()})
+                result = caches.get(key)
+            return result
+
+        return __wrapped
+
+    return _wrappend
+
+
+# 测试函数
+import time
+@funcCache(expire=300)
+def test_cache(v):
+    # 模拟任务处理时常3秒
+    time.sleep(3)
+    print('work 3s')
+    return v
+
+
+print(test_cache(1))
+print(test_cache(2))
+
+print(test_cache(1))
+print(test_cache(2))
+输出：
+
+work 3s
+{'expire': 1524363279, 'result': 1}
+work 3s
+{'expire': 1524363282, 'result': 2}
+{'expire': 1524363279, 'result': 1}
+{'expire': 1524363282, 'result': 2}
+
+可见第一次走具体处理函数，后面走的缓存
