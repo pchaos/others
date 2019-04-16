@@ -1,4 +1,5 @@
 fedora 29 kernel 5.0.4-200 VMware workstation 15.0.4 player not working failed to compile modules
+https://ask.fedoraproject.org/en/question/134430/fedora-29-kernel-504-200-vmware-workstation-1504-player-not-working-failed-to-compile-modules/
 
 Install VMware 15.0.4 normaly: ./VMware-Player-15.0.4-12990004.x86_64.bundle Should work fine
 Use this script put it in a file i.e : vmware.sh
