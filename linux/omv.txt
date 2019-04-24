@@ -1,2 +1,38 @@
+open media valult
+To install OMV4 on an already installed Debian 9 (Stretch), simply execute the following steps:
+-----------------------------
+cat <<EOF >> /etc/apt/sources.list.d/openmediavault.list
+deb http://packages.openmediavault.org/public arrakis main
+# deb http://downloads.sourceforge.net/project/openmediavault/packages arrakis main
+## Uncomment the following line to add software from the proposed repository.
+# deb http://packages.openmediavault.org/public arrakis-proposed main
+# deb http://downloads.sourceforge.net/project/openmediavault/packages arrakis-proposed main
+## This software is not part of OpenMediaVault, but is offered by third-party
+## developers as a service to OpenMediaVault users.
+# deb http://packages.openmediavault.org/public arrakis partner
+# deb http://downloads.sourceforge.net/project/openmediavault/packages arrakis partner
+EOF
+
+-----------------------------
+export LANG=C.UTF-8
+export DEBIAN_FRONTEND=noninteractive
+export APT_LISTCHANGES_FRONTEND=none
+wget -O "/etc/apt/trusted.gpg.d/openmediavault-archive-keyring.asc" https://packages.openmediavault.org/public/archive.key
+apt-key add "/etc/apt/trusted.gpg.d/openmediavault-archive-keyring.asc"
+apt-get update
+apt-get --yes --auto-remove --show-upgraded \
+	--allow-downgrades --allow-change-held-packages \
+	--no-install-recommends \
+	--option Dpkg::Options::="--force-confdef" \
+	--option DPkg::Options::="--force-confold" \
+	install postfix openmediavault-keyring openmediavault
+# Initialize the system and database.
+omv-initsystem
+# Rebuild configurations.
+omv-mkconf interfaces
+omv-mkconf issue
+# Display the login information.
+cat /etc/issue
+-----------------------------
 
 wget http://omv-extras.org/openmediavault-omvextrasorg_latest_all4.deb
