@@ -14,18 +14,14 @@ deb http://packages.openmediavault.org/public arrakis main
 EOF
 
 -----------------------------
-export LANG=C.UTF-8
+# export LANG=C.UTF-8
 export DEBIAN_FRONTEND=noninteractive
 export APT_LISTCHANGES_FRONTEND=none
 wget -O "/etc/apt/trusted.gpg.d/openmediavault-archive-keyring.asc" https://packages.openmediavault.org/public/archive.key
 apt-key add "/etc/apt/trusted.gpg.d/openmediavault-archive-keyring.asc"
 apt-get update
-apt-get --yes --auto-remove --show-upgraded \
-	--allow-downgrades --allow-change-held-packages \
-	--no-install-recommends \
-	--option Dpkg::Options::="--force-confdef" \
-	--option DPkg::Options::="--force-confold" \
-	install postfix openmediavault-keyring openmediavault
+apt-get --yes --show-upgraded --allow-downgrades --allow-change-held-packages --no-install-recommends --option Dpkg::Options::="--force-confdef" --option DPkg::Options::="--force-confold" install postfix openmediavault-keyring openmediavault
+
 # Initialize the system and database.
 omv-initsystem
 # Rebuild configurations.
@@ -35,4 +31,11 @@ omv-mkconf issue
 cat /etc/issue
 -----------------------------
 
+apt-get install dirmngr
 wget http://omv-extras.org/openmediavault-omvextrasorg_latest_all4.deb
+dpkg -i openmediavault-omvextrasorg_latest_all4.deb
+apt-get -f install
+
+sed -i -e 's/def remove(wr, selfref=ref(self)):/def remove(wr, selfref=ref(self), _atomic_removal=_remove_dead_weakref):/g' "/usr/lib/python3.5/weakref.py"
+sed -i -e 's/_remove_dead_weakref(d, wr.key)/_atomic_removal(d, wr.key)/g' "/usr/lib/python3.5/weakref.py"
+apt-get update && apt-get upgrade
