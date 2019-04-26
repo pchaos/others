@@ -1,0 +1,16 @@
+# debian 9.8
+# mirror ustc.com
+nano /etc/ssh/sshd_config 
+FROM:
+PermitRootLogin without-password
+TO:
+PermitRootLogin yes
+
+systemctl restart sshd
+
+# Copying Public Key Using ssh-copy-id
+ssh-copy-id rppt@192.168.103.110
+
+apt-get update && apt-get upgrade
+
+apt-get install -y partimage vim upx htop iftop
