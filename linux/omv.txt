@@ -30,7 +30,7 @@ omv-mkconf issue
 # Display the login information.
 cat /etc/issue
 -----------------------------
-
+# extra
 apt-get install dirmngr
 wget http://omv-extras.org/openmediavault-omvextrasorg_latest_all4.deb
 dpkg -i openmediavault-omvextrasorg_latest_all4.deb
