@@ -12,6 +12,8 @@ bash <(curl -L -s https://install.direct/go.sh)
 /usr/bin/v2ray/geoip.dat：IP 数据文件
 /usr/bin/v2ray/geosite.dat：域名数据文件
 
+# 压缩v2ray
+upx -k --best --lzma ./v2*
 
 # 免密码登录
 ssh-keygen -t rsa -C p19992003
