@@ -1,0 +1,14 @@
+# /lib/systemd/system/dnscrypt-proxy.service
+[Unit]
+Description=DNSCrypt and DNS over HTTPS proxy
+After=network.target
+Before=nss-lookup.target
+Wants=nss-lookup.target
+
+[Service]
+User=dnscrypt-proxy
+ExecStart=/usr/sbin/dnscrypt-proxy -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
