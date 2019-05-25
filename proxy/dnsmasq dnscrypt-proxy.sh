@@ -7,6 +7,7 @@ chinadnsServer=192.168.103.1
 wget https://github.com/felixonmars/dnsmasq-china-list/raw/master/accelerated-domains.china.conf
 olddnsserver=114.114.114.114
 sed -i "s/${olddnsserver}/${chinadnsServer}/g" accelerated-domains.china.conf && sudo cp ./accelerated-domains.china.conf /etc/dnsmasq.d/
+wget https://github.com/felixonmars/dnsmasq-china-list/raw/master/bogus-nxdomain.china.conf && sudo cp ./bogus-nxdomain.china.conf /etc/dnsmasq.d/
 
 # cloudflare
 # wget https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.rpm
