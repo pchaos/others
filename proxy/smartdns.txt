@@ -1,0 +1,11 @@
+tar zxf smartdns.xxxxxxxx.x86-64.tar.gz
+cd smartdns
+chmod +x ./install
+./install -i
+
+ln -s libssl.so.1.0.2k libssl.so.1.0.0
+ln -s libcrypto.so.1.0.2k libcrypto.so.1.0.0
+
+# Failed to execute operation: Too many levels of symbolic links
+rm /etc/systemd/system/smartdns.service
+systemctl enable smartdns
