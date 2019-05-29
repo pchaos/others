@@ -1,13 +1,15 @@
 # dnscrypt-proxy，强化家庭网络dns安全
 
+sudo rm -rf  /etc/dnsmasq.conf
+
 # g tmp
-chinadnsServer=192.168.6.1
+# chinadnsServer=192.168.6.1
 rm ./accelerated-domains.china.conf
 chinadnsServer=192.168.103.1
 wget https://github.com/felixonmars/dnsmasq-china-list/raw/master/accelerated-domains.china.conf
 olddnsserver=114.114.114.114
 sed -i "s/${olddnsserver}/${chinadnsServer}/g" accelerated-domains.china.conf && sudo cp ./accelerated-domains.china.conf /etc/dnsmasq.d/
-wget https://github.com/felixonmars/dnsmasq-china-list/raw/master/bogus-nxdomain.china.conf && sudo cp ./bogus-nxdomain.china.conf /etc/dnsmasq.d/
+# wget https://github.com/felixonmars/dnsmasq-china-list/raw/master/bogus-nxdomain.china.conf && sudo cp ./bogus-nxdomain.china.conf /etc/dnsmasq.d/
 
 # cloudflare
 # wget https://bin.equinox.io/c/VdrWdbjqyF/cloudflared-stable-linux-amd64.rpm
@@ -15,7 +17,6 @@ wget https://github.com/felixonmars/dnsmasq-china-list/raw/master/bogus-nxdomain
 wget -o dnscrypt-proxy-linux_x86_64.tar.gz https://github.com/jedisct1/dnscrypt-proxy/releases/download/2.0.23/dnscrypt-proxy-linux_x86_64-2.0.23.tar.gz
 tar -xf dnscrypt-proxy-linux_x86_64.tar.gz
 cd linux-x86_64
-rm -rf  /etc/dnsmasq.conf
 
 sudo ./dnscrypt-proxy -service install
 sudo ./dnscrypt-proxy -service start

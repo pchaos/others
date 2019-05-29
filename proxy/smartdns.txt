@@ -5,6 +5,8 @@ chmod +x ./install
 
 ln -s libssl.so.1.0.2k libssl.so.1.0.0
 ln -s libcrypto.so.1.0.2k libcrypto.so.1.0.0
+# for fedora 28
+# ln -s libcrypto.so.1.0.2o libcrypto.so.1.0.0
 
 # Failed to execute operation: Too many levels of symbolic links
 rm /etc/systemd/system/smartdns.service
