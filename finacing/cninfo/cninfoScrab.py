@@ -34,7 +34,7 @@ RESPONSE_TIMEOUT = 10
 def standardize_dir(dir_str):
     # assert (os.path.exists(dir_str)), 'Such directory \"' + str(dir_str) + '\" does not exists!'
     if not os.path.exists(dir_str):
-        os.mkdir(dir_str)
+        os.makedirs(dir_str)
     if dir_str[len(dir_str) - 1] != os.sep:
         return dir_str + os.sep
     else:
@@ -132,11 +132,14 @@ def __filter_illegal_filename(filename):
         '“': '"',
         '”': '"',
         '‘': '',
-        '’': ''
+        '’': '',
+        '《': '_',
+        '》': '_'
     }
     for item in illegal_char.items():
         filename = filename.replace(item[0], item[1])
     return filename
+
 
 def read_zxg(fname='zxg.txt'):
     dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -145,7 +148,7 @@ def read_zxg(fname='zxg.txt'):
     resultList = []
     if os.path.isfile(fname):
         with open(fname, 'r', encoding='UTF-8') as zxg:
-            alist =zxg.readlines()
+            alist = zxg.readlines()
     for a in alist:
         resultList.append(a[0:6])
     return resultList
@@ -184,54 +187,17 @@ def get_cninfo(stockCode=''):
         time.sleep(0.4)
     return resultList
 
-def save_cninfo(filename, stockCode=''):
-    # 获取记录数、页数
-    item_count = get_response(url, 1, True, stock_code=stockCode)
-    assert (item_count != []), 'Please restart this script!'
-    begin_pg = 1
-    end_pg = int(math.ceil(item_count / MAX_PAGESIZE))
-    print(
-        'Page count: ' + str(end_pg) + '; item count: ' + str(item_count) + '.')
-    print('保存文件名：{}'.format(filename))
-    time.sleep(1)
-    # 逐页抓取
-    with open(filename, 'w', newline='', encoding='UTF-8') as csv_out:
-        writer = csv.writer(csv_out)
-        # todo 出错后，续传
-        for i in range(begin_pg, end_pg + 1):
-            row = get_response(url, i, stock_code=stockCode)
-            if not row:
-                __log_error('Failed to fetch page #' + str(i) +
-                            ': exceeding max reloading times (' + str(
-                    MAX_RELOAD_TIMES) + ').')
-                continue
-            else:
-                writer.writerows(row)
-                last_item = i * MAX_PAGESIZE if i < end_pg else item_count
-                print('Page ' + str(i) + '/' + str(
-                    end_pg) + ' fetched, it contains items: (' +
-                      str(1 + (i - 1) * MAX_PAGESIZE) + '-' + str(
-                    last_item) + ')/' + str(item_count) + '.')
-            if i % 5 == 4:
-                print('sleeping ...')
-                time.sleep(1)
 
-
-if __name__ == '__main__':
-
+def save_cninfo():
     codeList = read_zxg()
     # 初始化重要变量
-    out_dir = standardize_dir(OUT_DIR)
-    error_log = out_dir + 'error.log'
-    output_csv_file = '{}.csv'.format(os.path.join(out_dir, OUTPUT_FILENAME))
-    # output_csv_file = out_dir + OUTPUT_FILENAME.replace(os.sep,
-    #                                                     '') + '_' + START_DATE.replace(
-    #     '-', '') + '-' + END_DATE.replace('-',
-    #                                       '') + '.csv'
+    error_log = standardize_dir(OUT_DIR) + 'error.log'
+    output_csv_file = get_output_csv_file()
     try:
-        df=pd.read_csv(output_csv_file, header=None, usecols=[0,1,2])
+        df = pd.read_csv(output_csv_file, header=None, usecols=[0, 1, 2])
     except Exception as e:
         df = pd.DataFrame()
+    adf = pd.DataFrame()
     for code in codeList:
         print(code)
         if len(code) != 6:
@@ -239,10 +205,18 @@ if __name__ == '__main__':
             continue
         alist = get_cninfo(stockCode=code)
         # print(pd.DataFrame(alist))
-        df = pd.concat([df, pd.DataFrame(alist)], ignore_index=True)
-        # save_cninfo(output_csv_file, stockCode=code)
+        adf = pd.concat([adf, pd.DataFrame(alist)], ignore_index=True)
+    df = pd.concat([adf, df], ignore_index=True)
+    df.drop_duplicates(subset=[1, 2], keep="first", inplace=True)
     # print(df)
-    df.drop_duplicates(subset=[1,2], keep="first", inplace=True)
 
-    # os.remove(output_csv_file)
     df.to_csv(output_csv_file, index=False, header=False)
+
+def get_output_csv_file():
+    out_dir = standardize_dir(OUT_DIR)
+    filename = '{}.csv'.format(os.path.join(out_dir, OUTPUT_FILENAME))
+    return filename
+
+
+if __name__ == '__main__' and __package__ is None:
+    save_cninfo()
