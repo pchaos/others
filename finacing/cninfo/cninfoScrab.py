@@ -7,9 +7,10 @@ import math
 import os
 import time
 import requests
+import re
 import pandas as pd
 
-START_DATE = '2016-12-31'  # 搜索的起始日期
+START_DATE = '1990-01-01'  # 搜索的起始日期
 END_DATE = str(time.strftime('%Y-%m-%d'))  # 默认当前提取，可设定为固定值
 OUT_DIR = '{}tmp{}2019年'.format(os.sep, os.sep)
 OUTPUT_FILENAME = '2019年度报告'
@@ -88,12 +89,29 @@ def get_response(url, page_num, return_total_count=False, stock_code=''):
         for each in my_query['announcements']:
             announcementId = str(each['announcementId'])
             file_link = 'http://static.cninfo.com.cn/' + str(each['adjunctUrl'])
+            # 其他格式匹配. 如2016-12-24与2016/12/24的日期格式.
+            date_reg_exp = re.compile(r'\d{4}[-/]\d{2}[-/]\d{2}')
+            mat = re.search(date_reg_exp, each['adjunctUrl'])
+            if mat:
+                # 发布日期
+                aDate = mat.group(0)
+            else:
+                aDate = ''
+            aDate = '-{}'.format(aDate.replace('-', ''))
             file_name = __filter_illegal_filename(
-                str(each['secCode']) + str(each['secName']) + str(
-                    each['announcementTitle']) + '.' + '(' + str(
+                str(each['secCode']) + str(each['secName'])
+                + aDate
+                + str(each['announcementTitle']) + '(' + str(
                     each['adjunctSize']) + 'k)' +
                 file_link[-file_link[::-1].find('.') - 1:]  # 最后一项是获取文件类型后缀名
             )
+            # if len(file_name) > 100:
+            #     file_name = __filter_illegal_filename(
+            #         str(each['secCode']) + str(each['secName'])
+            #         + aDate
+            #         + str(each['announcementTitle'])
+            #         + file_link[-file_link[::-1].find('.') - 1:]  # 最后一项是获取文件类型后缀名
+            #     )
             result_list.append([announcementId, file_name, file_link])
         return result_list
 
@@ -134,7 +152,7 @@ def __filter_illegal_filename(filename):
         '‘': '',
         '’': '',
         '《': '_',
-        '》': '_'
+        '》': ''
     }
     for item in illegal_char.items():
         filename = filename.replace(item[0], item[1])
@@ -154,7 +172,7 @@ def read_zxg(fname='zxg.txt'):
     return resultList
 
 
-def get_cninfo(stockCode=''):
+def get_cninfo(stockCode='', df=pd.DataFrame()):
     if stockCode[0] == '6':
         PLATE = 'shmb;'
     else:
@@ -184,7 +202,16 @@ def get_cninfo(stockCode=''):
                 end_pg) + ' fetched, it contains items: (' +
                   str(1 + (i - 1) * MAX_PAGESIZE) + '-' + str(
                 last_item) + ')/' + str(item_count) + '.')
+            if len(df) > 0:
+                # 是否已经下载过
+                rowdf = pd.DataFrame(row)
+                common = rowdf.merge(df, on=[1, 2])
+                adf = rowdf[~rowdf.isin(common)].dropna()
+                if len(rowdf) > len(adf):
+                    # 有下载过的目录
+                    break
         time.sleep(0.4)
+
     return resultList
 
 
@@ -203,14 +230,15 @@ def save_cninfo():
         if len(code) != 6:
             print('股票代码长度错误：{} 长度：{}'.format(code, len(code)))
             continue
-        alist = get_cninfo(stockCode=code)
+        alist = get_cninfo(stockCode=code, df=df)
         # print(pd.DataFrame(alist))
         adf = pd.concat([adf, pd.DataFrame(alist)], ignore_index=True)
-    df = pd.concat([adf, df], ignore_index=True)
+    df = pd.concat([df, adf], ignore_index=True)
     df.drop_duplicates(subset=[1, 2], keep="first", inplace=True)
     # print(df)
 
     df.to_csv(output_csv_file, index=False, header=False)
+
 
 def get_output_csv_file():
     out_dir = standardize_dir(OUT_DIR)
