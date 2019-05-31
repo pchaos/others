@@ -39,7 +39,8 @@ def download_anance():
             downloaded = False
             url = each[1][2]
             fname = adjustFileName(each[1][1])
-            if canDownload(fname):
+            if int(each[1][3]) > 0 and canDownload(fname):
+                # 下载标志 并且满足下载条件
                 pass
             else:
                 continue
@@ -60,7 +61,7 @@ def download_anance():
                         str(ind) + '::' + str(download_count) + ':\"' +
                         fname + '\" failed!')
                     download_token = False
-                    time.sleep(3)
+                    time.sleep(2)
             if downloaded:
                 # 已经保存过
                 print(
@@ -92,18 +93,19 @@ def adjustFileName(filename):
         fsur = filename[-filename[::-1].find('.') - 1:]
         return filename[:(maxlen - len(fsur))] + fsur.lower()
 
+
 def canDownload(filename):
     reg_exp = re.compile(r'\d{8}')
     mat = re.findall(reg_exp, filename)
     if mat:
-        if len(mat)>0:
+        if len(mat) > 0:
             # 大于2017年
-            if mat[0] >'20170101':
+            if mat[0] > '20170101':
                 return True
     # 首次公开发行股票
     reg_exp = re.compile('首次公开发行股票')
     mat = re.findall(reg_exp, filename)
     if mat:
-        if len(mat)>0:
-                return True
+        if len(mat) > 0:
+            return True
     return False
