@@ -171,6 +171,19 @@ def read_zxg(fname='zxg.txt'):
         resultList.append(a[0:6])
     return resultList
 
+def read_zxg_filter(fname='zxgFilter.txt'):
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    if not fname.find(os.sep) > -1:
+        fname = os.path.join(dir_path, fname)
+    resultList = []
+    if os.path.isfile(fname):
+        with open(fname, 'r', encoding='UTF-8') as zxg:
+            alist = zxg.readlines()
+    for a in alist:
+        if a.strip() > '':
+            resultList.append(a.strip())
+    return resultList
+
 
 def get_cninfo(stockCode='', df=pd.DataFrame()):
     if stockCode[0] == '6':
@@ -199,9 +212,9 @@ def get_cninfo(stockCode='', df=pd.DataFrame()):
             resultList.extend(row)
             last_item = i * MAX_PAGESIZE if i < end_pg else item_count
             print('Page ' + str(i) + '/' + str(
-                end_pg) + ' fetched, it contains items: (' +
-                  str(1 + (i - 1) * MAX_PAGESIZE) + '-' + str(
-                last_item) + ')/' + str(item_count) + '.')
+                end_pg) + ' fetched, it contains items: ('
+                  + str(1 + (i - 1) * MAX_PAGESIZE) + '-'
+                  + str(last_item) + ')/' + str(item_count) + '.')
             if len(df) > 0:
                 # 是否已经下载过
                 rowdf = pd.DataFrame(row)
@@ -210,7 +223,7 @@ def get_cninfo(stockCode='', df=pd.DataFrame()):
                 if len(rowdf) > len(adf):
                     # 有下载过的目录
                     break
-        time.sleep(0.4)
+        time.sleep(0.35)
 
     return resultList
 
@@ -221,9 +234,11 @@ def save_cninfo():
     error_log = standardize_dir(OUT_DIR) + 'error.log'
     output_csv_file = get_output_csv_file()
     try:
-        df = pd.read_csv(output_csv_file, header=None, usecols=[0, 1, 2])
+        df = pd.read_csv(output_csv_file, header=None, usecols=[0, 1, 2, 3])
     except Exception as e:
         df = pd.DataFrame()
+    # 原始长度
+    orglen = len(df)
     adf = pd.DataFrame()
     for code in codeList:
         print(code)
@@ -231,16 +246,29 @@ def save_cninfo():
             print('股票代码长度错误：{} 长度：{}'.format(code, len(code)))
             continue
         alist = get_cninfo(stockCode=code, df=df)
+        sublist = read_zxg_filter()
+        for a in alist:
+            if any(re.findall('|'.join(sublist), a[1])):
+                a.append(1)
+            else:
+                a.append(0)
         # print(pd.DataFrame(alist))
         adf = pd.concat([adf, pd.DataFrame(alist)], ignore_index=True)
-    df = pd.concat([df, adf], ignore_index=True)
-    df.drop_duplicates(subset=[1, 2], keep="first", inplace=True)
-    # print(df)
-
-    df.to_csv(output_csv_file, index=False, header=False)
+    # 新公告放在前面
+    df = pd.concat([adf, df], ignore_index=True)
+    df.drop_duplicates(subset=[1, 2], keep="last", inplace=True)
+    df.sort_values(by =[1], ascending=False, inplace=True)
+    if len(df) != orglen:
+        df.to_csv(output_csv_file, index=False, header=False)
+        print('{} saved.'.format(output_csv_file))
 
 
 def get_output_csv_file():
+    # 若本目录有OUTPUT_FILENAME，则优先使用本目录文件
+    out_dir = os.path.dirname(os.path.abspath(__file__))
+    filename = '{}.csv'.format(os.path.join(out_dir, OUTPUT_FILENAME))
+    if os.path.exists(filename):
+        return filename
     out_dir = standardize_dir(OUT_DIR)
     filename = '{}.csv'.format(os.path.join(out_dir, OUTPUT_FILENAME))
     return filename
