@@ -16,7 +16,7 @@ def scrollToEnd(brower):
     # from selenium.webdriver.common.keys import Keys
     # html = browser.find_element_by_tag_name('html')
     # html.send_keys(Keys.END)
-    SCROLL_PAUSE_TIME = 0.5
+    SCROLL_PAUSE_TIME = 0.6
     time.sleep(SCROLL_PAUSE_TIME)
     while True:
         # Get scroll height
@@ -88,6 +88,7 @@ def contentExtract(pageNum):
 # 文库地址
 # url='https://wenku.baidu.com/view/6b5d50c608a1284ac850438e.html'  # 分页大于50页
 url = 'https://wenku.baidu.com/view/c5c9b8f0d4bbfd0a79563c1ec5da50e2524dd113.html'
+url = 'https://wenku.baidu.com/view/d8f922f4eefdc8d377ee3298.html?sxts=1559283875938'
 browser = webdriver.Firefox()
 browser.get(url=url)
 # first finishe fire up the driver and load the page
@@ -95,13 +96,15 @@ browser.fullscreen_window()
 
 scrollToEnd(browser)
 # 不延时会找不到moreBth
-time.sleep(2.5)
-try:
-    moreBtn = browser.find_element_by_class_name('moreBtn')
-    moreBtn.click()
-except Exception as e:
-    print('错误！请增加延时等待时间')
-    exit(-1)
+waitBtn = True
+while waitBtn:
+    time.sleep(1)
+    try:
+        moreBtn = browser.find_element_by_class_name('moreBtn')
+        moreBtn.click()
+        waitBtn = False
+    except Exception as e:
+        print('错误！增加延时等待时间')
 pageInput = browser.find_element_by_class_name('page-input')
 datalist = []
 reTopVal = re.compile(r'top: (\d+)px')
