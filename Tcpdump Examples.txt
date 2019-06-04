@@ -1,0 +1,25 @@
+https://hackertarget.com/tcpdump-examples/
+
+Practical tcpdump examples
+1. Extract HTTP User Agents
+2. Capture only HTTP GET and POST packets
+3. Extract HTTP Request URL's
+4. Extract HTTP Passwords in POST Requests
+5. Capture Cookies from Server and from Client
+6. Capture all ICMP packets
+7. ICMP Packets that are not ECHO/REPLY
+8. Capture SMTP / POP3 Email
+9. Troubleshooting NTP Query and Response
+10. Capture SNMP Query and Response
+11. Capture FTP Credentials and Commands12. Rotate Capture Files
+13. Capture IPv6 Traffic
+14. Detect Port Scan in Network Traffic
+15. Example Filter Showing Nmap NSE Script Testing
+16. Capture Start and End Packets (SYN/FIN)
+17. Capture DNS Request and Response
+18. Capture HTTP data packets
+19. Capture with tcpdump and view in Wireshark
+20. Top Hosts by Packets
+21. Capture all the plaintext passwords
+22. DHCP Example
+ 
