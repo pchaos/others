@@ -38,7 +38,7 @@ service sshd restart
 # mkdir brook && cd brook && wget https://github.com/txthinking/brook/releases/download/v20181212/brook && chmod +x brook
 mkdir brook && cd brook && wget https://github.com/txthinking/brook/releases/download/v20190205/brook && chmod +x brook
 # Run as a brook server
-screen -dmS mybrook brook server -l :15100 -p password
+screen -dmS mybrook ./brook server -l :15100 -p password
 
 # Run as multiple brook servers
 brook servers -l ":9999 password" -l ":8888 password"
