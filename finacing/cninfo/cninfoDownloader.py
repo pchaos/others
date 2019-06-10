@@ -16,7 +16,8 @@ from cninfo.cninfoScrab import get_output_csv_file, read_zxg, standardize_dir
 
 # 每个文件最多出错几次
 MAX_COUNT = 3
-DST_DIR = '/tmp/report/'
+# DST_DIR = '/tmp/report/'
+DST_DIR = '~/software/shared/finacing/2019reports/'
 # LIST_FILE = '/tmp/2019年/201农业上市企业信息_20020206-20180417.csv'
 LIST_FILE = get_output_csv_file()
 
@@ -81,6 +82,7 @@ def download_anance():
                         fname + '\"\n')
                     print('...' + str(
                         ind) + ':\"' + fname + '\" finally failed ...')
+    print('下载目录:{}'.format(DST_DIR))
 
 
 def adjustFileName(filename):

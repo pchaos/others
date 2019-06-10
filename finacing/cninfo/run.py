@@ -19,5 +19,6 @@ if __name__ == '__main__' and __package__ is None:
     sys.path.append(PARENT_DIR)
     from cninfo import *
 
-    # save_cninfo()
+    # 更新公告
+    save_cninfo()
     download_anance()
