@@ -23,6 +23,7 @@ bash <(curl -L -s https://install.direct/go.sh)
 /usr/bin/v2ray/geosite.dat：域名数据文件
 
 # 压缩v2ray
+cd /usr/bin/v2ray/
 upx -k --best --lzma ./v2ray
 upx -k --best --lzma ./v2*
 
