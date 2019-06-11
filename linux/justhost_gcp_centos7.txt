@@ -18,6 +18,10 @@ vim /etc/sysctl.conf
 net.core.default_qdisc = fq
 net.ipv4.tcp_congestion_control = bbr
 
+echo 'net.core.default_qdisc=fq' | sudo tee -a /etc/sysctl.conf
+echo 'net.ipv4.tcp_congestion_control=bbr' | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
 # 加载系统参数
 sysctl -p
 # 确定bbr已经成功开启
