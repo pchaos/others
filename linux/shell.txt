@@ -13,3 +13,9 @@ do
    [[ $b =~ ^/ ]] && a=$b  || a=`dirname $c`/$b
 done
 echo $a
+
+
+# 命令行替换
+aa='E'
+sed -ie "s/S$aa/D$aa/g" aa.txt
+sed -ie "s/L$aa/C$aa/g" aa.txt
