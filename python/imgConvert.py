@@ -9,4 +9,4 @@ for (dirname, dirs, files) in os.walk("."):
              print('converting to: ' + os.path.splitext(filename)[0] + '.jpg')
              im = Image.open(filename).convert("RGB")
              im.save(os.path.splitext(filename)[0] + '.jpg', "jpeg")
-             print('done converti')
+             print('done converting…')
