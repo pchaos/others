@@ -13,4 +13,4 @@ ssh-copy-id root@192.168.103.110
 
 apt-get update && apt-get upgrade
 
-apt-get install -y partimage vim upx htop iftop screen
+apt-get install -y partimage vim upx htop iftop screen sudo 
