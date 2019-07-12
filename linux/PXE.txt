@@ -16,6 +16,8 @@ interface=enp3s0,lo
 bind-interfaces
 domain=mypxe.local
 
+port=53
+
 dhcp-range=enp3s0,192.168.103.230,192.168.103.253,255.255.255.0,1h
 dhcp-option=3,192.168.103.1
 dhcp-option=6,192.168.103.1
@@ -45,6 +47,9 @@ pxe-prompt – Uses can hit F8 key to enter PXE menu or wait 2 seconds before au
 pxe=service – Use x86PC for 32-bit/64-bit architectures and enter a menu description prompt under string quotes. Other values types can be: PC98, IA64_EFI, Alpha, Arc_x86, Intel_Lean_Client, IA32_EFI, BC_EFI, Xscale_EFI and X86-64_EFI.
 enable-tftp – Enables the build-in TFTP server.
 tftp-root – the system path for net boot files.
+
+systemctl disable systemd-resolved
+systemctl stop systemd-resolved
 
 systemctl restart dnsmasq.service
 systemctl status dnsmasq.service
