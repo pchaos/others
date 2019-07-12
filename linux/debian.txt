@@ -6,6 +6,7 @@ PermitRootLogin without-password
 TO:
 PermitRootLogin yes
 
+# apt-get install -y openssh-server
 systemctl restart sshd
 
 # Copying Public Key Using ssh-copy-id
