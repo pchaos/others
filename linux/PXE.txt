@@ -1,0 +1,4 @@
+#Enable PXE boot
+
+mkdir /media/hdisk
+mount /dev/sdb1 /media/hdisk
