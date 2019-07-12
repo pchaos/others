@@ -1,3 +1,8 @@
+[2019-07-12 16:41:44.232] UDP: Failed to set receive buffer: requested 4194304, got 425984
+[2019-07-12 16:41:44.232] UDP: Please add the line "net.core.rmem_max = 4194304" to /etc/sysctl.conf
+[2019-07-12 16:41:44.232] UDP: Failed to set send buffer: requested 1048576, got 425984
+[2019-07-12 16:41:44.232] UDP: Please add the line "net.core.wmem_max = 1048576" to /etc/sysctl.conf
+
 transmission config:
 
 {
