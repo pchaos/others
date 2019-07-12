@@ -18,6 +18,10 @@ domain=mypxe.local
 
 port=53
 
+dns-forward-max=150
+cache-size=1000
+neg-ttl=3600
+
 dhcp-range=enp3s0,192.168.103.230,192.168.103.253,255.255.255.0,1h
 dhcp-option=3,192.168.103.1
 dhcp-option=6,192.168.103.1
@@ -48,13 +52,17 @@ pxe=service – Use x86PC for 32-bit/64-bit architectures and enter a menu descr
 enable-tftp – Enables the build-in TFTP server.
 tftp-root – the system path for net boot files.
 
-systemctl disable systemd-resolved
-systemctl stop systemd-resolved
+#systemctl disable systemd-resolved
+#systemctl stop systemd-resolved
+
+rm /etc/resolv.conf
+touch /etc/resolv.conf
+echo "nameserver 127.0.0.1" >> /etc/resolv.conf
 
 systemctl restart dnsmasq.service
 systemctl status dnsmasq.service
 
-apt-get install -y netkit-inetd tftpd-hpa ufw
+apt-get install -y tftpd-hpa ufw inetutils-inetd
 
 ufw allow 67/udp
 ufw allow 69/udp
