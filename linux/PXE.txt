@@ -1,8 +1,66 @@
+https://www.howtoforge.com/tutorial/install-debian-9-stretch-via-pxe-network-boot-server/
+https://www.tecmint.com/install-ubuntu-via-pxe-server-using-local-dvd-sources/
+
 #Enable PXE boot
 
 mkdir /media/hdisk
 mount /dev/sdb1 /media/hdisk
 
+apt install dnsmasq
+mv /etc/dnsmasq.conf /etc/dnsmasq.conf.backup
+nano /etc/dnsmasq.conf
+-----------------------------------------------------------------------------
+Add the following configuration to dnsmasq.conf file.
 
-apt-get install -y netkit-inetd tftpd-hpa 
+interface=enp3s0,lo
+bind-interfaces
+domain=mypxe.local
+
+dhcp-range=enp3s0,192.168.103.230,192.168.103.253,255.255.255.0,1h
+dhcp-option=3,192.168.103.1
+dhcp-option=6,192.168.103.1
+server=192.168.103.1
+dhcp-option=28,192.168.103.255
+dhcp-option=42,0.0.0.0
+
+dhcp-boot=pxelinux.0,pxeserver,192.168.103.119
+
+pxe-prompt="Press F8 for menu.", 2
+pxe-service=x86PC, "Install Ubuntu 16.04 from network server 192.168.103.119", pxelinux
+enable-tftp
+tftp-root=/srv/tftp
+------------------------------------------------------------------------------
+On the above configuration file replace the following lines accordingly.
+
+interface Replace with your own machine network interface.
+domain – Replace it with your domain name.
+dhcp-range – Define your own network range for DHCP to allocate IPs to this network segment and how long should an IP address for a client should be granted.
+dhcp-option=3 – Your Gateway IP.
+dhcp-option=6 DNS Server IPs – several DNS IPs can be defined.
+server – DNS forwarder IPs Address.
+dhcp-option=28 – Your network broadcast address.
+dhcp-option=42 – NTP server – use 0.0.0.0 Address is for self-reference.
+dhcp-boot – the pxe boot file and the IP address of the PXE server (here pxelinux.0 and IP address of the same machine).
+pxe-prompt – Uses can hit F8 key to enter PXE menu or wait 2 seconds before automatically switching to PXE menu.
+pxe=service – Use x86PC for 32-bit/64-bit architectures and enter a menu description prompt under string quotes. Other values types can be: PC98, IA64_EFI, Alpha, Arc_x86, Intel_Lean_Client, IA32_EFI, BC_EFI, Xscale_EFI and X86-64_EFI.
+enable-tftp – Enables the build-in TFTP server.
+tftp-root – the system path for net boot files.
+
+systemctl restart dnsmasq.service
+systemctl status dnsmasq.service
+
+apt-get install -y netkit-inetd tftpd-hpa ufw
+
+ufw allow 67/udp
+ufw allow 69/udp
+
+apt install syslinux-utils syslinux
+
+wget http://ftp.nl.debian.org/debian/dists/stretch/main/installer-amd64/current/images/netboot/netboot.tar.gz
+tar xfz netboot.tar.gz -C /srv/tftp/
+cp /usr/lib/syslinux/memdisk /srv/tftp/
+ls /srv/tftp/
+ln -s /srv/tftp/debian-installer/amd64/bootnetx64.efi /srv/tftp/
+
+ nano /srv/tftp/debian-installer/amd64/boot-screens/txt.cfg
  
