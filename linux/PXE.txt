@@ -2,3 +2,7 @@
 
 mkdir /media/hdisk
 mount /dev/sdb1 /media/hdisk
+
+
+apt-get install -y netkit-inetd tftpd-hpa 
+ 
