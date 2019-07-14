@@ -62,6 +62,9 @@ echo "nameserver 127.0.0.1" >> /etc/resolv.conf
 systemctl restart dnsmasq.service
 systemctl status dnsmasq.service
 
+what did not help me was that the errror dnsmasq: failed to create listening socket for 192.168.2.1: Address already in use is possibly a bit mis-leading with its "Address already in use" as it is actually the port already in use but applying similar logic to this answer netstat -anup pointed me to in.tftp which i stopped with service tftpd-hpa stop
+------------------------------------------------------------
+
 apt-get install -y tftpd-hpa ufw inetutils-inetd
 
 ufw allow 67/udp
