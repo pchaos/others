@@ -14,4 +14,15 @@ ssh-copy-id root@192.168.103.110
 
 apt-get update && apt-get upgrade
 
-apt-get install -y partimage vim upx htop iftop screen sudo 
+apt-get install -y partimage vim upx htop iftop screen sudo beep
+
+# countdown
+export RELEASE="1.0.0"
+wget https://github.com/antonmedv/countdown/releases/download/v$RELEASE/countdown_linux_amd64 -O countdown
+chmod +x countdown
+sudo mv countdown /usr/local/bin
+
+usage: 
+  countdown 25s
+  countdown 1m50s
+  countdown 2h45m50s
