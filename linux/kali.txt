@@ -1,0 +1,24 @@
+apt-get clean && apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y 
+
+apt-get install filezilla filezilla-common -y 
+apt-get install htop nethogs -y
+apt-get install gtk-recordmydesktop recordmydesktop remmina -y
+
+#启用自动登录用户
+leafpad /etc/gdm3/daemon.conf 
+
+在daemon即守护程序部分，将用于自动登录的那两行代码取消注释。它最后应该看起来像这样：
+
+[daemon] 
+# Enabling automatic login 
+AutomaticLoginEnable = true 
+AutomaticLogin = root 
+就是这样，容易得很。要是你想知道如何使用不同于root用户的用户，方法如下：
+
+[daemon] 
+# Enabling automatic login 
+AutomaticLoginEnable = true 
+AutomaticLogin = myanotheruser 
+
+
+最后但并非最不重要的是，重启系统，核实一下是否管用。（这会管用，因为它是Linux，Kali很出色。）
