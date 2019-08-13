@@ -26,3 +26,13 @@ AutomaticLogin = myanotheruser
 
 
 最后但并非最不重要的是，重启系统，核实一下是否管用。（这会管用，因为它是Linux，Kali很出色。）
+
+# tor
+apt-get install tor privoxy haproxy
+
+# hpts
+apt-get install npm
+npm install -g http-proxy-to-socks
+
+# run multitor
+# multitor --init 2 --user debian-tor --socks-port 9000 --control-port 9900 --proxy privoxy --haproxy
