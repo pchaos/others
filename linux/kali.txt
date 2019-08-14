@@ -36,3 +36,7 @@ npm install -g http-proxy-to-socks
 
 # run multitor
 # multitor --init 2 --user debian-tor --socks-port 9000 --control-port 9900 --proxy privoxy --haproxy
+
+
+#为何安装了open-vm-tools,复制文件到kali上还是不能粘贴
+复制粘贴、拖拽、窗口缩放等问题都是因为这个进程没有启动起来，你只需要在启动后在终端输入“/usr/bin/vmware-user”就可以手动启动，启动时可能会提示“**模块找不到”之类的警告，不用管他，然后你就会发现这些功能都有了
