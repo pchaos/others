@@ -1,0 +1,42 @@
+apt-get clean && apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y 
+apt -y --reinstall install open-vm-tools-desktop fuse
+reboot
+
+apt-get install alsa-utils -y
+apt-get install filezilla filezilla-common -y
+apt-get install htop nethogs -y
+apt-get install gtk-recordmydesktop recordmydesktop remmina -y
+apt-get install unrar unace rar unrar p7zip zip unzip p7zip-full p7zip-rar file-roller -y 
+
+#启用自动登录用户
+leafpad /etc/gdm3/daemon.conf
+
+在daemon即守护程序部分，将用于自动登录的那两行代码取消注释。它最后应该看起来像这样：
+
+[daemon]
+# Enabling automatic login
+AutomaticLoginEnable = true
+AutomaticLogin = root
+就是这样，容易得很。要是你想知道如何使用不同于root用户的用户，方法如下：
+
+[daemon]
+# Enabling automatic login
+AutomaticLoginEnable = true
+AutomaticLogin = myanotheruser
+
+
+最后但并非最不重要的是，重启系统，核实一下是否管用。（这会管用，因为它是Linux，Kali很出色。）
+
+# tor
+apt-get install tor privoxy haproxy
+
+# hpts
+apt-get install npm
+npm install -g http-proxy-to-socks
+
+# run multitor
+# multitor --init 2 --user debian-tor --socks-port 9000 --control-port 9900 --proxy privoxy --haproxy
+
+
+#为何安装了open-vm-tools,复制文件到kali上还是不能粘贴
+复制粘贴、拖拽、窗口缩放等问题都是因为这个进程没有启动起来，你只需要在启动后在终端输入“/usr/bin/vmware-user”就可以手动启动，启动时可能会提示“**模块找不到”之类的警告，不用管他，然后你就会发现这些功能都有了
