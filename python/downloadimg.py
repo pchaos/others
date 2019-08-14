@@ -49,3 +49,5 @@ if __name__ == '__main__':
 		sleeping += 1
 		if sleeping > n:
 			break
+
+	print('\nBye!!!')
