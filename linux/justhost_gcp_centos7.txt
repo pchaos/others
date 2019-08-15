@@ -75,6 +75,7 @@ cd multitor
 
 # Install
 ./setup.sh install
+yum install -y npm
 
 # Run the app
 multitor --init 2 --user debian-tor --socks-port 9000 --control-port 9900 --proxy privoxy --haproxy
@@ -85,5 +86,6 @@ yum group install "Development Tools"
 
 git clone https://github.com/jech/polipo.git
 cd polipo
+yum install -y texinfo
 make all
 make install
