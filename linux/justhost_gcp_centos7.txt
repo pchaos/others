@@ -77,6 +77,9 @@ cd multitor
 ./setup.sh install
 yum install -y tor privoxy haproxy npm
 
+useradd debian-tor
+chown debian-tor -R /var/lib/multitor
+
 # Run the app
 multitor --init 2 --user debian-tor --socks-port 9000 --control-port 9900 --proxy privoxy --haproxy
 
