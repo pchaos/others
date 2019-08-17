@@ -34,9 +34,40 @@ apt-get install tor privoxy haproxy
 apt-get install npm
 npm install -g http-proxy-to-socks
 
+
 # run multitor
 # multitor --init 2 --user debian-tor --socks-port 9000 --control-port 9900 --proxy privoxy --haproxy
 
+# How To Run Tor While Logged In As Root
+apt-get install tor torbrowser-launcher
+xhost si:localuser:debian-tor
+sudo -u debian-tor -H proxychain torbrowser-launcher
+
+# apt-get remove --purge tor torbrowser-launcher 
 
 #为何安装了open-vm-tools,复制文件到kali上还是不能粘贴
 复制粘贴、拖拽、窗口缩放等问题都是因为这个进程没有启动起来，你只需要在启动后在终端输入“/usr/bin/vmware-user”就可以手动启动，启动时可能会提示“**模块找不到”之类的警告，不用管他，然后你就会发现这些功能都有了
+
+
+# Set the grub timeout to 0 in kali linux
+leafpad /etc/default/grub
+
+Edit the value of GRUB_TIMEOUT to 0. Also add 2 entries called GRUB_HIDDEN_TIMEOUT and GRUB_HIDDEN_TIMEOUT_QUIET.
+
+# If you change this file, run 'update-grub' afterwards to update
+# /boot/grub/grub.cfg.
+# For full documentation of the options in this file, see:
+#   info -f grub -n 'Simple configuration'
+
+GRUB_DEFAULT=0
+GRUB_HIDDEN_TIMEOUT=0
+GRUB_HIDDEN_TIMEOUT_QUIET=true
+GRUB_TIMEOUT=0
+GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
+GRUB_CMDLINE_LINUX_DEFAULT="quiet"
+GRUB_CMDLINE_LINUX="initrd=/install/gtk/initrd.gz"
+Save the file and issue the update-grub command.
+
+update-grub2
+reboot
+

@@ -67,3 +67,31 @@ brook client -l 127.0.0.1:8080 -i 127.0.0.1 -s server_address:port -p password -
 # 设置启动内核顺序
  grub2-set-default 0
 
+
+git clone https://github.com/trimstray/multitor
+
+# Go into the repository
+cd multitor
+
+# Install
+./setup.sh install
+yum install -y tor privoxy haproxy npm
+
+useradd debian-tor
+chown debian-tor -R /var/lib/multitor
+
+# Run the app
+multitor --init 2 --user debian-tor --socks-port 9000 --control-port 9900 --proxy privoxy --haproxy
+
+# multitor 占用的端口号
+#netstat -tapn | grep LISTEN | grep "tor\|haproxy\|polipo\|privoxy"
+
+yum group install "Development Tools"
+
+# 安装polipo(github地址：https://github.com/jech/polipo)
+
+git clone https://github.com/jech/polipo.git
+cd polipo
+yum install -y texinfo
+make all
+make install
