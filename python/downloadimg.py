@@ -24,6 +24,10 @@ def saveUrlToFile(image_url=pyperclip.paste()):
 	if is_valid_url(image_url):
 		# 文件名不变
 		filename = image_url.split('/')[-1]
+		if len(filename) < 5:
+			# 不是图片
+			print("pass {}".format(filename))
+			return False
 		img_data = requests.get(image_url).content
 		with open(filename, 'wb') as handler:
 			handler.write(img_data)
