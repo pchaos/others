@@ -4,3 +4,13 @@ var i;
 for (i=0; i<ck.length; i++) {
     ck[i].checked=false;
 }
+
+
+
+【百度文库】文档免费下载，文档内容自由复制；移除百度文库网页中的广告；解除大部分网站操作限制；全网VIP视频免费在线看
+https://greasyfork.org/zh-CN/scripts/383041-%E7%99%BE%E5%BA%A6%E6%96%87%E5%BA%93-%E6%96%87%E6%A1%A3%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD-%E6%96%87%E6%A1%A3%E5%86%85%E5%AE%B9%E8%87%AA%E7%94%B1%E5%A4%8D%E5%88%B6-%E7%A7%BB%E9%99%A4%E7%99%BE%E5%BA%A6%E6%96%87%E5%BA%93%E7%BD%91%E9%A1%B5%E4%B8%AD%E7%9A%84%E5%B9%BF%E5%91%8A-%E8%A7%A3%E9%99%A4%E5%A4%A7%E9%83%A8%E5%88%86%E7%BD%91%E7%AB%99%E6%93%8D%E4%BD%9C%E9%99%90%E5%88%B6-%E5%85%A8%E7%BD%91vip%E8%A7%86%E9%A2%91%E5%85%8D%E8%B4%B9%E5%9C%A8%E7%BA%BF%E7%9C%8B
+
+屏蔽知乎使用adblock后页面顶部出现的横幅
+https://greasyfork.org/zh-CN/scripts/30999-%E5%B1%8F%E8%94%BD%E7%9F%A5%E4%B9%8E%E4%BD%BF%E7%94%A8adblock%E5%90%8E%E9%A1%B5%E9%9D%A2%E9%A1%B6%E9%83%A8%E5%87%BA%E7%8E%B0%E7%9A%84%E6%A8%AA%E5%B9%85
+
+
