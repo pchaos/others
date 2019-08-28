@@ -31,3 +31,10 @@ chmod +x vmware.sh
 
 bash vmware.sh
 start WMware player
+
+---------------------------------------------------
+Enable 3D HW acceleration on VMWare Workstation 10 on Ubuntu 14.04
+ while booting the VM, it says "No 3D support is available from the host".
+
+Edit the file ~/.vmware/preferences and look for a line that starts with mks.gl.allowBlacklistedDrivers, if it is not present - you can add it into the file.
+This should be changed to mks.gl.allowBlacklistedDrivers = "TRUE" (note the double quotes around TRUE)
