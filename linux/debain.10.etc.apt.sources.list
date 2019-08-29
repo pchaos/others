@@ -1,0 +1,24 @@
+deb http://mirrors.ustc.edu.cn/debian buster main contrib non-free
+deb-src http://mirrors.ustc.edu.cn/debian buster main contrib non-free
+
+#deb cdrom:[Debian GNU/Linux 10.0.0 _Buster_ - Official amd64 DVD Binary-1 20190706-10:24]/ buster contrib main
+
+#deb http://security.debian.org/debian-security buster/updates main contrib
+#deb-src http://security.debian.org/debian-security buster/updates main contrib
+
+# buster-updates, previously known as 'volatile'
+# A network mirror was not selected during install.  The following entries
+# are provided as examples, but you should amend them as appropriate
+# for your mirror of choice.
+#
+deb http://mirrors.ustc.edu.cn/debian/ buster-updates main contrib
+deb-src http://mirrors.ustc.edu.cn/debian/ buster-updates main contrib
+
+
+# --------------------------------------------------------- 	
+
+deb http://ftp2.cn.debian.org/debian/ buster main contrib non-free
+deb-src http://ftp2.cn.debian.org/debian/ buster main contrib non-free
+
+deb http://ftp2.cn.debian.org/debian// buster-updates main contrib
+deb-src http://ftp2.cn.debian.org/debian// buster-updates main contrib
