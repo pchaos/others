@@ -16,7 +16,7 @@ deb-src http://mirrors.ustc.edu.cn/debian/ buster-updates main contrib
 
 
 # --------------------------------------------------------- 	
-
+# 指向清华镜像
 deb http://ftp2.cn.debian.org/debian/ buster main contrib non-free
 deb-src http://ftp2.cn.debian.org/debian/ buster main contrib non-free
 
