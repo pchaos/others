@@ -1,0 +1,11 @@
+Here begins a new adventure on HackThis!, with Crypt Level 1. This is likely going to be an ongoing solution series, as I have not yet completed all of the levels. I look forward to learning more about my readers, if I have any who are smarter than I am with the last few challenges (why some such people would be reading a very basic security blog like mine, of course, is beyond me, but one never knows).
+
+The assignment is:
+
+Decrypt the following text
+
+tpyrcoow :ssap siht retne level siht etelpmoc oT .rewop niarb fo tol a yolpme ot deen lliw uoy ,cigol dna noitpyrced tuoba lla era slevel esehT .sihtkcah no slevel tpyrc eht ot emoclew ,olleH
+
+It should not be difficult to guess that the encrypted text is simply a reversed string. We can reverse it online and we get:
+
+Hello, welcome to the crypt levels on hackthis. These levels are all about decryption and logic, you will need to employ a lot of brain power. To complete this level enter this pass: woocrypt
