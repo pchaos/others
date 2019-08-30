@@ -20,9 +20,10 @@ import jinja2
 class genHTML():
 
 	def __init__(self):
+		self.__outputDir = '/tmp/'
 		self.dlist = []
 		self.__outputFilename = ""
-		self.__iniFilename= ""
+		self.__iniFilename = ""
 
 	@property
 	def iniFilename(self):
@@ -53,15 +54,25 @@ class genHTML():
 			fnini = f.read()
 		dlist = []
 		alist = fnini.split("\n")
+		i = 0
 		for a in alist:
 			try:
 				item = {"caption": "", "href": ""}
 				t, h = a.split("||")
 				item["caption"] = t
 				item["href"] = h
+				dlist.append(item)
+				i += 1
 			except Exception as e:
-				print("warning !! 不能转换为dictionary {}".format(item))
-			dlist.append(item)
+				print("warning !! 不能转换为dictionary, 使用默认{}".format(item))
+				# 读取空行 自动填充空数据至数据个数能被5整除
+				for j in range(5):
+					if i% 5 > 0:
+						dlist.append(item)
+						i += 1
+					else:
+						break
+
 		return dlist
 
 	def genHTML(self, filename=""):
@@ -77,9 +88,11 @@ class genHTML():
 		outputText = template.render(title="HACKER",
 		                             sites=dlist)  # this is where to put args to the template renderer
 
-		with open('/tmp/{}'.format(filename), "w+") as f:
+		wfile = os.path.join(self.__outputDir, filename)
+		with open(wfile, "w+") as f:
 			f.write(outputText)
-		return self.outputFilename
+		return wfile
+
 
 if __name__ == '__main__':
 	# 需要生成的文件名list。模板文件为：template.html，模板数据文件名为：需要生成的文件名+".ini"
@@ -90,4 +103,4 @@ if __name__ == '__main__':
 		gh = genHTML()
 		# gh.outputFilename = fn
 		of = gh.genHTML(fn)
-		print(of)
+		print("完成 {}".format(of))
