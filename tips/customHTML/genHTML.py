@@ -64,10 +64,10 @@ class genHTML():
 				dlist.append(item)
 				i += 1
 			except Exception as e:
-				print("warning !! 不能转换为dictionary, 使用默认{}".format(item))
+				print("warning !! {} 不能转换为dictionary, 使用默认{}".format(a, item))
 				# 读取空行 自动填充空数据至数据个数能被5整除
 				for j in range(5):
-					if i% 5 > 0:
+					if i % 5 > 0:
 						dlist.append(item)
 						i += 1
 					else:
@@ -77,10 +77,13 @@ class genHTML():
 
 	def genHTML(self, filename=""):
 		if len(filename) == 0 and self.outputFilename == "":
-			print("需要设置输出文件名!")
+			print("需要设置输出文件名! ")
 			return None
 		self.outputFilename = filename
 		dlist = self.getSource()
+		if len(dlist) == 0:
+			print("文件{}无数据".format(self.outputFilename))
+			return None
 		templateLoader = jinja2.FileSystemLoader(searchpath="./")
 		templateEnv = jinja2.Environment(loader=templateLoader)
 		TEMPLATE_FILE = "template.html"

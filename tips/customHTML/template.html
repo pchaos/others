@@ -7,15 +7,15 @@
 </head>
 <h3 align="center">{{ title }}</h3>
 <body style="background-color:lightcyan;"><br/>
-<table align="center" border="1" cellpadding="1" cellspacing="0" width="90%">
-{%- for item in sites %}
-{% if loop.index0 % 5 == 0 %}
-<tr align="center">
-{% endif -%}
-    <td><a href="{{ item.href }}">{{ item.caption }}</a></td>
-{%- if loop.index0 % 5 == 4 or loop.last %}
-</tr>{% endif %}
-{%- endfor %} {# end of sites #}
+<table align="center" border="1" cellpadding="1" cellspacing="0" width="95%">
+    {%- for item in sites %}
+    {% if loop.index0 % 5 == 0 %}
+    <tr align="center">
+    {% endif -%}
+        <td><a href="{{ item.href }}">{{ item.caption }}</a></td>
+    {%- if loop.index0 % 5 == 4 or loop.last %}
+    </tr>{% endif %}
+    {%- endfor %} {# end of sites #}
 </table>
 </body>
 </html>
