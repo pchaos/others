@@ -1,0 +1,50 @@
+Decrypt the following text
+Dc, gdcl cl h lcrcshn ckqh gz sqwqs guz. Gdcl gcrq qhyd sqggqn cl hllcomqk h ljqycacqk nqshgczmldcj ucgd hmzgdqn sqggqn. Jhll: cdhwqancqmkl
+
+http://quipqiup.com/index.php
+
+ciphertext = "Dc, gdcl cl h lcrcshn ckqh gz sqwqs guz."
+ciphertext += " Gdcl gcrq qhyd sqggqn cl hllcomqk h ljqycacqk nqshgczmldcj ucgd hmzgdqn sqggqn. Jhll: cdhwqancqmkl"
+ 
+# jhll -> pass
+ciphertext = ciphertext.upper().replace('J', 'p').replace('H', 'a').replace('L', 's')
+ 
+# Cs -> is
+ciphertext = ciphertext.replace('C', 'i')
+ 
+# GDis -> this
+ciphertext = ciphertext.replace('G', 't').replace('D', 'h')
+ 
+# NQSatiZMship -> relationship, Uith -> with
+ciphertext = ciphertext.replace('N', 'r').replace('Q', 'e').replace('S', 'l').replace('Z', 'o').replace('M', 'n').replace('U', 'w')
+ 
+# siRilar -> similar, iKea -> idea, leWel -> level, eaYh -> each
+ciphertext = ciphertext.replace('R', 'm').replace('K', 'd').replace('W', 'v').replace('Y', 'c')
+ 
+# assiOned -> assigned, A -> f
+ciphertext = ciphertext.replace('O', 'g').replace('A', 'f')
+print(ciphertext)
+ 
+ 
+ciphertext = "Dc, gdcl cl h lcrcshn ckqh gz sqwqs guz."
+ciphertext += " Gdcl gcrq qhyd sqggqn cl hllcomqk h ljqycacqk nqshgczmldcj ucgd hmzgdqn sqggqn. Jhll: cdhwqancqmkl"
+ 
+# jhll -> pass
+ciphertext = ciphertext.upper().replace('J', 'p').replace('H', 'a').replace('L', 's')
+ 
+# Cs -> is
+ciphertext = ciphertext.replace('C', 'i')
+ 
+# GDis -> this
+ciphertext = ciphertext.replace('G', 't').replace('D', 'h')
+ 
+# NQSatiZMship -> relationship, Uith -> with
+ciphertext = ciphertext.replace('N', 'r').replace('Q', 'e').replace('S', 'l').replace('Z', 'o').replace('M', 'n').replace('U', 'w')
+ 
+# siRilar -> similar, iKea -> idea, leWel -> level, eaYh -> each
+ciphertext = ciphertext.replace('R', 'm').replace('K', 'd').replace('W', 'v').replace('Y', 'c')
+ 
+# assiOned -> assigned, A -> f
+ciphertext = ciphertext.replace('O', 'g').replace('A', 'f')
+print(ciphertext)
+
