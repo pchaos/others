@@ -2,7 +2,7 @@
 """
 -------------------------------------------------
    File Name：     genIni
-   Description :
+   Description :  将HTML文件转换成网址ini文件
    Author :       pchaos
    date：          2019/8/30
 -------------------------------------------------
@@ -19,7 +19,16 @@ for fn in flist:
 		contents = f.read()
 
 		soup = BeautifulSoup(contents, 'lxml')
-		with open('{}.ini'.format(fn), "w+") as fw:
+		outputFile = '{}.ini'.format(fn)
+		with open(outputFile, "w+") as fw:
+			blankLine = False # 判断是否重复输出空行多个空行输出只输出一行空行
 			for a in soup.find_all('a', href=True):
 				print(a['href'], a.text)
-				fw.write("{}{}{}\n".format(a.text, "||", a['href']))
+				if len(a['href']) > 5:
+					fw.write("{}{}{}\n".format(a.text, "||", a['href']))
+					blankLine = False
+				else:
+					if not blankLine:
+						fw.write("\n")
+						blankLine = True
+		print("输出文件:{}".format(outputFile))
