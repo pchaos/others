@@ -9,3 +9,6 @@ https://www.proxynova.com/proxy-server-list/anonymous-proxies/
 
 可用的搜索代理程序
 https://github.com/zhangchenchen/proxyspider
+
+gfwlist base64
+https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
