@@ -22,3 +22,14 @@ assert s == "-0123"
 n = 123
 s = "%05d" % n
 assert s == "00123"
+
+
+update all installed python packages with pip
+pip install -U $(pip freeze | awk '{split($0, a, "=="); print a[1]}')
+或者：
+pip install -U $(pip freeze | cut -d '=' -f 1)
+
+强制安装
+pip install --upgrade --no-deps --force-reinstall your-package
+
+pip list --outdated
