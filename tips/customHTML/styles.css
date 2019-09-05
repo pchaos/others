@@ -1,0 +1,19 @@
+body {
+    background-color:lightyellow;
+}
+table, th, td {
+    border: solid 2px black;
+    border-collapse: collapse;
+    border-color: lightgrey;
+    padding: 2px;
+}
+
+table th {
+    color: blue;
+    font-size: 18px;
+}
+
+table td {
+    color: green;
+    font-size: 16px;
+}

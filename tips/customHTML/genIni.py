@@ -12,7 +12,7 @@
 """
 from bs4 import BeautifulSoup
 
-flist = ["hacker.html"]
+flist = ["main.htm", "main_tech.htm", "hacker.html"]
 for fn in flist:
 	with open(fn, "r") as f:
 
@@ -21,7 +21,7 @@ for fn in flist:
 		soup = BeautifulSoup(contents, 'lxml')
 		outputFile = '{}.ini'.format(fn)
 		with open(outputFile, "w+") as fw:
-			blankLine = False # 判断是否重复输出空行多个空行输出只输出一行空行
+			blankLine = False  # 判断是否重复输出空行多个空行输出只输出一行空行
 			for a in soup.find_all('a', href=True):
 				print(a['href'], a.text)
 				if len(a['href']) > 5:
