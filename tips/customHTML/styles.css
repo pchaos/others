@@ -1,6 +1,17 @@
-body {
-    background-color:lightyellow;
+
+body.Hacker {
+    background-color: lightcyan;
 }
+
+body.Main_tech {
+    background-color: lightgoldenrodyellow;
+}
+
+
+body {
+    background-color: lightyellow;
+}
+
 table, th, td {
     border: solid 2px black;
     border-collapse: collapse;

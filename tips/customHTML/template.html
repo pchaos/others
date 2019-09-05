@@ -6,8 +6,8 @@
     <link href="styles.css" rel="stylesheet">
     <title>{{ title }}</title>
 </head>
+<body class="{{ title }}">
 <h3 align="center">{{ title }}</h3>
-<body>
 <table align="center" border="1" cellpadding="1" cellspacing="0" width="95%">
     {%- for item in sites %}
         {% if loop.index0 % 5 == 0 %}
