@@ -1,0 +1,23 @@
+<li class="navI">
+    <input class="navI-radio" name="nav" type="radio" id="{{ title }}" checked>
+    <label class="navI-tit" for="kc">{{ title }}</label>
+
+
+    <div align="center">
+        <table class="{{ title }}">
+            {%- for item in sites %}
+                {% if loop.index0 % 5 == 0 %}
+                    <tr>
+                {% endif -%}
+            <td><a href="{{ item.href }}" target="_blank"
+                    {% if '://' not in item.href %} {# 判断是否本地文件 #}
+                   id="local"
+                    {% endif %}
+            >
+                {{ item.caption }}</a></td>
+            {%- if loop.index0 % 5 == 4 or loop.last %}
+                </tr>{% endif %}
+            {%- endfor %} {# end of sites #}
+        </table>
+    </div>
+</li>

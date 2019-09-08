@@ -1,0 +1,83 @@
+body, p {
+    margin: 0;
+}
+
+h2 {
+    margin: 0;
+    font-size: 100%;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+input {
+    margin: 0;
+    width: 0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.box {
+    width: 572px;
+    border: 1px solid #999;
+    overflow: hidden;
+}
+
+.nav {
+    margin-left: -1px;
+    font: 14px "微软雅黑";
+    overflow: hidden;
+    background-color: #f1f1f1;
+}
+
+.navI {
+    float: left;
+    width: 33.333%;
+    box-sizing: border-box;
+}
+
+.navI-tit {
+    display: block;
+    line-height: 40px;
+    text-align: center;
+    cursor: pointer;
+    border-left: 1px solid #cecece;
+    border-bottom: 1px solid #cecece;
+}
+
+.navI-txt {
+    position: relative;
+    width: 572px;
+    height: 200px;
+    text-indent: 2em;
+    line-height: 2;
+    background: #fff;
+}
+
+.ml1 {
+    margin-left: -100%;
+}
+
+.ml2 {
+    margin-left: -200%;
+}
+
+/*重点代码*/
+.navI-radio {
+    display: none;
+}
+
+.navI-radio:checked + .navI-tit {
+    background: #fff;
+    border-bottom: none;
+}
+
+.navI-radio:checked ~ .navI-txt {
+    z-index: 1;
+}

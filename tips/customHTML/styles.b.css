@@ -1,0 +1,57 @@
+/* 彩色 */
+abbr {
+    color: blue;
+}
+
+body.Hacker {
+    background-color: lightcyan;
+    background: linear-gradient(#ffaa00, #00aaff, #ff00ff);
+}
+
+body.Main_tech {
+    background-color: lightgoldenrodyellow;
+    background: linear-gradient(#ffffff, #dfe9f3);
+}
+
+
+body {
+    background: #C9CCD3;
+    background-blend-mode: lighten;
+    background-image: linear-gradient(to top, lightgrey 0%, lightgrey 1%, #e0e0e0 26%, #efefef 48%, #d9d9d9 75%, #bcbcbc 100%);
+}
+
+table, th, td {
+    border: solid 1.5px black;
+    border-collapse: collapse;
+    border-color: darkcyan;
+    padding: 1.5px;
+    background: black;
+}
+
+table th {
+    color: blue;
+    font-size: 18px;
+}
+
+table td {
+    color: green;
+    font-size: 16px;
+    text-align: center;
+    /*background: linear-gradient(darkslategray, black);*/
+}
+
+table {
+    width: 100%;
+    align-items: center;
+}
+
+[id="local"] {
+    background: lightyellow;
+    color: orangered;
+}
+
+a {
+    color: lime;
+    letter-spacing: 2.5px;
+    word-spacing: 5px;
+}

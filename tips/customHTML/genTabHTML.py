@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 """
 -------------------------------------------------
-   File Name：     __init__.py
-   Description :
+   File Name：     genTabHTML
+   Description : css tab styles
    Author :       pchaos
-   date：          2019/8/28
+   date：          2019/9/8
 -------------------------------------------------
    Change Activity:
-                   2019/8/28:
+                   2019/9/8:
 -------------------------------------------------
 """
 __author__ = 'pchaos'
 
-# from . import genHTML
+from .genHTML import genHTML
+
+class genTABHTML(genHTML):
+	pass

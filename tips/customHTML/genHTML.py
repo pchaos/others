@@ -43,14 +43,28 @@ class genHTML():
 			self.__outputFilename = value
 			self.iniFilename = "{}.ini".format(value)
 
+	def getRealFileName(self, filename):
+		fx1 = os.path.exists(os.path.join(os.path.realpath("./"), filename))
+		fx2 = os.path.exists(
+			os.path.join(os.path.realpath("./customHTML"), filename))
+		if ((not fx1 and not fx2) or len(filename) == 0):
+			print(
+				"文件不存在：{}".format(os.path.join(os.path.realpath("./"), filename)))
+			return None
+		# 读取
+		if fx1:
+			filename =os.path.join(os.path.realpath("./"), filename)
+		else:
+			if fx2:
+				filename=os.path.join(os.path.realpath("./customHTML"), filename)
+		return filename
+
 	def getSource(self, iniFile=""):
 		if iniFile == "":
 			iniFile = self.iniFilename
-		if not os.path.exists(inifile):
-			print("文件不存在：{}".format(inifile))
-			return []
-		# 读取
-		with open(inifile, "r") as f:
+		iniFile = self.getRealFileName(iniFile)
+
+		with open(iniFile, "r") as f:
 			fnini = f.read()
 		dlist = []
 		alist = fnini.split("\n")
@@ -87,33 +101,36 @@ class genHTML():
 	            template="template.html"):
 		if len(filename) == 0 and self.outputFilename == "":
 			print("需要设置输出文件名! ")
-			return None
-		self.outputFilename = filename
+			return None, None
+		else:
+			if len(filename) > 0:
+				self.__outputFilename = filename
 		dlist = self.getSource()
 		if len(dlist) == 0:
 			print("文件{}无数据".format(self.outputFilename))
-			return None
+			return None, None
 		templateLoader = jinja2.FileSystemLoader(searchpath="./")
 		templateEnv = jinja2.Environment(loader=templateLoader)
+		# template = self.getRealFileName(template)
 		template = templateEnv.get_template(template)
 		if title == "":
 			title = self.capitalize_first_last_letters(filename.split(".")[0])
-		outputText = template.render(title=title,
-		                             sites=dlist)  # this is where to put args to the template renderer
+		render = template.render(title=title,
+		                         sites=dlist)  # this is where to put args to the template renderer
 		if prettify:
 			# 美化显示
-			soup = BeautifulSoup(outputText, "lxml")
-			outputText = soup.prettify()
-
-		wfile = os.path.join(self.__outputDir, filename)
+			soup = BeautifulSoup(render, "lxml")
+			render = soup.prettify()
+		wfile = os.path.join(self.__outputDir, self.outputFilename)
 		with open(wfile, "w+") as f:
-			f.write(outputText)
-		return wfile
+			f.write(render)
+		return wfile, render
 
 	@classmethod
 	def capitalize_first_last_letters(cls, str1):
 		# 首字符大写
 		return str1.capitalize()
+
 
 if __name__ == '__main__':
 	# 需要生成的文件名list。模板文件为：template.html，模板数据文件名为：需要生成的文件名+".ini"
@@ -123,5 +140,6 @@ if __name__ == '__main__':
 		inifile = '{}.ini'.format(fn)
 		gh = genHTML()
 		# gh.outputFilename = fn
-		of = gh.genHTML(fn)
+		gh.iniFilename = inifile
+		of, _ = gh.genHTML(fn)
 		print("完成 {}".format(of))

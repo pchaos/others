@@ -1,0 +1,47 @@
+abbr {
+    color: blue;
+}
+
+
+table, th, td {
+    border: solid 1.5px black;
+    border-collapse: collapse;
+    border-color: darkcyan;
+    padding: 1.5px;
+}
+
+table th {
+    color: blue;
+    font-size: 18px;
+}
+
+table td {
+    color: green;
+    font-size: 16px;
+    text-align: center;
+}
+
+table {
+    width: 95%;
+    align-items: center;
+}
+
+
+[id="local"] {
+    background: lightyellow;
+    color: orangered;
+}
+
+a {
+    letter-spacing: 2.5px;
+    word-spacing: 5px;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+td:hover {
+    background-color: #ddd;
+    font-size: larger;
+}

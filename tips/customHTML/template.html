@@ -3,20 +3,30 @@
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     <!--  <meta http-equiv="refresh" content="30"> -->
-    <link href="styles.css" rel="stylesheet">
+    <link href="styles.a.css" rel="stylesheet">
     <title>{{ title }}</title>
 </head>
 <body class="{{ title }}">
-<h3 align="center">{{ title }}</h3>
-<table align="center" border="1" cellpadding="1" cellspacing="0" width="95%">
+<abbr title="{{ title }}">{{ title }}</abbr>
+<div align="center">
+<table class="{{ title }}">
     {%- for item in sites %}
         {% if loop.index0 % 5 == 0 %}
-            <tr align="center">
+            <tr>
         {% endif -%}
-    <td><a href="{{ item.href }}">{{ item.caption }}</a></td>
+    <td><a href="{{ item.href }}" target="_blank"
+            {% if '://' not in item.href %} {# 判断是否本地文件 #}
+           id="local"
+            {% endif %}
+        >
+        {{ item.caption }}</a></td>
     {%- if loop.index0 % 5 == 4 or loop.last %}
         </tr>{% endif %}
     {%- endfor %} {# end of sites #}
 </table>
+</div>
+<div class="styles"> {# css style切换 #}
+
+</div>
 </body>
 </html>
