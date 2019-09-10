@@ -49,14 +49,16 @@ class genHTML():
 			os.path.join(os.path.realpath("./customHTML"), filename))
 		if ((not fx1 and not fx2) or len(filename) == 0):
 			print(
-				"文件不存在：{}".format(os.path.join(os.path.realpath("./"), filename)))
+				"文件不存在：{}".format(
+					os.path.join(os.path.realpath("./"), filename)))
 			return None
 		# 读取
 		if fx1:
-			filename =os.path.join(os.path.realpath("./"), filename)
+			filename = os.path.join(os.path.realpath("./"), filename)
 		else:
 			if fx2:
-				filename=os.path.join(os.path.realpath("./customHTML"), filename)
+				filename = os.path.join(os.path.realpath("./customHTML"),
+				                        filename)
 		return filename
 
 	def getSource(self, iniFile=""):
@@ -97,8 +99,9 @@ class genHTML():
 			dlist.append(item)
 		return dlist
 
-	def genHTML(self, filename="", title="", prettify=True,
+	def genHTML(self, outputFilename=None, title="", prettify=True,
 	            template="template.html"):
+		filename = "" if outputFilename is None else outputFilename
 		if len(filename) == 0 and self.outputFilename == "":
 			print("需要设置输出文件名! ")
 			return None, None
@@ -109,22 +112,37 @@ class genHTML():
 		if len(dlist) == 0:
 			print("文件{}无数据".format(self.outputFilename))
 			return None, None
+		if title == "":
+			title = self.capitalize_first_last_letters(filename.split(".")[0])
+		render = self.renders(dlist, prettify, template, title)
+		return self.save(outputFilename, render)
+
+	def save(self, outputFilename=None, render=""):
+		if outputFilename is not None:
+			wfile = os.path.join(self.__outputDir, outputFilename)
+			with open(wfile, "w+") as f:
+				f.write(render)
+			return wfile, render
+		else:
+			if self.outputFilename is not None:
+				return self.save(self.outputFilename, render)
+			else:
+				# 不写到文件
+				return None, render
+
+	def renders(self, dlist, prettify, template, title):
 		templateLoader = jinja2.FileSystemLoader(searchpath="./")
 		templateEnv = jinja2.Environment(loader=templateLoader)
 		# template = self.getRealFileName(template)
 		template = templateEnv.get_template(template)
-		if title == "":
-			title = self.capitalize_first_last_letters(filename.split(".")[0])
+
 		render = template.render(title=title,
 		                         sites=dlist)  # this is where to put args to the template renderer
 		if prettify:
 			# 美化显示
 			soup = BeautifulSoup(render, "lxml")
 			render = soup.prettify()
-		wfile = os.path.join(self.__outputDir, self.outputFilename)
-		with open(wfile, "w+") as f:
-			f.write(render)
-		return wfile, render
+		return render
 
 	@classmethod
 	def capitalize_first_last_letters(cls, str1):

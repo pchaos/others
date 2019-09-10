@@ -1,4 +1,4 @@
-body, p {
+body, table {
     margin: 0;
 }
 
@@ -18,13 +18,41 @@ input {
     width: 0;
 }
 
+table {
+    width: 95%;
+    /*align-items: center;*/
+}
+
+table td {
+    color: inherit;
+    font-size: 16px;
+    text-align: center;
+}
+
+[id="local"] {
+    background: lightyellow;
+    color: orangered;
+}
+
 a {
     text-decoration: none;
     color: inherit;
+    letter-spacing: 2px;
+    word-spacing: 4px;
+}
+
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+td:hover {
+    background-color: #ddd;
+    font-size: larger;
 }
 
 .box {
-    width: 572px;
+    width: 100%;
     border: 1px solid #999;
     overflow: hidden;
 }
@@ -38,7 +66,7 @@ a {
 
 .navI {
     float: left;
-    width: 33.333%;
+    width: 33.33%;
     box-sizing: border-box;
 }
 
@@ -52,10 +80,11 @@ a {
 }
 
 .navI-txt {
-    position: relative;
-    width: 572px;
-    height: 200px;
+    position: absolute;
+    width: 100%;
+    height: 95%;
     text-indent: 2em;
+    left: 0;
     line-height: 2;
     background: #fff;
 }

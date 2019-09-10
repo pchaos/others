@@ -20,14 +20,35 @@ class TestGenTABHTML(TestCase):
 		flist = ["main.htm", "main_tech.htm", "hacker.html"]
 
 		# inifile = '{}.ini'.format(flist[0])
-		inifile = '{}.ini'.format(flist[0])
+		renderList = []
 		for fn in flist:
+			inifile = '{}.ini'.format(fn)
 			gh = genTABHTML()
 			# gh.outputFilename = fn
+			gh.outputFilename = "test"
 			gh.iniFilename = inifile
-			of, render = gh.genHTML("a{}".format(fn),
+			of, render = gh.genHTML(None,
+			                        # of, render = gh.genHTML("a{}".format(fn),
+			                        title=fn.split(".")[0],
 			                        prettify=False,
 			                        template="customHTML/template.tab.table.html")
-			print("完成 {}".format(of))
-			print(render)
+			print("输出文件完成 {}".format(of))
+			# print(render)
 			self.assertTrue(len(render) > 100)
+			renderList.append(render)
+		print(renderList)
+		# main
+		inifile = '{}.ini'.format(flist[0])
+		gh = genTABHTML()
+		# gh.outputFilename = fn
+		gh.iniFilename = inifile
+		# of, render = gh.genHTML(None,
+		render = gh.renders(renderList,
+		                    prettify=True,
+		                    template="customHTML/template.tab.html",
+		                    title="Main")
+		saveText = ""
+		for r in render:
+			saveText += r
+		gh.save('main.htm', saveText)
+		print("输出文件完成 {}".format(render))

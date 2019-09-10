@@ -1,9 +1,8 @@
 <li class="navI">
-    <input class="navI-radio" name="nav" type="radio" id="{{ title }}" checked>
-    <label class="navI-tit" for="kc">{{ title }}</label>
+    <input class="navI-radio" name="nav" type="radio" id="{{ title }}" checked="False">
+    <label class="navI-tit" for="{{ title }}">{{ title }}</label>
 
-
-    <div align="center">
+    <div align="center" class="navI-txt box">
         <table class="{{ title }}">
             {%- for item in sites %}
                 {% if loop.index0 % 5 == 0 %}
