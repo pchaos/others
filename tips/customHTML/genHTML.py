@@ -75,6 +75,9 @@ class genHTML():
 			try:
 				item = {"caption": "", "href": ""}
 				t, h = a.split("||")
+				if t.startswith(";"):
+					# 该行为注释
+					continue
 				item["caption"] = t
 				item["href"] = h
 				lh, lt = len(h), len(t)
