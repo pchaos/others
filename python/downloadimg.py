@@ -35,7 +35,7 @@ def saveUrlToFile(image_url=pyperclip.paste()):
 			if "=webp" in filename:
 				# webp格式
 				fn = genFilename(filename=filename)
-				response =requests.get(image_url)
+				response = requests.get(image_url)
 				webp2jpg(BytesIO(response.content), fn)
 				return
 		img_data = requests.get(image_url).content
@@ -47,15 +47,19 @@ def saveUrlToFile(image_url=pyperclip.paste()):
 
 
 def genFilename(filename, fileext="jpg", defaultDir='./'):
-	# 返回新的文件名
+	#  如果有重复 返回新的文件名
 	filename, file_extension = os.path.splitext(filename)
 	for a in map(chr, range(97, 123)):
-		# or list(map(chr, range(ord('a'), ord('z')+1)))
-		if "?" in filename:
-			fn = filename.split("?")[0]
-		fn = os.path.join(defaultDir, "{}{}.{}".format(fn, a, fileext))
-		if not os.path.exists(fn):
-			return fn
+		for b in map(chr, range(65, 91)):  # 增加一层循环 防止文件名冲突
+			# or list(map(chr, range(ord('a'), ord('z')+1)))
+			if "?" in filename:
+				# 截取“？”前面的名称
+				fn = filename.split("?")[0]
+			fn = os.path.join(defaultDir,
+			                  "{}{}.{}".format(fn, "{}{}".format(a, b),
+			                                   fileext))
+			if not os.path.exists(fn):
+				return fn
 	return filename
 
 
