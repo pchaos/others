@@ -1,6 +1,9 @@
 import requests
 import pyperclip
 import time
+import os
+from PIL import Image
+from io import BytesIO
 
 ''' 监控剪贴板粘贴图片url，并保存
 如果获取图片出错, 可能需要使用代理
@@ -28,6 +31,13 @@ def saveUrlToFile(image_url=pyperclip.paste()):
 			# 不是图片
 			print("pass {}".format(filename))
 			return False
+		else:
+			if "=webp" in filename:
+				# webp格式
+				fn = genFilename(filename=filename)
+				response =requests.get(image_url)
+				webp2jpg(BytesIO(response.content), fn)
+				return
 		img_data = requests.get(image_url).content
 		with open(filename, 'wb') as handler:
 			handler.write(img_data)
@@ -36,9 +46,33 @@ def saveUrlToFile(image_url=pyperclip.paste()):
 		print('错误的网址： {}'.format(image_url))
 
 
+def genFilename(filename, fileext="jpg", defaultDir='./'):
+	# 返回新的文件名
+	filename, file_extension = os.path.splitext(filename)
+	for a in map(chr, range(97, 123)):
+		# or list(map(chr, range(ord('a'), ord('z')+1)))
+		if "?" in filename:
+			fn = filename.split("?")[0]
+		fn = os.path.join(defaultDir, "{}{}.{}".format(fn, a, fileext))
+		if not os.path.exists(fn):
+			return fn
+	return filename
+
+
+def webp2jpg(webpData, filename):
+	try:
+		print("webp file")
+		im = Image.open(webpData).convert("RGB")
+		im.save(filename, "jpeg")
+		print('Converting webp to jpeg … {}'.format(filename))
+	except Exception as e:
+		print(e.args)
+		print("错误原因可能是缺少pillow等安装包 ")
+
+
 if __name__ == '__main__':
 	# n秒没有图片url则退出
-	n = 100
+	n = 90
 	lasturl = ""
 	sleeping = 0
 	while True:
