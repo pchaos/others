@@ -3,6 +3,8 @@
 -------------------------------------------------
    File Name：     genHTML
    Description : 从配置ini文件中生成用户主页
+    次文件生成独立的html文件，一个ini文件对应一个html文件
+    多个ini文件合并生成一个html文件 参见genTabHTML.py
    Author :       pchaos
    date：          2019/8/28
 -------------------------------------------------

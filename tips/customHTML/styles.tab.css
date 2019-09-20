@@ -25,7 +25,7 @@ table {
 
 table td {
     color: inherit;
-    font-size: 16px;
+    font-size: 14px;
     text-align: center;
 }
 
@@ -47,7 +47,7 @@ tr:nth-child(even) {
 }
 
 td:hover {
-    background-color: #ddd;
+    background-color: #FFFF80;
     font-size: larger;
 }
 
