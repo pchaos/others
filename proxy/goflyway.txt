@@ -1,0 +1,23 @@
+下载安装
+mkdir goflyway && cd goflyway
+goflyway_ver=$(wget --no-check-certificate -qO- -t1 -T3 https://api.github.com/repos/coyove/goflyway/releases| grep "tag_name"| head -n 1| awk -F ":" '{print $2}'| sed 's/\"//g;s/,//g;s/ //g') && echo ${goflyway_ver}
+if [[ $(uname -m) == "x86_64" ]]; then bit='amd64';else bit='386';fi && [[ ! -z ${bit} ]] && wget -N --no-check-certificate "https://github.com/coyove/goflyway/releases/download/${goflyway_ver}/goflyway_linux_${bit}.tar.gz"
+# 自动判断系统位数并下载
+
+tar -xzf "goflyway_linux_${bit}.tar.gz" && rm -rf "goflyway_linux_${bit}.tar.gz"
+# 解压压缩包并删除无用的压缩包
+
+chmod +x goflyway
+# 赋予软件执行权限
+
+
+服务端使用方法
+#假设密码为：doubi233，监听端口为：80，日志输出位置为：/tmp/goflyway.log，那么执行：
+key="doubi233"
+proxypass="http://support.cloudflare.com/hc/en-us"
+proxypass="http://www.mozilla.org/en-US/firefox/new/?redirect_source=firefox-com"
+
+#nohup ./goflyway -k="$key" -l=":8080" -proxy-pass="http://kernel.ubuntu.com/~kernel-ppa/mainline/" > /tmp/goflyway.log 2>&1 &
+nohup ./goflyway -k="$key" -l=":8080" -proxy-pass="$proxypass" > /tmp/goflyway.log 2>&1 &
+
+./goflyway -k="$key" -up="cf://www.aduckchick.ml:8080" -l=":8080"
