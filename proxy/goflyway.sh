@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 
-key="doubi233"
+if [ ! $key ];then key="doubi233"; fi
+
 proxypass="http://support.cloudflare.com/hc/en-us"
 proxypass="http://mirror.centos.org/centos/7/os/x86_64/"
 
