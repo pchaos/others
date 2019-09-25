@@ -19,3 +19,9 @@ echo $a
 aa='E'
 sed -ie "s/S$aa/D$aa/g" aa.txt
 sed -ie "s/L$aa/C$aa/g" aa.txt
+
+# shell cat to File foo
+cat << EOF > foo
+first line.
+sencond line.
+EOF
