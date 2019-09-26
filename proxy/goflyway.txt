@@ -21,3 +21,8 @@ proxypass="http://mirror.centos.org/centos/7/os/x86_64/"
 nohup ./goflyway -k="$key" -l=":8080" -proxy-pass="$proxypass" > /tmp/goflyway.log 2>&1 &
 
 ./goflyway -k="$key" -up="cf://www.aduckchick.ml:8080" -l=":8080"
+
+编译
+git clone https://github.com/coyove/goflyway
+cd goflyway
+make build && cd build
