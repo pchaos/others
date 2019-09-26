@@ -99,3 +99,5 @@ make install
 
 firewall-cmd --zone=public --add-port=8080/tcp $PERMANENT
 firewall-cmd --zone=public --add-port=8080/udp $PERMANENT
+firewall-cmd --zone=public --add-port=8880/tcp $PERMANENT
+firewall-cmd --zone=public --add-port=8880/udp $PERMANENT
