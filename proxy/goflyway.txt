@@ -26,3 +26,11 @@ nohup ./goflyway -k="$key" -l=":8080" -proxy-pass="$proxypass" > /tmp/goflyway.l
 git clone https://github.com/coyove/goflyway
 cd goflyway
 make build && cd build
+
+刷这个论坛的固件就含有goflyway了：
+http://www.right.com.cn/forum/thread-161324-1-1.html
+
+或者直接下载：
+https://opt.cn2qq.com/opt-file/goflyway
+
+GOARCH=arm GOARM=7 go build hello.go

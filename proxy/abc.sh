@@ -6,4 +6,7 @@ export GOPATH=$PWD/goflywaybuild
 #go get -u -d github.com/coyove/goflyway/cmd/goflyway
 cd $GOPATH/bin
 
-./gox -os "windows linux" -arch amd64 $GOPATH/src/github.com/coyove/goflyway/cmd/goflyway
+GOOS=linux
+GOARCH=amd64
+#./gox -os "windows linux" -arch amd64 $GOPATH/src/github.com/coyove/goflyway/cmd/goflyway
+go build $GOPATH/src/github.com/coyove/goflyway/cmd/goflyway/main.go
