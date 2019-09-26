@@ -1,6 +1,7 @@
 #!/usr/bin/bash
-rm -rf gofly
-git clone https://github.com/coyove/goflyway gofly
-cd gofly
-wget https://raw.githubusercontent.com/JeffJiangHub/goflyway/master/Makefile
-make build && cd build
+
+mkdir goflywaybuild && export GOPATH=$PWD/goflywaybuild
+go get github.com/mitchellh/gox
+go get -u -d github.com/coyove/goflyway/cmd/goflyway
+cd $GOPATH/bin
+
