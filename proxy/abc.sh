@@ -15,5 +15,4 @@ GOARCH=amd64
 ./gox -os "linux" -arch mips $GOPATH/src/github.com/coyove/goflyway/cmd/goflyway
 ./gox -os "windows" -arch amd64 $GOPATH/src/github.com/coyove/goflyway/cmd/goflyway
 #go build $GOPATH/src/github.com/coyove/goflyway/cmd/goflyway/main.go
-rm -f main
 ls -l
