@@ -13,7 +13,7 @@ systemctl restart sshd
 ssh-copy-id root@192.168.103.110
 
 apt-get update && apt-get upgrade
-
+How to install VirtualBox Guest Additions in a Debian virtual machine
 apt-get install -y partimage vim upx htop iftop screen sudo beep nmon iotop htop
 
 # countdown
@@ -26,3 +26,45 @@ usage:
   countdown 25s
   countdown 1m50s
   countdown 2h45m50s
+
+How to install VirtualBox Guest Additions in a Debian virtual machine?
+Follow these steps to install the VirtualBox Guest Additions on your Linux Debian virtual machine:
+
+Open terminal and become root (su); if you have sudo enabled, you may also do for example sudo -i; see man sudo for all options):
+
+su
+enter root password and press enter
+
+alternatively you can use sudo -s if you have it installed and the user where you are logged in has the necessary rights...
+
+Update APT cache:
+
+apt-get update
+Install the latest security updates:
+
+This step will upgrade all your packages, so be wise about it. Try the following steps first and they might be enough to work if not, then perform upgrade and retry.
+
+apt-get upgrade
+apt full-upgrade
+apt install libxrandr2 libxt6 libxmu6
+Install these required packages:
+
+Packages build-essential and module-assistant are both required to be able to compile the kernel modules and so when installing the VirtualBox Linux Guest Additions you must have them. So, this command will get the headers and packages (compilers and libraries) required to work. Notice, that after installing your VirtualBox Linux Guest Additions you will leave behind some packages as well as Linux headers, which you might delete afterwards or not. In my case they didn't hurt, but for the sake of system tidiness, you might want to pick up after playing.
+
+apt-get install build-essential module-assistant
+Configure your system for building kernel modules:
+
+m-a prepare
+Insert Guest Additions ISO:
+
+Expand menu Devices and click on Insert Guest Additions CD image...
+
+It should mount automatically, but if for any reason it doesn't:
+
+mount /media/cdrom
+Run the following script:
+
+sh /media/cdrom/VBoxLinuxAdditions.run
+Restart the system:
+
+reboot
