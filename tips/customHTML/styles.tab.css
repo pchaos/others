@@ -48,7 +48,7 @@ tr:nth-child(even) {
 
 td:hover {
     background-color: #FFFF80;
-    font-size: larger;
+    /*font-size: larger;*/
 }
 
 .box {
