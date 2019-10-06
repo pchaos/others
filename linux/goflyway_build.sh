@@ -4,6 +4,9 @@
 mkdir goflywaybuild && export GOPATH=$PWD/goflywaybuild
 go get github.com/mitchellh/gox
 go get -u -d github.com/coyove/goflyway/cmd/goflyway
+#cd $GOPATH/src/github.com/coyove/goflyway/
+##git checkout tags/2.0.0rc1
+#git pull
 cd $GOPATH/bin
 
 #GOOS=linux

@@ -9,6 +9,7 @@ fi
 localport=8080
 #proxypass="http://support.cloudflare.com/hc/en-us"awk
 proxypass="http://mirror.centos.org/centos/7/os/x86_64/"
+proxypass="https://www.debian.org/mirror/list"
 
 PID=$(ps -ef| grep "goflyway"| grep -v grep| grep -v "goflyway.sh"| grep -v "init.d"| grep -v "service"|grep -v "golayway.log"| awk '{print $2}')
 if [ "$PID" ];then kill -9 $PID; fi
