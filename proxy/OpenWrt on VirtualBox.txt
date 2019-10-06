@@ -34,3 +34,28 @@ eth1 of the VM on wan interface, dynamic address, set in VirtualBox as NAT. This
 (optional) eth2 of the VM on lan interface, configured depending on your local network, set in VirtualBox as Bridged Adapter. This interface allows other devices (host included) to connect to the VM as if it was a physical device in the local network. Will only work if there is already a local network of some kind.
 For a setup with 2 bridged physical network cards WAN/LAN Setup see troubleshooting. The rest of this guide applies to a setup with 2 physical cards as well.
 Note that the order of the “Host-only Adapter” as “Adapter 1” and “NAT” as “Adapter 2” is important for turn-key operation of OpenWrt in the VM. While it can be configured using the console, configuration in this way simplifies getting to a running configuration.
+
+
+还有一点要注意的是！！！！
+
+现在是使用桥接的方式配置的网络， 默认没有设置网关和dns， 所以没有办法访问外网 。
+
+可以修改 /etc/config/network 文件：
+
+uci set network.lan.ipaddr='192.168.6.3'
+uci set network.lan.netmask='255.255.255.0'
+uci set network.lan.gateway='192.168.6.1'
+uci set network.lan.broadcast='192.168.6.255'
+uci set network.lan.dns='192.168.6.1'
+
+uci commit
+
+  然后执行 ： 
+
+  /etc/init.d/network  restart
+  /etc/init.d/dnsmasq  restart  
+  其中我发现配置完后 ， 可以ping通百度， 如果只执行 /etc/init.d/network  restart， 就不能ping通百度， 必须再执行一次/etc/init.d/dnsmasq  restart才可以。
+
+   网上说是因为实际使用的dns配置文件是 /etc/resolv.conf.auto， 具体我还没去研究， 先MARK一下！！ 
+
+   好了， 至此， 就可以正常访问外网了！！
