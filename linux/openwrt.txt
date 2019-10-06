@@ -1,0 +1,39 @@
+
+
+1、获取openwrt官方源码
+
+git  clone  https://github.com/openwrt/openwrt.git （获取master分支官方源码）
+git  clone  -b v18.06.1 https://github.com/openwrt/openwrt.git（获取18.06.1版本官方源码）
+
+
+2、远程同步OpenWrt官方源码
+
+
+git  pull  https://github.com/openwrt/openwrt.git （同步master分支官方源码到自己机器）
+git  pull  https://github.com/openwrt/openwrt.git v18.06.1 （获取18.06.1版本分支官方源码到自己机器，发行版一般无需同步代码）
+
+
+3、变更自己机器的源码
+
+
+到https://github.com/openwrt/openwrt 查找某一分支（或发行版）的commit，将其复制在自己机器内
+
+
+执行命令
+git reset --hard <commit>  (用实际的commit替换)
+
+
+例如将机器代码变更到 18.06.0
+
+
+git reset --hard  03b693064b6ad85ce9c57ab0226b986b09c8eb05
+
+git  pull  https://github.com/openwrt/openwrt.git v18.06.0
+
+
+例如将机器代码变更到 17.01.5
+
+
+git reset --hard  248b35890339d70d7b43e3b40fba0281f854ed9a
+
+git  pull  https://github.com/openwrt/openwrt.git v17.01.5
