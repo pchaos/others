@@ -1,0 +1,36 @@
+This document describes how to run the x86-64 OpenWrt images in VirtualBox, or VB for short.
+
+Prerequisites
+Download and install VirtualBox
+Download and install the VirtualBox Guest Additions (needed for USB connectivity among others)
+Download the openwrt-x86-64-combined-squashfs.img.gz image, from snapshots/targets/x86/64/ (On Linux, download the openwrt-x86-64-combined-ext4.img.gz image)
+Uncompress the gziped img file. On Linux use the command
+gzip -d openwrt-x86-64-combined-ext4.img.gz
+
+Open a terminal and go in the folder where you have downloaded the file (sorry, the tool has only a command line interface)
+Convert it to native VB format by writing this in command line (the same for Windows, Mac and Linux. Sadly this tool does not have graphical user interface): VBoxManage convertfromraw --format VDI openwrt-x86-64-combined-squashfs.img openwrt-x86-64-combined-squashfs.vdi
+Custom Images
+You can compile your own image (Target System → x86-64 and Target Images → Build VirtualBox image files). ext4 needs to be enabled first.
+
+Error
+If you receive an error similar to
+VBoxManage: error: VD: The given disk size 19444018 is not aligned on a sector boundary (512 bytes)
+VBoxManage: error: Error code VERR_VD_INVALID_SIZE at /Users/vbox/tinderbox/5.1-mac-rel/src/VBox/Storage/VD.cpp(7002) in function int VDCreateBase(PVBOXHDD, const char *, const char *, uint64_t, unsigned int, const char *, PCVDGEOMETRY, PCVDGEOMETRY, PCRTUUID, unsigned int, PVDINTERFACE, PVDINTERFACE)
+VBoxManage: error: Cannot create the disk image "openwrt.vdi": VERR_VD_INVALID_SIZE
+
+you may need to pad the image with dd if=openwrt-x86-64-combined-squashfs.img of=openwrt.img bs=128000 conv=sync and use the padded image as input to VBoxManage convertfromraw.
+
+Enlarge the image to a useful size (size is in MB)
+$ VBoxManage modifymedium openwrt-x86-64-combined-squashfs.vdi --resize 128
+0%...10%...20%...30%...40%...50%...60%...70%...80%...90%...100%
+
+
+VM setup
+This part of the configuration will deal with setting up networking manually.
+The configuration you will set up by following this tutorial is:
+
+eth0 of the VM on mng (management) interface, fixed address 192.168.56.2, set in VirtualBox as Host-only Adapter on adapter vboxnet0. This interface will be always available to the host even if host or VM are disconnected from any network.
+eth1 of the VM on wan interface, dynamic address, set in VirtualBox as NAT. This interface will be used to access the Internet through whatever setup the host also uses.
+(optional) eth2 of the VM on lan interface, configured depending on your local network, set in VirtualBox as Bridged Adapter. This interface allows other devices (host included) to connect to the VM as if it was a physical device in the local network. Will only work if there is already a local network of some kind.
+For a setup with 2 bridged physical network cards WAN/LAN Setup see troubleshooting. The rest of this guide applies to a setup with 2 physical cards as well.
+Note that the order of the “Host-only Adapter” as “Adapter 1” and “NAT” as “Adapter 2” is important for turn-key operation of OpenWrt in the VM. While it can be configured using the console, configuration in this way simplifies getting to a running configuration.
