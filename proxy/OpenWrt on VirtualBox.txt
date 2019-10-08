@@ -59,3 +59,7 @@ uci commit
    网上说是因为实际使用的dns配置文件是 /etc/resolv.conf.auto， 具体我还没去研究， 先MARK一下！！ 
 
    好了， 至此， 就可以正常访问外网了！！
+
+opkg update
+opkg install tcpdump tor openvpn-ssl
+opkg install shadowsocks-libev-ss-local shadowsocks-libev-ss-redir shadowsocks-libev-ss-rules shadowsocks-libev-ss-tunnel shadowsocks-libev-ss-server
