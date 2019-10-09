@@ -71,3 +71,26 @@ Save the file and issue the update-grub command.
 update-grub2
 reboot
 
+---------------------------------------
+Kali Linux Unattended Install
+Create a new VM, with the minimal required hardware requirements.
+Complete a standard, default, installation, using a preseed file – hosted over HTTP (or HTTPS). Your pressed file is https://www.kali.org/dojo/preseed.cfg.
+Make sure the installation is fully unattended: you must preseed locale, keymap, hostname and domain as well.
+Hide Answer
+Minimum requirements: 2GB RAM, 20 GB disk space. You know this by now, RIGHT?
+This is pretty much a standard install with modified boot parameters. Here are suggested boot parameters:
+
+preseed/url=https://www.kali.org/dojo/preseed.cfg locale=en_US keymap=us hostname=kali domain=local.lan
+
+preseed/url=https://www.kali.org/dojo/preseed.cfg locale=en_US keymap=us hostname=kali domain=local.lan
+
+Note that the locale, keymap, hostname and domain parameters are set on the kernel command line!
+
+Good question. Preseeding parameters depends on the preseed method. If you use a preseed file in the initrd, then you can preseed all parameters even those that are very early in the process. If you use a preseed file from the network or from the ISO image itself, then the preseed gets applied a bit later in the installation process and the early parameters need to be preseeded on the kernel command line.
+
+Alternatively, you could also use the auto=true and priority=critical preseed parameters.
+
+preseed/url=https://www.kali.org/dojo/preseed.cfg auto=true priority=critical
+1
+preseed/url=https://www.kali.org/dojo/preseed.cfg auto=true priority=critical
+If you didn’t know this, step up your game! Pay attention! The auto and priority boot parameters are specifically mentioned in chapter 4.3. Don’t think you can skim all the material and slide by. We’re keeping an eye on you.
