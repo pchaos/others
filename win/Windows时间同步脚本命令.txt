@@ -9,3 +9,25 @@ w32tm /unregister
 w32tm /register
 net start w32time
 w32tm /resync
+
+
+1.在Ubuntu中把计算机硬件时间改成系统显示的时间，即禁用Ubuntu的UTC。
+
+安装ntpdate：
+
+sudo apt-get install ntpdate
+设置校正服务器：
+
+sudo ntpdate time.windows.com
+设置硬件时间为本地时间：
+
+sudo hwclock --localtime --systohc
+
+2.修改 Windows对硬件时间的对待方式，让 Windows把硬件时间当作UTC.
+
+打开命令行程序，在命令行中输入下面命令并回车
+
+Reg add HKLM\SYSTEM\CurrentControlSet\Control\TimeZoneInformation /v RealTimeIsUniversal /t REG_DWORD /d 1
+应该就没有问题了。
+
+这两种方法，我个人倾向于使用第一种。
