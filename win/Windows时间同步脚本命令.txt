@@ -1,0 +1,11 @@
+双系统经常出现时间不同步问题
+
+使用的是Windows10系统
+
+除了麻烦的可视化操作方法，也可以用命令同步
+
+net stop w32time
+w32tm /unregister
+w32tm /register
+net start w32time
+w32tm /resync
