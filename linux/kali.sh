@@ -76,7 +76,7 @@ updatesection "$PERMIT_ROOT" "PermitRootLogin"
 
 Pubkey_Auth="PubkeyAuthentication yes"
 updatesection "$Pubkey_Auth" "PubkeyAuthentication"
-sed "s/^PubkeyAuthentication.*/${Pubkey_Auth}/" "$SSHD_CONFIG"
+#sed "s/^PubkeyAuthentication.*/${Pubkey_Auth}/" "$SSHD_CONFIG"
 
 PASSWD_Auth="PasswordAuthentication yes"
 if grep -q -E "^[[:space:]]*PasswordAuthentication" "$SSHD_CONFIG"; then
@@ -87,5 +87,6 @@ fi
 
 # 显示有效命令
 cat $SSHD_CONFIG |grep -E -v "^#"|grep -E"^[a-zA-Z0-9_]"
+cat $SSHD_CONFIG |grep -E -v "^#"|grep -E"^\w"
 
 systemctl restart ssh

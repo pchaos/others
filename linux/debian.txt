@@ -55,6 +55,7 @@ apt-get install build-essential module-assistant
 Configure your system for building kernel modules:
 
 m-a prepare
+
 Insert Guest Additions ISO:
 
 Expand menu Devices and click on Insert Guest Additions CD image...
