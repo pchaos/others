@@ -65,3 +65,17 @@ nodes vm config: /etc/pve/nodes/xxx/xxx/qemu-server/xxx.conf
  # disable verbose syslog messages
  echo "0" >/etc/pve/.debug 
  
+
+After Debian installation, how to add Grub Entries for new/other bootable disks/installations?
+apt-get update
+apt-get install os-prober
+if os-prober package is already installed, apt will let you know, without doing any changes to the system.
+
+Then edit /etc/default/grub and make sure you have a line like
+
+GRUB_DISABLE_OS_PROBER=false
+
+Once you're done with editing the file, if necessary, enter this command
+
+update-grub
+Note: You can skip the file editing process on your first try, but if that doesn't work you'll need to do it, then retry update-grub command.
