@@ -92,3 +92,14 @@ You are now ready to create containers using that image, and you can list all do
 The above command shows you the full Proxmox VE volume identifiers. They include the storage name, and most other Proxmox VE commands can use them. For example you can delete that image later with:
 
 pveam remove local:vztmpl/debian-8.0-standard_8.0-1_amd64.tar.gz
+---------------------------------------------
+Proxmox includes qm importdisk as command.
+
+Extract your ova:
+
+tar -xvf *.ova
+Create a new VM without harddisks.
+
+Import Your harddisks like this: (targetvmid is the vmnumber)
+
+qm importdisk targetvmid disk001.vmdk local -format qcow2
