@@ -1,0 +1,5 @@
+targetsDir="/etc/yum.repos.d/"
+wget -O "$targetsDir"fedora.repo http://mirrors.163.com/.help/fedora-163.repo
+wget -O "$targetsDir"fedora-updates.repo http://mirrors.163.com/.help/fedora-updates-163.repo
+dnf clean all
+dnf makecache
