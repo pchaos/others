@@ -56,7 +56,7 @@ nodes vm config: /etc/pve/nodes/xxx/xxx/qemu-server/xxx.conf
  .clusterlog => Cluster log (last 50 entries)
  .rrd        => RRD data (most recent entries)
  
- 
+ pct console 100
 === Enable/Disable debugging ====
  
  # enable verbose syslog messages
@@ -65,3 +65,41 @@ nodes vm config: /etc/pve/nodes/xxx/xxx/qemu-server/xxx.conf
  # disable verbose syslog messages
  echo "0" >/etc/pve/.debug 
  
+
+After Debian installation, how to add Grub Entries for new/other bootable disks/installations?
+apt-get update
+apt-get install os-prober
+if os-prober package is already installed, apt will let you know, without doing any changes to the system.
+
+Then edit /etc/default/grub and make sure you have a line like
+
+GRUB_DISABLE_OS_PROBER=falsepct console 100
+
+Once you're done with editing the file, if necessary, enter this command
+
+update-grub
+Note: You can skip the file editing process on your first try, but if that doesn't work you'll need to do it, then retry update-grub command.
+----------------------------------------------
+pveam available --section system
+Before you can use such a template, you need to download them into one of your storages. You can simply use storage local for that purpose. For clustered installations, it is preferred to use a shared storage so that all nodes can access those images.
+
+pveam download local debian-8.0-standard_8.0-1_amd64.tar.gz
+
+You are now ready to create containers using that image, and you can list all downloaded images on storage local with:
+
+# pveam list local
+
+The above command shows you the full Proxmox VE volume identifiers. They include the storage name, and most other Proxmox VE commands can use them. For example you can delete that image later with:
+
+pveam remove local:vztmpl/debian-8.0-standard_8.0-1_amd64.tar.gz
+---------------------------------------------
+Proxmox includes qm importdisk as command.
+
+Extract your ova:
+
+tar -xvf *.ova
+Create a new VM without harddisks.
+
+Import Your harddisks like this: (targetvmid is the vmnumber)
+
+qm importdisk targetvmid disk001.vmdk local -format qcow2
