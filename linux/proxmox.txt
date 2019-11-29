@@ -103,3 +103,13 @@ Create a new VM without harddisks.
 Import Your harddisks like this: (targetvmid is the vmnumber)
 
 qm importdisk targetvmid disk001.vmdk local -format qcow2
+-------------------------------------------
+VE 5.1 host - how to turn off laptop screen?
+setterm -blank 5
+(time in minutes)
+
+This should blank the console after 5 minutes, but is only working until the next reboot.
+If this is wanted permanently add "consoleblank=5" to the kernel command line, i.e., open "/etc/default/grub" and add "consoleblank=300" (time in seconds) to the GRUB_CMDLINE_LINUX property, e.g.:
+Code:
+GRUB_CMDLINE_LINUX="consoleblank=300"
+Then run "update-grub" to apply the new config for the next boot.

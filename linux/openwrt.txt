@@ -37,3 +37,8 @@ git  pull  https://github.com/openwrt/openwrt.git v18.06.0
 git reset --hard  248b35890339d70d7b43e3b40fba0281f854ed9a
 
 git  pull  https://github.com/openwrt/openwrt.git v17.01.5
+-------------------------------------------------
+uci show network
+uci set network.lan.address="192.168.103.30"
+uci commit
+/etc/init.d/network restart
