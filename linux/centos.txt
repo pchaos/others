@@ -1,0 +1,15 @@
+
+Remove GUI part of "server with GUI"
+
+yum group remove "Server with GUI"
+yum groupremove "GNOME Desktop Environment"
+yum groupremove "X Window System"
+
+systemctl set-default multi-user.target
+reboot
+That will stop the gui from loading on boot and instead give you the text login
+
+To change it back:
+
+systemctl set-default graphical.target
+reboot
