@@ -1,4 +1,5 @@
 #install mongodb
+cd /tmp
 cat <<EOF > mongodb.repo
 [Mongodb]
 name=MongoDB Repository
