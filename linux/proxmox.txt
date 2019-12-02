@@ -113,3 +113,31 @@ If this is wanted permanently add "consoleblank=5" to the kernel command line, i
 Code:
 GRUB_CMDLINE_LINUX="consoleblank=300"
 Then run "update-grub" to apply the new config for the next boot.
+
+--blank         [0-60|force|poke] 设置多久不活动后屏幕变空白
+-powersave      [on|vsync|hsync|powerdown|off]
+                                   设置 vesa 节能功能
+--powerdown     [0-60]            设置 vesa 关闭电源间隔(分钟)
+-------------------------------------------
+The default proxmox CPU governor is "performance", but you can save power by setting this to "ondemand" or "powersave". There are a number of ways to do that, here's one which doesn't require installing any packages:
+
+echo "ondemand" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+echo "powersave" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
+Check the current CPU governor:
+
+cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
+To make this persist across reboots, add a cron job using crontab -e as root. Add the following line:
+
+@reboot echo "ondemand" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+@reboot echo "powersave" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
+To watch CPU frequency live, updated every two seconds:
+
+watch "lscpu | grep MHz"
+
+You can test CPU performance in a Windows guest using:
+
+WinSAT cpuformal -xml c:\cpu.xml
+

@@ -1,4 +1,4 @@
-#install mongodb
+#install mongodb on centos
 cd /tmp
 cat <<EOF > mongodb.repo
 [Mongodb]
