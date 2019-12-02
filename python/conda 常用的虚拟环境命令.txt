@@ -16,3 +16,7 @@ $ deactivate env_name
 
 # 删除 conda 虚拟环境
 $ conda-env remove --name env_name
+$ conda env remove -n ENV_NAME
+
+# 列出所有的虚拟环境
+conda env list
