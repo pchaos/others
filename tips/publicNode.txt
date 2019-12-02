@@ -1,0 +1,2 @@
+https://www.right.com.cn/forum/forum.php?mod=viewthread&tid=1317566&extra=page%3D1%26filter%3Dtypeid%26typeid%3D13
+wget -O - d.oo14.com/87XW
