@@ -1,4 +1,5 @@
 #install mongodb
+cd /tmp
 cat <<EOF > mongodb.repo
 [Mongodb]
 name=MongoDB Repository
@@ -9,4 +10,4 @@ gpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc
 EOF
 sudo cp mongodb.repo /etc/yum.repos.d/mongodb.repo
 
-sudo dnf install mongodb-org
+sudo dnf install -y mongodb-org
