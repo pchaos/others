@@ -28,3 +28,11 @@ vim的颜色主题文件放在Vim运行目录下的color目录下，所以我们
 
 打开/etc/vim/vimrc文件，在其中加入一行"colorscheme 颜色主题名字"，之后保存更改即可。
 colorscheme torte
+
+How do I list loaded plugins in Vim?
+" where was an option set  
+:scriptnames            : list all plugins, _vimrcs loaded (super)  
+:verbose set history?   : reveals value of history and where set  
+:function               : list functions  
+:func SearchCompl       : List particular function"
+
