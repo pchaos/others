@@ -36,3 +36,10 @@ How do I list loaded plugins in Vim?
 :function               : list functions  
 :func SearchCompl       : List particular function"
 
+-----------------------------------------------------
+# https://www.bilibili.com/video/av67091857/?spm_id_from=333.788.videocard.1
+curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+cd ~/.config/nvim && wget https://github.com/theniceboy/nvim/raw/master/init.vim
+wget https://github.com/theniceboy/nvim/raw/master/md-snippets.vim
+wget -O _machine_specific.vim https://github.com/theniceboy/nvim/raw/master/default_configs/_machine_specific_default.vim

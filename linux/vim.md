@@ -31,8 +31,7 @@ vim的学习曲线相当的大（参看各种文本编辑器的学习曲线）�
 
 * 事实上，你需要2周时间的苦练，而不是3天。
 
-* [AngularJS] - HTML enhanced for web apps!
-*
+
 ## 第一级 – 存活
 * 安装 vim
 * 启动 vim
@@ -264,4 +263,30 @@ vim的学习曲线相当的大（参看各种文本编辑器的学习曲线）�
 
 对于vi/vim只是点评一点：这是一个你不需要使用鼠标，不需使用小键盘，只需要使用大键盘就可以完成很多复杂功能文本编辑的编辑器。不然，Visual Studio也不就会有vim的插件了。
 
-[]:
+## [neovim]
+
+### Features
+#### Extensible
+API is first-class: discoverable, versioned, documented.
+MessagePack structured communication enables extensions in any language.
+Remote plugins run as co-processes, safely and asynchronously.
+GUIs, IDEs, web browsers can --embed Nvim as an editor or script host.
+#### Usable
+Strong defaults
+Works the same everywhere: one build-type, one command
+Modern terminal features such as cursor styling, focus events, bracketed paste
+Built-in terminal emulator
+#### Drop-in Vim
+Fully compatible with Vim's editing model and the Vimscript language.
+Start with :help nvim-from-vim if you already use Vim.
+
+#### User manual
+This is the online form of Nvim's :help system.
+
+Neovim features are documented at :help nvim-features.
+:help quickref is a handy cheatsheet.
+Read :help nvim-from-vim if you already use Vim.
+
+
+[neovim]: <https://neovim.io/>
+
