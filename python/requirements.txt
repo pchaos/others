@@ -1,0 +1,10 @@
+# env pytest
+requests
+pyperclip
+Pillow
+selenium
+lxml
+BS4
+pandas>=0.23.4
+numpy
+pytz
