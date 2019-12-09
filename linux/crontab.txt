@@ -1,0 +1,21 @@
+命令行导入任务
+How to create a cron job using Bash automatically without the interactive editor?
+#write out current crontab
+crontab -l > mycron
+#echo new cron into cron file
+echo "00 09 * * 1-5 echo hello" >> mycron
+#install new cron file
+crontab mycron
+rm mycron
+
+Cron line explaination
+
+* * * * * "command to be executed"
+- - - - -
+| | | | |
+| | | | ----- Day of week (0 - 7) (Sunday=0 or 7)
+| | | ------- Month (1 - 12)
+| | --------- Day of month (1 - 31)
+| ----------- Hour (0 - 23)
+------------- Minute (0 - 59)
+
