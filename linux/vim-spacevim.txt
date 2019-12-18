@@ -1,0 +1,269 @@
+显著特性
+
+    详细的文档： 在 SpaceVim 中通过 :h SpaceVim 来访问 SpaceVim 帮助文档。
+    优雅简洁的界面： 你将会喜欢这样的优雅而实用的界面。
+    确保手指不离开主键盘区域： 使用 Space 作为前缀键，合理组织快捷键，确保手指不离开主键盘区域。
+    快捷键辅助系统： SpaceVim 所有快捷键无需记忆，当输入出现停顿，会实时提示可用按键及其功能。
+    更快的启动时间： 得益于 dein.vim, SpaceVim 中 90% 的插件都是按需载入的。
+    更少的肌肉损伤： 频繁使用空格键，取代 ctrl，shift 等按键，大大减少了手指的肌肉损伤。
+    更易扩展： 依照一些约定，很容易将现有的插件集成到 SpaceVim 中来。
+    完美支持 Neovim: 依赖于 Neovim 的 romote 插件以及异步 API，SpaceVim 运行在 Neovim 下将有更加完美的体验。
+
+默认主题 gruvbox 的状态栏颜色和模式对照表：
+模式 	颜色
+Normal 	灰色
+Insert 	蓝色
+Visual 	橙色
+Replace 	浅绿色
+以上的这几种模式所对应的颜色取决于不同的主题模式。
+
+一些状态栏元素可以进行动态的切换：
+快捷键 	功能描述
+SPC t m b 	显示/隐藏电池状态 (需要安装 acpi)
+SPC t m c 	toggle the org task clock (available in org layer)(TODO)
+SPC t m i 	显示/隐藏输入法
+SPC t m m 	显示/隐藏 SpaceVim 已启用功能
+SPC t m M 	显示/隐藏文件类型
+SPC t m n 	toggle the cat! (if colors layer is declared in your dotfile)(TODO)
+SPC t m p 	显示/隐藏光标位置信息
+SPC t m t 	显示/隐藏时间
+SPC t m d 	显示/隐藏日期
+SPC t m T 	显示/隐藏状态栏
+SPC t m v 	显示/隐藏版本控制信息
+--------------------------------------------------
+使用 :SPUpdate SpaceVim 这一命令，将会打开 SpaceVim 的插件管理器，更新 SpaceVim，具体进度会在插件管理器 buffer 中展示。
+--------------------------------------------------
+标签管理器
+
+可使用 SPC t t 打开内置的标签管理器，标签管理器内的快捷键如下：
+快捷键 	功能描述
+o 	展开或关闭标签目录
+r 	重命名光标下的标签页
+n 	在光标位置下新建命名标签页
+N 	在光标位置下新建匿名标签页
+x 	删除光标下的标签页
+Ctrl-S-<Up> 	向上移动光标下的标签页
+Ctrl-S-<Down> 	向下移动光标下的标签页
+<Enter> 	跳至光标所对应的标签窗口
+
+窗口管理器
+
+窗口管理器快捷键只可以在 Normal 模式下使用，默认的前缀（WIN）按键为 s，可以在配置文件中通过修改 SpaceVim 选项 window_leader 的值来设为其它按键：
+
+[options]
+    windows_leader = "s"
+
+快捷键 	功能描述
+q 	智能关闭当前窗口
+WIN v 	水平分屏
+WIN V 	水平分屏，并编辑上一个文件
+WIN g 	垂直分屏
+WIN G 	垂直分屏，并编辑上一个文件
+WIN t 	新建新的标签页
+WIN o 	关闭其他窗口
+WIN x 	关闭当前缓冲区，并保留新的空白缓冲区
+WIN q 	关闭当前缓冲区
+WIN Q 	关闭当前窗口
+<Tab> 	跳至下一个窗口
+Shift-<Tab> 	跳至上一个窗口
+
+Normal 模式下的按键 q 被用来快速关闭窗口，其原生的功能可以使用 <Leader> q r 来代替。
+快捷键 	模式 	功能描述
+<leader>+y 	Visual 	Copy selection to X11 clipboard (“+y)
+Ctrl-c 	Normal 	Copy full path of current buffer to X11 clipboard
+<leader>+Ctrl-c 	Normal 	Copy github.com url of current buffer to X11 clipboard(if it is a github repo)
+<leader>+Ctrl-l 	Normal/Visual 	Copy github.com url of current lines to X11 clipboard(if it is a github repo)
+<leader>+p 	Normal/Visual 	Paste selection from X11 clipboard (“+p)
+Ctrl-f 	Normal 	Smart page forward (C-f/C-d)
+Ctrl-b 	Normal 	Smart page backwards (C-b/C-u)
+Ctrl-e 	Normal 	Smart scroll down (3C-e/j)
+Ctrl-y 	Normal 	Smart scroll up (3C-y/k)
+Ctrl-q 	Normal 	Ctrl-w
+Ctrl-x 	Normal 	Switch buffer and placement
+<Up> / <Down> 	Normal 	Smart up and down
+} 	Normal 	After paragraph motion go to first non-blank char (}^)
+< 	Visual/Normal 	Indent to left and re-select
+> 	Visual/Normal 	Indent to right and re-select
+<Tab> 	Visual 	Indent to right and re-select
+Shift-<Tab> 	Visual 	Indent to left and re-select
+gp 	Normal 	Select last paste
+Q / g Q 	Normal 	Disable EX-mode ()
+Ctrl-a 	Command 	Navigation in command line
+Ctrl-b 	Command 	Move cursor backward in command line
+Ctrl-f 	Command 	Move cursor forward in command line
+文件操作
+按键 	功能描述
+SPC f s / Ctrl-s 	保存文件 (:w)
+SPC f W 	使用管理员模式保存
+编辑器界面
+按键 	功能描述
+<F2> 	Toggle tagbar
+<F3> 	Toggle Vimfiler
+<Leader> + num 	Jump to the buffer with the num index
+<Alt> + num 	Jump to the buffer with the num index, this only works in Neovim
+Alt-h / <Left> 	Jump to left buffer in the tabline, this only works in Neovim
+Alt-l / <Right> 	Jump to Right buffer in the tabline, this only works in Neovim
+<Leader> t s 	Toggle spell-checker (:setlocal spell!)
+<Leader> t n 	Toggle line numbers (:setlocal nonumber!)
+<Leader> t l 	Toggle hidden characters (:setlocal nolist!)
+<Leader> t h 	Toggle highlighted search (:set hlsearch!)
+<Leader> t w 	Toggle wrap (:setlocal wrap! breakindent!)
+g 0 	Go to first tab (:tabfirst)
+g $ 	Go to last tab (:tablast)
+g r 	Go to previous tab (:tabprevious)
+Ctrl-<Down> 	Move to split below (Ctrl-w j)
+Ctrl-<Up> 	Move to upper split (Ctrl-w k)
+Ctrl-<Left> 	Move to left split (Ctrl-w h)
+Ctrl-<Right> 	Move to right split (Ctrl-w l)
+* 	Search selection forwards
+# 	Search selection backwards
+, <Space> 	Remove all spaces at EOL
+Ctrl-r 	Replace selection
+<Leader> l j 	Next on location list
+<Leader> l k 	Previous on location list
+<Leader> S 	Source selection
+原生功能
+快捷键 	功能描述
+<leader> q r 	原生 q 快捷键
+<leader> q r/ 	原生 q / 快捷键，打开命令行窗口
+<leader> q r? 	原生 q ? 快捷键，打开命令行窗口
+<leader> q r: 	原生 q : 快捷键，打开命令行窗口
+标签管理
+
+在浏览代码时，通常需要给指定位置添加标签，方便快速跳转，在 SpaceVim 中可以使用如下快捷键来管理标签。 这一功能需要载入 tools 模块：
+
+[layers]
+    name = "tools"
+
+快捷键 	功能描述
+m a 	显示书签列表
+m m 	切换当前行标签状态
+m n 	跳至下一个书签
+m p 	跳至前一个书签
+m i 	给当前行标签添加说明
+
+正因为占用了以上几个快捷键，以下几个寄存器无法用来记忆当前位置了：a, m, n, p, i。 当然，也可以在启动函数里将 <Leader> m 映射为 m 键，如此便可使用 <Leader> m a 来代替 m a。
+
+function! myspacevim#before() abort
+    nnoremap <silent><Leader>m m
+endfunction
+
+模糊搜索
+
+目前一共有五种模糊搜索的模块，分别对应不同的工具：
+
+    denite
+    unite
+    leaderf
+    ctrlp
+    fzf
+
+这些模块都提供了非常类似的快捷键，包括文件搜索、跳转历史搜索等功能， 具体快捷键列表如下：
+
+快捷键
+快捷键 	功能描述
+<Leader> f <Space> 	模糊查找快捷键，并执行该快捷键
+<Leader> f e 	模糊搜索寄存器
+<Leader> f h 	模糊搜索 history/yank
+<Leader> f j 	模糊搜索 jump, change
+<Leader> f l 	模糊搜索 location list
+<Leader> f m 	模糊搜索 output messages
+<Leader> f o 	模糊搜索函数列表
+<Leader> f q 	模糊搜索 quickfix list
+<Leader> f r 	重置上次搜索窗口
+
+但是由于不同工具的局限性，有些模块还不能完全提供上述功能，目前仅有 denite 和 unite 模块可以提供完整的功能。
+功能特性 	unite 	denite 	leaderf 	ctrlp 	fzf
+模糊查找快捷键，并执行该快捷键 	yes 	yes 	no 	no 	no
+模块搜索寄存器 	yes 	yes 	no 	yes 	yes
+模糊搜索文件 	yes 	yes 	yes 	yes 	yes
+模糊搜索复制历史 	yes 	yes 	no 	no 	yes
+模糊搜索跳转历史 	yes 	yes 	no 	yes 	yes
+模糊搜索位置列表 	yes 	yes 	no 	no 	yes
+模糊搜索语法树 	yes 	yes 	yes 	yes 	yes
+模糊搜索消息 	yes 	yes 	no 	no 	yes
+模糊搜索全局位置列表 	yes 	yes 	no 	yes 	yes
+重置上次搜索窗口 	yes 	yes 	no 	no 	no
+
+模糊搜索窗口内的快捷键：
+快捷键 	功能描述
+<Tab> / Ctrl-j 	下一个选项
+Shift-<Tab> / Ctrl-k 	上一个选项
+jk 	离开输入模式（仅支持 denite 和 unite 模块）
+Ctrl-w 	删除光标前词语
+<Enter> 	执行默认动作
+Ctrl-s 	在分割窗口内打开
+Ctrl-v 	在垂直分割窗口内打开
+Ctrl-t 	在新的标签页里打开
+Ctrl-g 	推出模糊搜索插件
+
+Denite 或 Unite 模块可视模式下快捷键：
+快捷键 	功能描述
+Ctrl+h/k/l/r 	未定义
+Ctrl+l 	刷新窗口
+<Tab> 	选择即将执行的动作
+Space 	切换标记当前选项
+r 	替换或者重命名
+Ctrl+z 	切换窗口分割方式
+
+以上这些快捷键仅仅是模糊搜索模块的部分快捷键，其他快捷键信息可查阅对应模块文档。
+
+获取帮助信息
+
+Denite/Unite 是一个强大的信息筛选浏览器，这类似于 Emacs 中的 Helm。以下这些快捷键将帮助你快速获取需要的帮助信息：
+快捷键 	功能描述
+SPC h SPC 	使用 fuzzy find 模块展示 SpaceVim 帮助文档章节目录
+SPC h i 	获取光标下单词的帮助信息
+SPC h k 	使用快捷键导航，展示 SpaceVim 所支持的前缀键
+SPC h m 	使用 Unite 浏览所有 man 文档
+
+以 g 为前缀的快捷键
+
+在 Normal 模式下按下 g 之后，如果你不记得快捷键出现按键延迟，那么快捷键导航将会提示你所有以 g 为前缀的快捷键。
+快捷键 	功能描述
+g # 	反向搜索光标下的词
+g $ 	跳向本行最右侧字符
+g & 	针对所有行重复执行上一次 “:s” 命令
+g ' 	跳至标签
+g * 	正向搜索光标下的词
+g + 	newer text state
+g , 	newer position in change list
+g - 	older text state
+g / 	stay incsearch
+g 0 	go to leftmost character
+g ; 	older position in change list
+g < 	last page of previous command output
+g <Home> 	go to leftmost character
+g E 	end of previous word
+g F 	edit file under cursor(jump to line after name)
+g H 	select line mode
+g I 	insert text in column 1
+g J 	join lines without space
+g N 	visually select previous match
+g Q 	switch to Ex mode
+g R 	enter VREPLACE mode
+g T 	previous tag page
+g U 	make motion text uppercase
+g ] 	tselect cursor tag
+g ^ 	go to leftmost no-white character
+g _ 	go to last char
+g ` 	跳至标签，等同于 g'
+g a 	打印光标字符的 ascii 值
+g d 	跳至定义处
+g e 	go to end of previous word
+g f 	edit file under cursor
+g g 	go to line N
+g h 	select mode
+g i 	insert text after ‘^ mark
+g j 	move cursor down screen line
+g k 	move cursor up screen line
+g m 	go to middle of screenline
+g n 	visually select next match
+g o 	goto byte N in the buffer
+g s 	sleep N seconds
+g t 	next tag page
+g u 	make motion text lowercase
+g ~ 	swap case for Nmove text
+g <End> 	跳至本行最右侧字符，等同于 g$
+g Ctrl-G 	显示光标信息
+

@@ -43,3 +43,101 @@ curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
 cd ~/.config/nvim && wget https://github.com/theniceboy/nvim/raw/master/init.vim
 wget https://github.com/theniceboy/nvim/raw/master/md-snippets.vim
 wget -O _machine_specific.vim https://github.com/theniceboy/nvim/raw/master/default_configs/_machine_specific_default.vim
+ (word: 标点或空格分隔的单词)
+
+# 复制到剪贴板
+set clipboard=unnamedplus
+"+y
+# 从剪贴板粘贴
+"+p
+--------------------------------------------------
+vim /etc/vim/vimrc
+
+加入
+set fileencodings=utf-8,gbk,utf-16le,cp1252,iso-8859-15,ucs-bom
+set termencoding=utf-8
+set encoding=utf-8
+--------------------------------------------------
+How can I find out what <Leader> is set to? And is it possible to remap <Leader>?
+
+By default your <leader> is \, backslash. You can check it with:
+
+:echo mapleader
+
+If this gives you an E121: Undefined variable: mapleader, it means it's set to the default of \. If it gives you something else, then it's that :-)
+
+You can easily remap it. I mapped it to the space-bar:
+
+:let mapleader = "\<Space>"
+
+Note that the value of mapleader is used at the moment the mapping is defined. So this example:
+
+let mapleader = ","
+nnoremap <Leader>a :echo "Hey there ,"<CR>
+
+let mapleader = "\<Space>"
+nnoremap <Leader>a :echo "Hey there space"<CR>
+
+Will produce two mappings: ,a and <Space>a.
+
+This means that the current value of mapleader is not necessarily the value that was used to define your mappings!
+
+In addition, there's the maplocalleader, which is the same as mapleader, except that it's used by <LocalLeader> and that it's local to the current buffer.
+
+--------------------------------------------------
+Vim 中的 remap，noremap，nnoremap 和 vnoremap 映射命令有什么区别？
+
+remap是一个使映射以递归方式工作的选项 。默认情况下它已打开，我建议你保持这种状态。其余的是映射命令 ，如下所述：
+
+:map和:noremap是各种映射命令的递归和非递归版本。这意味着，如果你这样做：
+
+:map j gg
+:map Q j
+:noremap W j
+
+j将映射到gg 。 Q 也将映射到gg ，因为j将被扩展用于递归映射。 W将被映射到j （而不是gg ），因为j不会针对非递归映射进行扩展。
+
+现在请记住，Vim 是一个模态编辑器 。它具有普通模式， 可视模式和其他模式。
+
+对于这些映射集中的每一个，都有一个映射可以在正常，可视，选择和操作员模式下工作（ :map和:noremap ），一个在普通模式下工作（ :nmap和:nnoremap ），一个在可视模式下（ :vmap和:vnoremap ）等等。
+
+有关此问题的更多指导，请参阅：
+
+:help :map
+:help :noremap
+:help recursive_mapping
+:help :map-modes
+
+--------------------------------------------------
+Search and replace
+:%s/foo/bar/g
+    Find each occurrence of 'foo' (in all lines), and replace it with 'bar'. 
+
+:s/foo/bar/g
+    Find each occurrence of 'foo' (in the current line only), and replace it with 'bar'. 
+
+:%s/foo/bar/gc
+    Change each 'foo' to 'bar', but ask for confirmation first. 
+
+:%s/\<foo\>/bar/gc
+    Change only whole words exactly matching 'foo' to 'bar'; ask for confirmation. 
+
+:%s/foo/bar/gci
+    Change each 'foo' (case insensitive due to the i flag) to 'bar'; ask for confirmation. 
+    :%s/foo\c/bar/gc is the same because \c makes the search case insensitive. 
+    This may be wanted after using :set noignorecase to make searches case sensitive (the default). 
+
+:%s/foo/bar/gcI
+    Change each 'foo' (case sensitive due to the I flag) to 'bar'; ask for confirmation. 
+    :%s/foo\C/bar/gc is the same because \C makes the search case sensitive. 
+    This may be wanted after using :set ignorecase to make searches case insensitive.
+
+rm ~/.vim/nvim
+rm -rf ~/.config/nvim
+
+#
+rm -rf .SpaceVim
+rm -rf .cache/SpaceVim
+rm -rf  .cache/vimfiler/
+rm -rf  .cache/vimfiles/
+

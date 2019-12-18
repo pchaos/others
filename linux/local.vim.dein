@@ -1,0 +1,79 @@
+" 字符乱码
+" set fileencodings=utf-8,gbk,utf-16le,cp1252,iso-8859-15,ucs-bom
+set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
+set termencoding=utf-8
+set encoding=utf-8
+
+colorscheme happy_hacking
+
+" 显示光标当前位置
+"set ruler
+set cursorline
+"set cursorcolumn
+
+" 快速退出vim
+nnoremap Q :q<cr>
+
+" arrow keys to execute no operation in normal
+nnoremap <Up> <NOP>
+nnoremap <Down> <NOP>
+nnoremap <Left> <NOP>
+nnoremap <Right> <NOP>
+
+"split navigations
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
+" 设置快捷键将选中文本块复制至系统剪贴板
+vnoremap <Leader>y "+y
+" 设置快捷键将系统剪贴板内容粘贴至 vim
+nmap <Leader>p "+p
+
+" 依次遍历子窗口
+nnoremap nw <C-W><C-W>
+" 跳转至右方的窗口
+nnoremap <Leader>lw <C-W>l
+" 跳转至左方的窗口
+nnoremap <Leader>hw <C-W>h
+" 跳转至上方的子窗口
+nnoremap <Leader>kw <C-W>k
+" 跳转至下方的子窗口
+nnoremap <Leader>jw <C-W>j
+
+" 设置显示行号.进入编辑模式时使用绝对行号，退出编辑模式进入normal模式时使用相对行号
+set number
+augroup relative_numbser
+    autocmd!
+    autocmd InsertEnter * :set norelativenumber
+    autocmd InsertLeave * :set relativenumber
+augroup END
+set relativenumber
+
+" 输入法切换
+let g:input_toggle = 1
+function! Fcitx2en()
+   let s:input_status = system("fcitx-remote")
+   if s:input_status == 2
+      let g:input_toggle = 1
+      let l:a = system("fcitx-remote -c")
+   endif
+endfunction
+
+function! Fcitx2zh()
+   let s:input_status = system("fcitx-remote")
+   if s:input_status != 2 && g:input_toggle == 1
+      let l:a = system("fcitx-remote -o")
+      let g:input_toggle = 0
+   endif
+endfunction
+
+set timeoutlen=150
+autocmd InsertLeave * call Fcitx2en()
+"autocmd InsertEnter * call Fcitx2zh()
+
+" BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn}则是设定为仅当打开的文本是 Markdown 的时候才执行,set noimdisable 则是切换输入法的指令.当然你可以设置任意你想设置的文件类型.
+"ad,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn} set noimdisable
+
+
