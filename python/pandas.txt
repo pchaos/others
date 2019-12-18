@@ -97,3 +97,12 @@ df
 # median of the specific column
 df.loc[:,"Score1"].median()
 
+
+pandas对数据中的某一列进行归一化处理
+#####归一化函数#####
+max_min_scaler = lambda x : (x-np.min(x))/(np.max(x)-np.min(x))
+
+data['use_dates_month'].apply(max_min_scaler)#这种写法是错误的
+
+正确的写法是:
+data[['use_dates_month']].apply(max_min_scaler)
