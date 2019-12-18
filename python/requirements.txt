@@ -1,10 +1,12 @@
 # env pytest
 requests
 pyperclip
+matplotlib
 Pillow
 selenium
 lxml
 BS4
 pandas>=0.23.4
+pandas_datareader
 numpy
 pytz

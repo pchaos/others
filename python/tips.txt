@@ -33,3 +33,10 @@ pip install -U $(pip freeze | cut -d '=' -f 1)
 pip install --upgrade --no-deps --force-reinstall your-package
 
 pip list --outdated
+--------------------------------------------------
+Jupyter(.ipynb) to Python(.py)
+> ipython nbconvert --to script abc.ipynb
+
+You can have abc.py
+
+Jupyter nbconvert --to python abc.ipynb
