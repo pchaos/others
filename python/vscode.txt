@@ -1,0 +1,4 @@
+Using Python environments in VS Code
+vscode切换python环境
+To select a specific environment, use the Python: Select Interpreter command from the Command Palette (Ctrl+Shift+P).
+
