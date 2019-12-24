@@ -1,0 +1,37 @@
+Centos 7.x卸载ibus黑屏修复及fcitx搜狗拼音安装方法
+ibus黑屏修复
+
+百度出来的fcitx安装方法，都要卸载ibus，如果没有注意同时卸载掉的依赖包的话，gnome桌面中的一些关键库也没被卸载。
+修复方法很简单，重新安装Gnome
+
+sudo yum -y groups install "GNOME Desktop"
+sudo systemctl set-default graphical.target
+sudo reboot
+
+安装 fcitx
+
+sudo yum install fcitx fcitx-table-chinese
+sudo yum install fcitx-configtool
+sudo yum install fcitx-googlepinyin fcitx-cloudpinyin
+
+在/etc/profile或~/.bashrc最后增加以下内容
+
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS="@im=fcitx"
+
+关闭gnome-shell 对键盘的监听，然后切换输入法为fcitx:
+
+sudo pkill ibus-daemon
+gsettings set org.gnome.settings-daemon.plugins.keyboard active false
+imsettings-switch fcitx
+
+重新启动系统，fcitx自己主动启动，但图标藏在桌面右下角的通知栏中
+打开fcitx的配置工具，选择输入法标签点”+”能够搜索并加入输入法
+
+imsettings：根据 ~/.cache/imsettings/log 日志排查错误
+env | grep fcitx
+fcitx-diagnose
+--------------------------------------------------
+配置文件目录： /usr/share/fcitx/
+
