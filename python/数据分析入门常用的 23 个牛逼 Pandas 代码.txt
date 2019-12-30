@@ -1,0 +1,163 @@
+数据分析入门常用的 23 个牛逼 Pandas 代码，收好不谢
+优达学城（Udacity）
+这儿有给数据分析师的23个Pandas代码，可以帮你更好地理解数据！Pandas想必从事数据分析的各位都懂，这是一个开源的，BSD许可的库，为Python编程语言提供高性能，易于使用的数据结构和数据分析工具。还不熟悉的新手可以复制官网链接，10分钟快速了解下：http://pandas.pydata.org/pandas-docs/stable/10min.html
+
+应用案例集合也可以看看：http://pandas.pydata.org/pandas-docs/stable/cookbook.html
+
+（1）读入 CSV 数据集
+
+pd.DataFrame.from_csv(“csv_file”)
+或者：
+
+pd.read_csv(“csv_file”)
+
+（2）读入 Excel 数据集
+
+pd.read_excel("excel_file")
+
+
+（3）直接把数据写入 CSV
+
+如数据以逗号分隔，且没有索引：
+
+df.to_csv("data.csv", sep=",", index=False)
+
+
+（4）基础数据集特征信息
+
+df.info()
+
+
+（5）基础数据集统计结果
+
+print(df.describe())
+
+
+(6) 以表格形式打印数据
+
+print(tabulate(print_table, headers=headers))
+其中“print_table”是一列list，“headers”是一列字符串抬头
+
+
+
+（7）列出列名称
+
+df.columns
+
+
+基本数据处理
+
+
+
+（8）删除缺失的数据
+
+df.dropna(axis=0, how='any')
+返回给定轴上标签的对象，逐个丢掉相应数据。
+
+
+
+（9）替换丢失的数据
+
+df.replace(to_replace=None, value=None)
+用“value”的值替换“to_replace”中给出的值。
+
+
+
+（10）检查 NAN
+
+pd.isnull(object)
+检测缺失值（有数值数组中的NaN，对象数组中的None和NaN）
+
+
+
+（11）删除特征
+
+df.drop('feature_variable_name', axis=1)
+轴为 0 代表行，1 代表列
+
+
+
+（12）将对象类型转换为 float
+
+pd.to_numeric(df["feature_name"], errors='coerce')
+将对象类型转换为数字型以便计算（如果它们是字符串的话）
+
+
+
+（13）将数据转换为 Numpy 数组
+
+df.as_matrix()
+
+
+（14）获取数据的头“n”行
+
+df.head(n)
+
+
+（15）按特征名称获取数据
+
+df.loc[feature_name] 
+
+
+（16）将函数应用于数据
+
+这个函数将数据里“height”一列中的所有值乘以2
+
+df["height"].apply(*lambda* height: 2 * height)
+或：
+
+def multiply(x):
+
+ return x * 2
+
+df["height"].apply(multiply)
+
+
+（17）重命名数据列
+
+这里我们将数据的第3列重命名为“size”
+
+df.rename(columns = {df.columns[2]:'size'}, inplace=True)
+
+
+（18）单独提取某一列
+
+df["name"].unique()
+
+
+（19）访问子数据
+
+我们从数据中选择“name”和“size”两列
+
+new_df = df[["name", "size"]]
+
+
+（20）总结数据信息
+
+#数据之和df.sum()
+#数据中的最小值df.min()
+#数据中的最大值df.max()
+#最小值的索引df.idxmin()
+#最大值的索引df.idxmax()
+#数据统计信息，有四分位数，中位数等df.describe()
+#平均值df.mean()
+#中位数值df.median() 
+
+
+（21）对数据进行排序
+
+df.sort_values(ascending = False)
+
+
+（22）布尔索引
+
+这里我们过滤“size”的数据列，以显示等于5的值：
+
+df[df["size"] == 5]
+
+
+（23）选择某值
+
+选择“size”列的第一行：
+
+df.loc([0], ['size'])
