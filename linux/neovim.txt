@@ -127,3 +127,10 @@ pip install autopep8
 mkdir -p ~/.config/nvim
 git clone https://github.com/jdhao/nvim-config.git .
 nvim
+-----------------------------
+# Building Neovim
+dnf install -y autoconf automake cmake g++ libtool
+git clone https://github.com/neovim/neovim.git
+cd neovim
+git checkout stable
+make
