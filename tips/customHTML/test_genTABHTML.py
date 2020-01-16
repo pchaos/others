@@ -54,12 +54,12 @@ class TestGenTABHTML(TestCase):
         gh.iniFilename = inifile
         try:
             templateFile = "template.tab.html"
-        except Exception as e:
             render = gh.renders(renderList,
                                 prettify=True,
                                 # template="customHTML/template.tab.html",
                                 template=templateFile,
                                 title="Main")
+        except Exception as e:
             templateFile = "customHTML/template.tab.html"
             render = gh.renders(renderList,
                                 prettify=True,
