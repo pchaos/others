@@ -1,0 +1,14 @@
+cl1p.net API
+Basic anonymous mode
+To enable better integration from the command line cl1p.net provides a basic API for posting and getting data from cl1ps.
+
+Limitations:
+
+All posted cl1ps are destroyed as soon as they are viewed. Either via api, or the webapp
+If a cl1p is already in use it can't be written to.
+api.cl1p.net is meant for command line / programming use only. Using the api to render a web page is prohibited.
+Create a cl1p example:
+curl -H "Content-Type: text/html; charset=UTF-8" -X POST --data "Some test data" https://api.cl1p.net/uqzcvislcssuf
+
+View a cl1p example:
+curl https://api.cl1p.net/uqzcvislcssuf
