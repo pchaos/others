@@ -19,12 +19,20 @@ import unittest
 import time
 from selenium import webdriver
 
+
 class testSELENIUM(unittest.TestCase):
+    def setUp(self):
+        self.browser = webdriver.Chrome()
+        # self.browser = webdriver.Firefox()
+
+    def tearDown(self) :
+        self.browser.quit()
+
     def test_selenium27(self):
         # 多窗口之间切换
         # 原文链接：https: // blog.csdn.net / u011541946 / article / details / 70132672
-        driver = webdriver.Chrome()
-        # driver = webdriver.Firefox()
+        driver = self.browser
+
         driver.maximize_window()
         driver.get('http://news.baidu.com')
         time.sleep(1)
