@@ -9,7 +9,7 @@ File->settings->Editor->File and Code Templates->Python Script
 @File    : ${NAME}.py
 
 @author  : pchaos
-@license : Copyright(C), yglib
+@license : Copyright(C), pchaos
 @Contact : p19992003#gmail.com
 """
 
@@ -21,7 +21,7 @@ File->settings->Editor->File and Code Templates->Python Script
 @File    : ${NAME}.py
 
 @author  : pchaos
-@license : Copyright(C), yglib
+@license : Copyright(C), pchaos
 @Contact : p19992003#gmail.com
 """
 
