@@ -1,0 +1,45 @@
+查看chrome插件源码(扩展程序源)的码方法
+
+crx 是chrome 插件源码的组成部分；
+一个应用（扩展）其实是压缩在一起的一组文件，包括HTML，CSS，Javascript脚本，图片文件，还有其它任何需要的文件。 应用（扩展）本质上来说就是web页面，它们可以使用所有的浏览器提供的API，从XMLHttpRequest到JSON到HTML5全都有。应用（扩展）可以与Web页面交互，或者通过content script或cross-origin XMLHttpRequests与服务器交互。应用（扩展）还可以访问浏览器提供的内部功能，例如标签或书签等。
+
+每个应用（扩展）都应该包含下面的文件：
+
+1、一个manifest文件
+
+2、一个或多个html文件（除非这个应用是一个皮肤）
+
+3、可选的一个或多个javascript文件
+
+4、可选的任何需要的其他文件，例如图片
+
+5、在开发应用（扩展）时，需要把这些文件都放到同一个目录下。发布应用（扩展）时，这个目录全部打包到一个应用（扩展）名是.crx的压缩文件中。如果使用Chrome Developer Dashboard,上传应用（扩展），可以自动生成.crx文件。
+
+系统文件查看chrome源码法
+1.本文举例查看adblock插件的方法，在chrome扩展程序管理页面找到adblock插件的插件ID。chrome 打开扩展程序页面 chrome://extensions/，勾选开发者模式就可以看到插件ID如下图所示：
+
+
+注意id
+先复制他的ID：fmkadmapgofadopljbjfkapdkoienihi。然后去找到chrome插件的安装目录。
+
+关于安装目录
+
+正常情况下，Chrome插件扩展程序的默认安装目录如下：
+
+
+1.windows xp中chrome插件默认安装目录位置: C:\Documents and Settings\用户名\Local Settings\Application Data\Google\Chrome\User Data\Default\Extensions
+
+
+2.windows7中chrome插件默认安装目录位置: C:\Users\用户名\AppData\Local\Google\Chrome\User Data\Default\Extensions
+
+
+3.MAC中chrome插件默认安装目录位置：~/Library/Application Support/Google/Chrome/Default/Extensions（可能在用户下的资源目录下）
+
+4.Ubuntu中chrome插件默认安装目录位置： ~/.config/google-chrome/Default/Extensions
+
+如果找不到建议浏览器输入chrome://version/ 即可查看到 个人资料路径
+
+找到源码安装路径后查找id就能找到源码了。
+
+
+还有其他方式方便查找插件源码，那就是下载插件查看源码。
