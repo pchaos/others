@@ -13,4 +13,18 @@ https://greasyfork.org/zh-CN/scripts/383041-%E7%99%BE%E5%BA%A6%E6%96%87%E5%BA%93
 屏蔽知乎使用adblock后页面顶部出现的横幅
 https://greasyfork.org/zh-CN/scripts/30999-%E5%B1%8F%E8%94%BD%E7%9F%A5%E4%B9%8E%E4%BD%BF%E7%94%A8adblock%E5%90%8E%E9%A1%B5%E9%9D%A2%E9%A1%B6%E9%83%A8%E5%87%BA%E7%8E%B0%E7%9A%84%E6%A8%AA%E5%B9%85
 
+Disable Google Choose an Account Sign In Page
+Disable Account Chooser
+There is 2 ways to disable Account Chooser.
 
+Method 1
+Never Add Any Account to Account Chooser
+Always uncheck Stay signed in checkbox when signing in. This way, no account will be remembered and stored by Account Chooser. If you have accounts currently listed in Account Chooser, remove them.
+
+Method 2
+Account Chooser Opt-Out Cookie
+Disable Account Chooser by clicking on https://www.google.com/accounts/optintoaccountchooser?optout=1.
+
+Once you set the cookies, Account Chooser page won’t appear anymore, regardless of whether you select or deselect “Stay signed in.”
+
+To re-enable Account Chooser, you have to visit this link to reset the cookies, and enable the Account Chooser: https://www.google.com/accounts/optintoaccountchooser
