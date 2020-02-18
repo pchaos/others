@@ -12,3 +12,4 @@ numpy
 pytz
 TA-lib
 statsmodels
+pysocks
