@@ -38,3 +38,30 @@ Enable 3D HW acceleration on VMWare Workstation 10 on Ubuntu 14.04
 
 Edit the file ~/.vmware/preferences and look for a line that starts with mks.gl.allowBlacklistedDrivers, if it is not present - you can add it into the file.
 This should be changed to mks.gl.allowBlacklistedDrivers = "TRUE" (note the double quotes around TRUE)
+---------------------------------------------------
+VMWare Workstation 15.5.1 on Kernel Linux 5.4.6 : fail to compile vmci-only 
+
+I work on a Calculate Linux KDE with 5.4.6 kernel. I tried to install Workstation 15.5.1 and I had the same problem.
+
+After the installation of workstation, I had to clone this git repo : GitHub - mkubecek/vmware-host-modules: Patches needed to build VMware (Player and Workstation) host modules against rece…
+
+I used the workstation-15.5.1 branch. I had to install the sys-kernel/linux-headers to be able to build vmmon-only and vmnet-only modules (because these two were not working at all).
+
+To install modules, simply run make and make install as root. It will replace modules initially installed by the vmware installer.
+
+Summary of all commands :
+
+git clone https://github.com/mkubecek/vmware-host-modules.git
+
+cd vmware-host-modules
+
+git checkout workstation-15.5.1
+
+make
+
+make install
+ 
+
+After the installation, I ran this command : /etc/init.d/vmware start
+
+All modules started to work sucessfully.
