@@ -34,4 +34,8 @@ env | grep fcitx
 fcitx-diagnose
 --------------------------------------------------
 配置文件目录： /usr/share/fcitx/
+--------------------------------------------------
+How do I fix Fcitx from freezing my keyboard and mouse click
 
+It's something related to the skin. Please install fcitx-ui-classic. At first use shortcut to active input method to Chinese (or other instead of the en_US input method), then click the indicator, popup the skin menu, select classic, then the problem will be gone.
+Run fcitx-config-gtk3 to uncheck it.
