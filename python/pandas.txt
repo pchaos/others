@@ -106,3 +106,32 @@ data['use_dates_month'].apply(max_min_scaler)#这种写法是错误的
 
 正确的写法是:
 data[['use_dates_month']].apply(max_min_scaler)
+
+# df rank Examples
+
+import numpy as np
+import pandas as pd
+df = pd.DataFrame(data={'Animal': ['fox', 'Kangaroo', 'deer',
+                                   'spider', 'snake'],
+                        'Number_legs': [4, 2, 4, 8, np.nan]})
+df
+# Animal	Number_legs
+# 0	fox	4.0
+# 1	Kangaroo	2.0
+# 2	deer	4.0
+# 3	spider	8.0
+# 4	snake	NaN
+
+#The following example shows how the method behaves with the above parameters:
+
+df['default_rank'] = df['Number_legs'].rank()
+df['max_rank'] = df['Number_legs'].rank(method='max')
+df['NA_bottom'] = df['Number_legs'].rank(na_option='bottom')
+df['pct_rank'] = df['Number_legs'].rank(pct=True)
+df
+# Animal	Number_legs	default_rank	max_rank	NA_bottom	pct_rank
+# 0	fox	4.0	2.5	3.0	2.5	0.625
+# 1	Kangaroo	2.0	1.0	1.0	1.0	0.250
+# 2	deer	4.0	2.5	3.0	2.5	0.625
+# 3	spider	8.0	4.0	4.0	4.0	1.000
+# 4	snake	NaN	NaN	NaN	5.0	NaN
