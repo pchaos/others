@@ -1,0 +1,33 @@
+# numpy支持mkl
+conda update conda
+conda update anaconda
+
+onda update conda
+conda update mkl
+pip install numpy scipy scikit-learn numexpr
+
+# 检验是否安装正常
+import numpy as np
+np.__config__.show()
+--------------------------------------------------------
+    blas_mkl_info:
+        libraries = ['mkl_rt', 'pthread']
+        library_dirs = ['/home/myuser/software/python3rd/anaconda3/envs/quantaxis/lib']
+        define_macros = [('SCIPY_MKL_H', None), ('HAVE_CBLAS', None)]
+        include_dirs = ['/home/myuser/software/python3rd/anaconda3/envs/quantaxis/include']
+    blas_opt_info:
+        libraries = ['mkl_rt', 'pthread']
+        library_dirs = ['/home/myuser/software/python3rd/anaconda3/envs/quantaxis/lib']
+        define_macros = [('SCIPY_MKL_H', None), ('HAVE_CBLAS', None)]
+        include_dirs = ['/home/myuser/software/python3rd/anaconda3/envs/quantaxis/include']
+    lapack_mkl_info:
+        libraries = ['mkl_rt', 'pthread']
+        library_dirs = ['/home/myuser/software/python3rd/anaconda3/envs/quantaxis/lib']
+        define_macros = [('SCIPY_MKL_H', None), ('HAVE_CBLAS', None)]
+        include_dirs = ['/home/myuser/software/python3rd/anaconda3/envs/quantaxis/include']
+    lapack_opt_info:
+        libraries = ['mkl_rt', 'pthread']
+        library_dirs = ['/home/myuser/software/python3rd/anaconda3/envs/quantaxis/lib']
+        define_macros = [('SCIPY_MKL_H', None), ('HAVE_CBLAS', None)]
+        include_dirs = ['/home/myuser/software/python3rd/anaconda3/envs/quantaxis/include']
+--------------------------------------------------------
