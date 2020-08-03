@@ -1,0 +1,41 @@
+基于Openwrt iptables 限速
+
+脚本文件：
+
+#!/bin/ash
+
+unallow()
+{
+    echo "noallow $1 access internet"
+    iptables -t raw -D PREROUTING -s $1 -j DROP
+    iptables -t raw -A PREROUTING -s $1 -j DROP
+}
+
+allow()
+{
+    echo "allow $1 access internet"
+    iptables -t raw -D PREROUTING -s $1 -j DROP
+}
+
+if [ $1 == "allow" ] 
+then
+    allow $2
+else
+    unallow $2
+fi
+
+
+crontab如下：
+
+30 12 * * * sh /root/allow.sh allow 192.168.10.100 
+30 13 * * * sh /root/allow.sh unallow 192.168.10.100 
+30 19 * * * sh /root/allow.sh allow 192.168.10.100 
+30 20 * * * sh /root/allow.sh unallow 192.168.10.100 
+30 21 * * * sh /root/allow.sh allow 192.168.10.100 
+30 22 * * * sh /root/allow.sh unallow 192.168.10.100
+
+00 17 * * * sh /usr/share/allow.sh unallow 192.168.103.82
+05 17 * * * sh /usr/share/allow.sh allow 192.168.103.82
+03 18 * * * sh /usr/share/allow.sh unallow 192.168.103.82
+08 18 * * * sh /usr/share/allow.sh allow 192.168.103.82
+

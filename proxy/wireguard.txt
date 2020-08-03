@@ -1,0 +1,19 @@
+# https://cryptostorm.is/wireguard#windows
+
+mkdir /etc/wireguard && cd /etc/wireguard
+umask 077
+wg genkey > privatekey
+wg pubkey < privatekey > publickey
+pubkey=$(cat publickey) && echo $pubkey
+
+
+Copy whatever that last line is for you and paste it into the box at the top of this page, under "Your wireguard public key:".
+Enter your cryptostorm token (or it's SHA512 hash) into the box above that, then click the "ADD KEY" button.
+This page will then show you the pre-shared key (PSK) and IP that you will need in your WireGuard configs. Each WireGuard key you generate will have a different PSK/IP.
+To generate all of the configs, use the script at https://cryptostorm.is/wg_confgen.txt.
+For example, if after entering my cryptostorm token and WireGuard public key, this page gave me the PSK No2ax6F0iFOXjFV2WxpSNXdvgfbP+NSuV/We2R5QGUk= and the IP 10.10.53.129
+then I would run the commands:
+
+wget https://cryptostorm.is/wg_confgen.txt -Oconfgen.sh
+chmod +x confgen.sh
+./confgen.sh No2ax6F0iFOXjFV2WxpSNXdvgfbP+NSuV/We2R5QGUk= 10.10.53.129
