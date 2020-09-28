@@ -1,0 +1,28 @@
+The @ symbol is for special services, sockets, and other units where multiple instances can be run.
+
+For instance, getty@.service is the service that provides text login terminals. When you press Ctrl+Alt+F2, getty@tty2.service is started, creating virtual terminal #2.
+
+Another service that uses this functionality is OpenVPN. You can create a file /etc/openvpn/work.conf, configured to connect to the VPN at your workplace, and then systemctl start openvpn@work.service to connect to it. Similarly, you could create /etc/openvpn/home.conf, then start openvpn@home.service if you had a VPN at home. This prevents you from having to create a .service file for every VPN you connect to.
+
+But don't take my word for it. Try it out! Let's create a simple service that outputs a message to syslog. Create a file /etc/systemd/system/echo@.service with the following contents:
+
+[Unit]
+Description=Echo '%I'
+
+[Service]
+Type=oneshot
+ExecStart=/bin/echo %i
+StandardOutput=syslog
+Notice the %i? systemd will populate that with whatever follows the @ sign when the service is started. So, try starting echo@foo.service:
+
+systemctl start echo@foo.service
+Then, check the journal:
+
+ journalctl -n10
+At the bottom, you'll see that systemd ran /bin/echo foo:
+
+Feb 24 12:41:01 localhost echo[8412]: foo
+Now, try systemctl start echo@bar.service. This time, systemd will populate %i with bar, so you'll see:
+
+Feb 24 12:42:51 localhost echo[8432]: bar
+That's all there is to it! Anything could potentially follow the @ sign, as systemd just replaces %i in the service definition with it. OpenVPN uses it for configuration, other services might use for something else, like a port number.

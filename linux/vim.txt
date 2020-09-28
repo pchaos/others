@@ -140,4 +140,19 @@ rm -rf .SpaceVim
 rm -rf .cache/SpaceVim
 rm -rf  .cache/vimfiler/
 rm -rf  .cache/vimfiles/
+--------------------------------------------------
+vim编辑器中整段代码的移动
+先在~/.vimrc文件中设置一下参数，set shiftwidth=4。
+
+之后进入vim中，按下v，进行选择移动的整段代码，是连续的代码段。之后进行可以  向左（向右）移动。
+
+shift+> (向右缩进) ，shift+<(向左缩进)。
+--------------------------------------------------
+单词加上引号
+Quote a word, using single quotes
+ciw'Ctrl+r"'
+ciw - Delete the word the cursor is on, and end up in insert mode.
+' - add the first quote.
+Ctrl+r" - Insert the contents of the " register, aka the last yank/delete.
+' - add the closing quote.
 

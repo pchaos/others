@@ -1,3 +1,5 @@
+# fedora 30 使用git安装。pip安装可能有点问题
+
 pip install neovim
 
 mkdir -p ~/.config/nvim
@@ -133,4 +135,61 @@ dnf install -y autoconf automake cmake g++ libtool
 git clone https://github.com/neovim/neovim.git
 cd neovim
 git checkout stable
-make
+make -j4
+--------------------------------------------------
+Basic idea
+There are many shortcuts key in SpaceVim, the most frequently used shortcut keys are often starting with Space key, I guess that's why we call it SpaceVim. For convenience, when we mention spc, it means the Space key on keyboard.
+
+1. Shortcuts
+There are different kinds of shortcuts, start with different prefix:
+
+<table>
+<thead>
+<tr>
+<th>Prefix</th>
+<th>Prefix name</th>
+<th>Example</th>
+<th>Description</th>
+<th>More info</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>space</code></td>
+<td><code>[SPC]</code></td>
+<td><code>spc f t</code></td>
+<td>open/close filetree</td>
+<td>just press space key and wait 1s</td>
+</tr>
+<tr>
+<td><code>s</code></td>
+<td><code>[WIN]</code></td>
+<td><code>s v</code></td>
+<td>split window, equal to <code>:split</code></td>
+<td><a href="https://spacevim.org/documentation/#window-manager" rel="nofollow">link</a></td>
+</tr>
+<tr>
+<td><code>\</code></td>
+<td><code>&lt;Leader&gt;</code></td>
+<td><code>\ [0-9]</code></td>
+<td>jump to other tab or buffer</td>
+<td>just press <code>\</code> key and wait 1s</td>
+</tr>
+<tr>
+<td><code>g</code></td>
+<td>go to</td>
+<td><code>g 0</code></td>
+<td>go to first tab</td>
+<td><a href="https://spacevim.org/documentation/#commands-starting-with-g" rel="nofollow">link</a></td>
+</tr>
+<tr>
+<td><code>z</code></td>
+<td>fold</td>
+<td><code>z a</code></td>
+<td>toggle a fold</td>
+<td><a href="https://spacevim.org/documentation/#commands-starting-with-z" rel="nofollow">link</a></td>
+</tr>
+</tbody>
+</table>
+
+Just press the button spc, wait 1 second, you will see useful hint to shortcuts, explore by yourself.
