@@ -1,0 +1,25 @@
+{ "path": "/content/geometrixx/my-first-jinja-page",
+  "properties": [
+    { "name": "jcr:primaryType",
+      "value": "cq:Page" }],
+    
+  "nodes": [
+    { "path": "jcr:content",
+      "properties": [
+        { "name": "jcr:primaryType",
+          "value": "cq:PageContent"},
+        { "name": "sling:resourceType",
+          "value": "geometrixx/components/widepage"},
+        { "name": "jcr:title",
+          "value": "{{ page.title }}" },
+        { "name": "cq:template",
+          "value": "/apps/geometrixx/templates/widepage"},
+        { "name": "cq:tags",
+          "type": "String[]",
+          "value": "{{ page.tags|jsonify }}" },
+        { "name": "jcr:description",
+          "value": "{{ page.description }}" },
+        { "name": "sling:vanityPath",
+          "value": "/connector-examples/json/" }]}
+  ]
+}
