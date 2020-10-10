@@ -290,3 +290,10 @@ Read :help nvim-from-vim if you already use Vim.
 
 [neovim]: <https://neovim.io/>
 
+## tips
+
+### VIM in the Shell
+
+Finally, once you’ve mastered VIM and its keyboard shortcuts, you’ll often find yourself getting annoyed with the lack of those same shortcuts in the shell. Fear not: most shells have a VI mode. To turn it on for your shell, add the following line to ~/.inputrc:
+
+et editing-mode vi

@@ -155,4 +155,8 @@ ciw - Delete the word the cursor is on, and end up in insert mode.
 ' - add the first quote.
 Ctrl+r" - Insert the contents of the " register, aka the last yank/delete.
 ' - add the closing quote.
+--------------------------------------------------
+How to Change or Switch the Case of Characters in Vim
+
+Toggle "Hello" to "hELLO" with g~. Uppercase "Hello" to "HELLO" with gU. Lowercase "Hello" to "hello" with gu.
 
