@@ -1,3 +1,7 @@
+set_xmakever("2.2.5")
+-- version
+set_version("0.0.1", {build="%Y%m%d%H%M"})
+
 set_languages("cxx17", "C99")
 
 -- add_requires("fmt", {system=false})
@@ -6,8 +10,11 @@ add_requires("fmt", {configs = {header_only = true, vs_runtime = "MD"}})
 -- add_requires("spdlog", {configs = {header_only = true, fmt_external=true, vs_runtime = "MD"}})
 add_requires("spdlog", {configs = {header_only = true, fmt_external=false, vs_runtime = "MD"}})
 
-  local s = format("工程目录: $(projectdir), $(curdir)")
-  -- print(s)
+local s = format("工程目录: $(projectdir), $(curdir)")
+-- print(s)
+
+add_includedirs("$(env BOOST_ROOT)")
+add_linkdirs("$(env BOOST_LIB)")
 
 if is_mode("debug") then
     set_configvar("LOG_ACTIVE_LEVEL", 0)  -- 激活的日志级别
