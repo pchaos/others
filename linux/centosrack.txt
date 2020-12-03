@@ -1,0 +1,6 @@
+centos 8
+
+yum update -y 
+yum install -y wget
+yum groupinstall 'Development Tools' -y
+
