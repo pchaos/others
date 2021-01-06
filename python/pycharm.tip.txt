@@ -66,3 +66,8 @@ According to the document, despite the name http.proxy, it should work for both 
 To disable the proxy, run command:
 
 git config --global --unset http.proxy
+
+
+# New agent license server
+https://fls.jetbrains-agent.com (HTTP is also available)
+
