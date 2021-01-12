@@ -28,3 +28,11 @@ When the system-upgrade command completes, you need to reboot your machine with 
 This command will reboot the system and then run all of the necessary upgrades. This is the portion of the upgrade that will take the most time, so walk away from the machine and take on another task. 
 
 When this task completes, the system will automatically restart and present to you the newest version of Fedora. Enjoy the smell of a fresh operating system. 
+
+## python “Gtk-WARNING **: 17:34:29.822: Theme parsing error: colors.css:71:44: Invalid number for color value”
+I found out that by rebooting the system, colors.css gets restored to the old one from somewhere.
+
+However, by going to System Settings -> Color and clicking a bit on available color schemes (so one is able to save the scheme), the correct default colors.css gets installed. This also survives reboots.
+
+While it would be nice to have this bug fixed out-of-the box, the above solution works for me.
+
