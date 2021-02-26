@@ -25,13 +25,20 @@ try:
 except Exception as e:
     filename = "justhost"
 cookieFileName = f'cookies.{filename}.pkl'
-PROXY = "127.0.0.1:1080"  #  HOST:PORT
+#  PROXY = "127.0.0.1:1080"  #  HOST:PORT
+PROXY = "socks5://127.0.0.1:1081"  #  HOST:PORT
 chrome_options = webdriver.ChromeOptions()
 chrome_options.headless = headless
 if isProxy:
     chrome_options.add_argument('--proxy-server=%s' % PROXY)
 chrome_options.add_argument("ignore-certificate-errors")
 chrome_options.add_argument("--window-size=1280,1080")
+chrome_options.add_argument("--lang=en-us")
+chrome_options.add_argument("--incognito")
+# 关闭提示条：”Chrome 正受到自动测试软件的控制”
+chrome_options.add_argument("--disable-infobars")
+# 不加载图片, 提升速度
+chrome_options.add_argument('blink-settings=imagesEnabled=false') 
 
 driver = webdriver.Chrome(options=chrome_options)
 #  driver.get("https://www.ipchicken.com/")
