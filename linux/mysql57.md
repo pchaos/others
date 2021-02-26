@@ -130,13 +130,18 @@ sudo dnf install https://repo.mysql.com//mysql80-community-release-fc29-1.noarch
 2、对于Fedora 28系统：
 
 如果使用的是Fedora 28，请运行以下命令：
+> sudo dnf install https://repo.mysql.com//mysql80-community-release-fc28-1.noarch.rpm
 
-sudo dnf install https://repo.mysql.com//mysql80-community-release-fc28-1.noarch.rpm
+> # Fedora 32
+> sudo dnf install https://dev.mysql.com/get/mysql80-community-release-fc32-1.noarch.rpm 
 
 这会将存储库文件写入/etc/yum.repos.d/mysql-community.repo中。
 
 **二、安装MySQL Server 8.0的方法**
 
+> dnf config-manager --disable mysql80-community
+> dnf config-manager --enable mysql57-community
+>
 添加存储库并确认启用后，通过运行以下命令继续将MySQL 8.0安装到Fedora 29系统中：
 
 sudo dnf -y install mysql-community-server
