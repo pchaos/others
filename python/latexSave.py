@@ -11,7 +11,7 @@ def a_tex_file(title):
     pageAry.append('\\def\\today{January 21, 2011}\n')
     pageAry.append('\\centerline{\\titlefont ' + title + '}\n\\vskip5pt\n\\vskip5pt\\centerline{\\default blahblahblah}\n')
     pageAry.append('\n\\bye')
-return 1
+    return 1
 
 a_tex_file("blunk")
 
