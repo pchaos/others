@@ -73,5 +73,5 @@ Simply remove eval file!
 [Windows] delete anything in this directory (WebStorm2020.1 for example, use your soft's name and version):
 C:\Users\%USERNAME%\AppData\Roaming\JetBrains\WebStorm2020.1\eval\
 [Linux] Add to firsts line pycharm.sh:
-# 超过25天删除试用注册文件
-find ~/.config/JetBrains/PyCharm2020.3/eval -type f -mtime +25 -delete
+# 超过23天删除试用注册文件
+find ~/.config/JetBrains/PyCharm2020.3/eval -type f -mtime +23 -delete
