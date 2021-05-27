@@ -39,7 +39,8 @@ class IBMCloudTest(BaseCase):
         self.update_text("input.bx--text-input", f"{user}\n")
         self.assert_title("IBM Cloud")
         self.update_text("input.bx--password-input", f"{password}")
-        self.wait_for_element_present("div.bx--password-input-wrapper", timeout=20)
+        self.wait_for_element_present("div.bx--password-input-wrapper",
+                                      timeout=20)
         #  self.assert_text("Log in", "登录")
         self.assert_element('input[id="password"]')
         self.click("//div[2]/div[2]/div[2]/button/span")
@@ -52,8 +53,9 @@ class IBMCloudTest(BaseCase):
         #  time.sleep(1)
         # click "Cloud Foundry apps"
         try:
-            # 英文版 
-            self.wait_for_element_present("link=Cloud Foundry apps", timeout=30)
+            # 英文版
+            self.wait_for_element_present("link=Cloud Foundry apps",
+                                          timeout=30)
             self.click("link=Cloud Foundry apps")
         except Exception as e:
             # 中文版
@@ -65,10 +67,13 @@ class IBMCloudTest(BaseCase):
         # 验证存在标题
         self.assert_element('//*[@id="main-content"]/div[2]')
         #  self.wait_for_element_present("//body[@id='body']/div[5]/ul/li[2]/button/div", timeout=12)
-        self.wait_for_element_present("//*[@id='body']/div[5]/ul/li[2]/button/div", timeout=15)
+        self.wait_for_element_present(
+            "//*[@id='body']/div[5]/ul/li[2]/button/div", timeout=15)
         self.click("//*[@id='body']/div[5]/ul/li[2]/button/div")
-        time.sleep(1.2)
-        self.wait_for_element_present("(//button[@type='button'])[17]", timeout=12)
-        time.sleep(1.2)
+        print('click menu button')
+        time.sleep(3.5)
+        self.wait_for_element_present("(//button[@type='button'])[17]",
+                                      timeout=12)
+        time.sleep(2.8)
         self.click("(//button[@type='button'])[17]")
         time.sleep(5)
