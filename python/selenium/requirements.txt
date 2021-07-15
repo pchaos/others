@@ -1,0 +1,5 @@
+python-dotenv
+pytest
+nosetest
+pathlib
+seleniumbase
