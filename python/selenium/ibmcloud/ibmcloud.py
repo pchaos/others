@@ -64,16 +64,27 @@ class IBMCloudTest(BaseCase):
         self.click('svg.bx--overflow-menu__icon')
         # click "restart"
         time.sleep(2)
-        # 验证存在标题
-        self.assert_element('//*[@id="main-content"]/div[2]')
+        # 验证存在菜单标题
+        self.assert_element('button.bx--overflow-menu-options__btn')
+        # menu "restart"
+        self.assert_element('button.bx--overflow-menu-options__btn[index="1"]')
+        #  self.assert_element('//*[@id="main-content"]/div[2]')
+        #  self.assert_element('//*[@id="body"]/div[6]/ul/li[2]/button/div')
         #  self.wait_for_element_present("//body[@id='body']/div[5]/ul/li[2]/button/div", timeout=12)
+
+        # click "restart"
         self.wait_for_element_present(
-            "//*[@id='body']/div[5]/ul/li[2]/button/div", timeout=15)
-        self.click("//*[@id='body']/div[5]/ul/li[2]/button/div")
+            'button.bx--overflow-menu-options__btn[index="1"]', timeout=15)
+        #  self.wait_for_element_present(
+            #  "//*[@id='body']/div[6]/ul/li[2]/button/div", timeout=15)
+        #  self.click("//*[@id='body']/div[6]/ul/li[2]/button/div")
+        self.click('button.bx--overflow-menu-options__btn[index="1"]')
         print('click menu button')
         time.sleep(3.5)
-        self.wait_for_element_present("(//button[@type='button'])[17]",
+        # restart confirm
+        self.wait_for_element_present('#modal > div > div.bx--modal-footer > button.bx--btn.bx--btn--primary',
                                       timeout=12)
         time.sleep(2.8)
-        self.click("(//button[@type='button'])[17]")
+        self.click('#modal > div > div.bx--modal-footer > button.bx--btn.bx--btn--primary')
+        print("restarting ibm vps")
         time.sleep(5)
