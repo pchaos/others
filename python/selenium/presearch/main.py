@@ -121,11 +121,11 @@ def presearch_click():
     #  time.sleep(20)
     #  prev_search_key = search_key
 
-    searchcounts=8
+    searchcounts = 8
     for i in range(searchcounts):
         driver.back()
         time.sleep(4)
-        search_key=random.choice(all_keys)
+        search_key = random.choice(all_keys)
         print(search_key)
         time.sleep(random.random() * 15)
         try:
@@ -146,38 +146,37 @@ def presearch_click():
         #  actions.send_keys(search_key)
         #  actions.send_keys(Keys.ENTER)
         #  actions.perform()
-        prev_search_key=search_key
+        prev_search_key = search_key
         time.sleep(4)
         time.sleep(random.random() * 15)
         delayseconds = random.random() * int(delays)
         print(f"delay {delayseconds} seconds")
         time.sleep(delayseconds)
 
-
     print("Done")
 
 
 if __name__ == "__main__":
-    driver=None
-    all_keys=get_keywords()
-    delays=50
-    arguments=len(sys.argv) - 1
+    driver = None
+    all_keys = get_keywords()
+    delays = 50
+    arguments = len(sys.argv) - 1
     if arguments > 1:
-        parser=argparse.ArgumentParser(description = 'Process some integers.')
+        parser = argparse.ArgumentParser(description='Process some integers.')
         parser.add_argument('--delay',
-                            metavar = 'N',
-                            type = int,
-                            nargs = '+',
-                            help = 'delay N seconds')
-        args=parser.parse_args()
+                            metavar='N',
+                            type=int,
+                            nargs='+',
+                            help='delay N seconds')
+        args = parser.parse_args()
         print(args)
-        delays=args.delay[0]
+        delays = args.delay[0]
         print(f"{delays=} {type(delays)=}")
 
     presearch_click()
 
     # close new presearch windwos
-    multi_window=driver.window_handles
+    multi_window = driver.window_handles
     try:
         for window in multi_window:
             if window not in multi_window_old:
