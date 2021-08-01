@@ -133,6 +133,8 @@ def presearch_click():
             time.sleep(random.random() * 10)
             driver.find_element_by_id("search").send_keys(Keys.ENTER)
         except Exception as e:
+            driver.switch_to.window(driver.window_handles[-1])
+            time.sleep(2)
             driver.get("https://presearch.org")
             print(f"{i} ... on Exception")
             driver.find_element_by_id("search").send_keys(search_key)
@@ -174,14 +176,17 @@ if __name__ == "__main__":
 
     presearch_click()
 
-    # close new windwos
+    # close new presearch windwos
     multi_window=driver.window_handles
     try:
         for window in multi_window:
             if window not in multi_window_old:
-                driver.switch_to.window(window)
-                time.sleep(0.5)
-                driver.close()
+                try:
+                    driver.switch_to.window(window)
+                    time.sleep(0.5)
+                    driver.close()
+                except Exception as e:
+                    raise e
     except Exception as e:
         raise e
     finally:
