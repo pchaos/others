@@ -267,3 +267,7 @@ g ~ 	swap case for Nmove text
 g <End> 	跳至本行最右侧字符，等同于 g$
 g Ctrl-G 	显示光标信息
 
+## checkhealth/perl: check for "Neovim::Ext" is broken
+cpan
+cpan Neovim::Ext
+cpan App::cpanminus
