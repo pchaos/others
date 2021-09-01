@@ -15,6 +15,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 import random
 import pandas as pd
+import numpy as np
 import os
 from dotenv import load_dotenv
 import requests
@@ -42,7 +43,7 @@ def get_keywords():
     # List Of 1000 Most Searched Words On Google
     url = "https://www.mondovo.com/keywords/most-searched-words-on-google"
     print(f"get {url}")
-    response = requests.get(url)
+    response = requests.get(url, timeout=12)
     if (response.status_code == 200):
         soup = bs4.BeautifulSoup(response.text)
         table = soup.find('table')
@@ -83,6 +84,7 @@ def presearch_click():
     time.sleep(2)
     driver.get("https://www.presearch.org")
     # 以前的窗口
+    global multi_window_old
     multi_window_old = driver.window_handles
 
     # TODO: 2 Make a login strong system in environment veriable
@@ -121,7 +123,10 @@ def presearch_click():
     #  time.sleep(20)
     #  prev_search_key = search_key
 
-    searchcounts = 8
+    searchcounts = 10
+    # 随机产生搜索次数
+    searchcounts += int(
+        round(random.random() * 2 * (-1 if random.random() > 0.5 else 1), 0))
     for i in range(searchcounts):
         driver.back()
         time.sleep(4)
@@ -136,7 +141,7 @@ def presearch_click():
             driver.switch_to.window(driver.window_handles[-1])
             time.sleep(2)
             driver.get("https://presearch.org")
-            print(f"{i} ... on Exception")
+            print(f"{i}/{searchcounts} ... on Exception")
             driver.find_element_by_id("search").send_keys(search_key)
             time.sleep(random.random() * 10)
             driver.find_element_by_id("search").send_keys(Keys.ENTER)
@@ -150,14 +155,15 @@ def presearch_click():
         time.sleep(4)
         time.sleep(random.random() * 15)
         delayseconds = random.random() * int(delays)
-        print(f"delay {delayseconds} seconds")
+        print(f"delay {np.round(delayseconds, 2)} seconds")
         time.sleep(delayseconds)
 
-    print("Done")
+    print(f"Done ... {searchcounts=}")
 
 
 if __name__ == "__main__":
     driver = None
+    multi_window_old = None
     all_keys = get_keywords()
     delays = 50
     arguments = len(sys.argv) - 1
@@ -173,24 +179,27 @@ if __name__ == "__main__":
         delays = args.delay[0]
         print(f"{delays=} {type(delays)=}")
 
-    presearch_click()
-
-    # close new presearch windwos
-    multi_window = driver.window_handles
     try:
-        for window in multi_window:
-            if window not in multi_window_old:
-                try:
-                    driver.switch_to.window(window)
-                    time.sleep(0.5)
-                    driver.close()
-                except Exception as e:
-                    raise e
+        presearch_click()
     except Exception as e:
         raise e
     finally:
-        time.sleep(2.5)
-        driver.quit()
+        # close new presearch windwos
+        multi_window = driver.window_handles
+        try:
+            for window in multi_window:
+                if window not in multi_window_old:
+                    try:
+                        driver.switch_to.window(window)
+                        time.sleep(0.5)
+                        driver.close()
+                    except Exception as e:
+                        raise e
+        except Exception as e:
+            raise e
+        finally:
+            time.sleep(2.5)
+            driver.quit()
 
     # TODO: 1 Click the search resust to make it more human
 
