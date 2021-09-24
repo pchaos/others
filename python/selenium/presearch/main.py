@@ -27,6 +27,37 @@ load_dotenv()
 USERNAME = os.getenv('username')
 PASSWORD = os.getenv('password')
 chromeuserdatadir = os.getenv('chromeuserdatadir')
+headless = os.getenv('headless', 0)
+"""判断一个unicode是否是汉字"""
+
+
+def is_chinese(uchar):
+    if uchar >= u'\u4e00' and uchar <= u'\u9fa5':
+        return True
+    else:
+        return False
+
+
+def get_weibo(url=""):
+    driver = webdriver.Chrome()
+    driver.implicitly_wait(25)  # seconds
+    driver.get(url)
+    time.sleep(2)
+    #  elem = driver.find_element_by_id("yyp")
+    #  elem = driver.find_element_by_id('pl_top_realtimehot')
+    elem = driver.find_element_by_tag_name('table')
+    #  elem = driver.find_element_by_tag_name('div')
+    #  elem = driver.find_element_by_class_name("data")
+    head = elem.find_element_by_tag_name('thead')
+    body = elem.find_element_by_tag_name('tbody')
+    list_rows = []
+    for items in body.find_elements_by_tag_name('tr'):
+        list_cells = []
+        for item in items.find_elements_by_tag_name('td'):
+            list_cells.append(item.text)
+        list_rows.append(list_cells)
+    driver.close()
+    return list_rows
 
 
 def get_keywords():
@@ -36,14 +67,23 @@ def get_keywords():
     ]
     # 热搜
     url = "https://s.weibo.com/top/summary?cate=realtimehot"
-    df = pd.read_html(url)
-    for i in range(len(df[0])):
-        all_keys.append(df[0]["关键词"][i].split()[0])
-
+    try:
+        df = pd.read_html(url)
+        for i in range(len(df[0])):
+            all_keys.append(df[0]["关键词"][i].split()[0])
+    except Exception as e:
+        print(f"获取关键词错误，请检查{url}")
+        url="https://s.weibo.com/top/summary?cate=socialevent"
+        weibo = get_weibo(url)
+        print(weibo)
+        for item in weibo:
+            all_keys.append(item[1])
+        print(f"{all_keys=}")
+        #  exit()
     # List Of 1000 Most Searched Words On Google
     url = "https://www.mondovo.com/keywords/most-searched-words-on-google"
     print(f"get {url}")
-    response = requests.get(url, timeout=12)
+    response = requests.get(url, timeout=18)
     if (response.status_code == 200):
         soup = bs4.BeautifulSoup(response.text)
         table = soup.find('table')
@@ -61,11 +101,29 @@ def get_keywords():
 
 
 def presearch_click():
+    def random_down(counts=12, ischinese=False):
+        if not ischinese:
+            for i in range(int(random.random() * counts)):
+                # 随机选择可选搜索内容
+                driver.find_element_by_id("search").send_keys(Keys.ARROW_DOWN)
+                #  time.sleep(0.05)
+                time.sleep(random.random() / 9)
+
+    def delay_sendkey(key=""):
+        # 减慢搜索输入速度
+        print(f"send_keys ", end="|")
+        for k in key:
+            driver.find_element_by_id("search").send_keys(k)
+            time.sleep(random.random() / 2)
+            print(f"{k}", end="")
+        print("")
+
     global delays
     chrome_options = Options()
     chrome_options.add_argument("--user-data-dir=chrome-data")
     chrome_options.add_argument(f"--user-data-dir={chromeuserdatadir}")
     chrome_options.add_argument("--start-maximized")
+    # chrome_options.add_argument("--headless={headless}")
     # chrome_options.add_argument("--incognito")
 
     #  driver = webdriver.Chrome("./chromedriver.exe", chrome_options=chrome_options)
@@ -134,16 +192,20 @@ def presearch_click():
         print(search_key)
         time.sleep(random.random() * 15)
         try:
-            driver.find_element_by_id("search").send_keys(search_key)
-            time.sleep(random.random() * 10)
+            #  driver.find_element_by_id("search").send_keys(search_key)
+            delay_sendkey(search_key)
+            time.sleep(random.random() * 5)
+            random_down(ischinese=is_chinese(search_key[0]))
             driver.find_element_by_id("search").send_keys(Keys.ENTER)
         except Exception as e:
             driver.switch_to.window(driver.window_handles[-1])
             time.sleep(2)
             driver.get("https://presearch.org")
             print(f"{i}/{searchcounts} ... on Exception")
-            driver.find_element_by_id("search").send_keys(search_key)
-            time.sleep(random.random() * 10)
+            #  driver.find_element_by_id("search").send_keys(search_key)
+            delay_sendkey(search_key)
+            time.sleep(random.random() * 4)
+            random_down(ischinese=is_chinese(search_key[0]))
             driver.find_element_by_id("search").send_keys(Keys.ENTER)
 
         else:
