@@ -2,7 +2,7 @@
 
 [官网 https://hikyuu.org/](https://hikyuu.org/)
 
-## fedora 30安装hikyuu
+## fedora 34安装hikyuu
 按照00_hikyuu.sh 10_SetUpBasicEnvironment.sh 30_buildhikyuu.sh的顺序执行脚本
 
 
@@ -85,6 +85,9 @@ edit hikyuu_pywrap/xmake.lua
             加上前缀（lib）：
             os.cp(target:targetdir() .. '/libhikyuu.so', dst_dir)
 ``````
+## Import Error: libGL.so.1 :cannot open shared object file
+sudo dnf install -y mesa-libGLU
+
 ## python hikyuu/gui/HikyuuTDX.py ModuleNotFoundError: No module named 'hikyuu'
 切换到hikyuu代码目录，
 

@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
 sudo dnf update -y
-sudo dnf install -y wget vim proxychains-ng tree xsel
+sudo dnf install -y wget vim proxychains-ng tree xsel powerline
 sudo dnf install -y gnome-desktop
 sudo dnf groupinstall -y "Development Tools" "Development Libraries"
 sudo dnf install -y clang
+sudo dnf install -y neovim python-neovim
+sudo dnf install -y mesa-libGLU
 sudo dnf install -y hdf5 hdf5-devel sqlite-devel
 # sudo dnf install -y libconfig-devel
 
@@ -39,8 +41,14 @@ if [ ! -d "${HOME}/${anaconda3}/envs/${hik}" ]
 then
   echo "y" | conda create -n ${hik} python=3.8 \
     && echo "[ -d '${HOME}/${anaconda3}/envs/${hik}' ] && conda activate ${hik}" >> ~/.bashrc \
-    && . ~/.bashrc && conda install click \
+    && . ~/.bashrc && conda install -n ${hik} -y click \
     && pip install -r install/hikyuu/requirements.txt
+  # libstdc++.so.6 version not equal to system libstdc++
+  file2del="${HOME}/${anaconda3}/envs/${hik}/lib/libstdc++.so.6"
+  if [[ -f "$file2del" ]]
+  then
+    rm ${file2del}
+  fi
 fi
 # [ ! -d "${HOME}/${anaconda3}/envs/${hik}" ] && conda create -n ${hik} python=3.8 && echo "[ -d ${HOME}/${anaconda3}/envs/${hik}' ] && conda activate ${hik}" >> ~/.bashrc && . ~/.bashrc
 
