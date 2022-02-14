@@ -40,23 +40,25 @@ def is_chinese(uchar):
 
 def get_weibo(url=""):
     driver = webdriver.Chrome()
-    driver.implicitly_wait(25)  # seconds
-    driver.get(url)
-    time.sleep(2)
-    #  elem = driver.find_element_by_id("yyp")
-    #  elem = driver.find_element_by_id('pl_top_realtimehot')
-    elem = driver.find_element_by_tag_name('table')
-    #  elem = driver.find_element_by_tag_name('div')
-    #  elem = driver.find_element_by_class_name("data")
-    head = elem.find_element_by_tag_name('thead')
-    body = elem.find_element_by_tag_name('tbody')
-    list_rows = []
-    for items in body.find_elements_by_tag_name('tr'):
-        list_cells = []
-        for item in items.find_elements_by_tag_name('td'):
-            list_cells.append(item.text)
-        list_rows.append(list_cells)
-    driver.close()
+    try:
+        driver.implicitly_wait(25)  # seconds
+        driver.get(url)
+        time.sleep(2)
+        #  elem = driver.find_element_by_id("yyp")
+        #  elem = driver.find_element_by_id('pl_top_realtimehot')
+        elem = driver.find_element_by_tag_name('table')
+        #  elem = driver.find_element_by_tag_name('div')
+        #  elem = driver.find_element_by_class_name("data")
+        head = elem.find_element_by_tag_name('thead')
+        body = elem.find_element_by_tag_name('tbody')
+        list_rows = []
+        for items in body.find_elements_by_tag_name('tr'):
+            list_cells = []
+            for item in items.find_elements_by_tag_name('td'):
+                list_cells.append(item.text)
+            list_rows.append(list_cells)
+    finally:
+        driver.close()
     return list_rows
 
 
@@ -67,6 +69,7 @@ def get_keywords():
     ]
     # 热搜
     url = "https://s.weibo.com/top/summary?cate=realtimehot"
+    url = "https://tophub.today/n/VaobJ98oAj"
     try:
         df = pd.read_html(url)
         for i in range(len(df[0])):
@@ -79,6 +82,8 @@ def get_keywords():
         for item in weibo:
             all_keys.append(item[1])
         print(f"{all_keys=}")
+    finally:
+        pass
         #  exit()
     # List Of 1000 Most Searched Words On Google
     url = "https://www.mondovo.com/keywords/most-searched-words-on-google"
@@ -108,6 +113,7 @@ def presearch_click():
                 driver.find_element_by_id("search").send_keys(Keys.ARROW_DOWN)
                 #  time.sleep(0.05)
                 time.sleep(random.random() / 9)
+
 
     def delay_sendkey(key=""):
         # 减慢搜索输入速度
@@ -195,7 +201,7 @@ def presearch_click():
             #  driver.find_element_by_id("search").send_keys(search_key)
             delay_sendkey(search_key)
             time.sleep(random.random() * 5)
-            random_down(ischinese=is_chinese(search_key[0]))
+            random_down(ischinese=is_chinese(search_key[1 if len(search_key)> 1 else 0]))
             driver.find_element_by_id("search").send_keys(Keys.ENTER)
         except Exception as e:
             driver.switch_to.window(driver.window_handles[-1])
@@ -205,7 +211,7 @@ def presearch_click():
             #  driver.find_element_by_id("search").send_keys(search_key)
             delay_sendkey(search_key)
             time.sleep(random.random() * 4)
-            random_down(ischinese=is_chinese(search_key[0]))
+            random_down(ischinese=is_chinese(search_key[1 if len(search_key)> 1 else 0]))
             driver.find_element_by_id("search").send_keys(Keys.ENTER)
 
         else:
