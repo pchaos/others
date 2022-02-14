@@ -71,6 +71,7 @@ class TestGenTABHTML(TestCase):
             saveText += r
         gh.save('main.htm', saveText)
         print("输出文件完成 {}".format(render))
+        print(f"{flist} saved in main.htm")
 
 
 if __name__ == '__main__':
