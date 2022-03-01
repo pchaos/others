@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+. ./hikyuuEnv.sh
+
 sudo dnf update -y
-sudo dnf install -y wget vim proxychains-ng tree xsel powerline
+sudo dnf install -y wget vim neovim proxychains-ng tree xsel powerline
 sudo dnf install -y gnome-desktop
 sudo dnf groupinstall -y "Development Tools" "Development Libraries"
 sudo dnf install -y clang
@@ -41,8 +43,8 @@ if [ ! -d "${HOME}/${anaconda3}/envs/${hik}" ]
 then
   echo "y" | conda create -n ${hik} python=3.8 \
     && echo "[ -d '${HOME}/${anaconda3}/envs/${hik}' ] && conda activate ${hik}" >> ~/.bashrc \
-    && . ~/.bashrc && conda install -n ${hik} -y click \
-    && pip install -r install/hikyuu/requirements.txt
+    && . ~/.bashrc && conda install -n ${hik} -y click jupyterlab \
+    && testb="install/hikyuu/requirements.txt" ; [ -f "${testb}" ] && pip install -r ${testb}
   # libstdc++.so.6 version not equal to system libstdc++
   file2del="${HOME}/${anaconda3}/envs/${hik}/lib/libstdc++.so.6"
   if [[ -f "$file2del" ]]
@@ -56,5 +58,7 @@ fi
 proxyserver=192.168.103.1
 # ping -c 1 ${proxyserver} && export ALL_PROXY=socks5:/${proxyserver}:1081 && git config --global http.proxy socks5://${proxyserver}:1081
 ping -c 1 ${proxyserver} && git config --global http.proxy socks5://${proxyserver}:1081
+[ ! -d "$HOME/.SpaceVim" ] && curl -sLf https://spacevim.org/install.sh | bash
 
+printf "sudo免密码，使用sudo visudo\n your_login_name ALL=(ALL) NOPASSWD:ALL"
 echo "请注销当前登录，使conda ${hik}环境生效"
