@@ -19,7 +19,9 @@ cd ${usrsourcedir}
 
 # boost 版本号。修改boostver指定版本
 # boostver=70 # 1.70.0
+. ./hikyuuEnv.sh
 usingsystem=0
+boostfile="boost_1_${boostver}_0.tar.gz"
 if [[ -n $(ls -d /usr/include/boost/) ]] && [[ "${usingsytem}" -gt 0 ]]
 then
   echo "found boost devel "
@@ -28,18 +30,17 @@ else
   [ -f "boostroot.txt" ] && rm boostroot.txt
   # boostver=78 # for boost 1.74.0
   . ./hikyuuEnv.sh
-  boostfile="boost_1_${boostver}_0.tar.gz"
   # [ ! -f ${boostfile} ] && wget -c -O $boostfile https://dl.bintray.com/boostorg/release/1.${boostver}.0/source/boost_1_${boostver}_0.tar.gz
   [ ! -f ${boostfile} ] && wget -c -O $boostfile https://boostorg.jfrog.io/artifactory/main/release/1.${boostver}.0/source/boost_1_${boostver}_0.tar.gz
-  # 第一次需要执行bootstrap,sh 产生配置文件
 : <<'EOF'
 如果使用Anaconda自带的python，在boost源码目录中执行： ./bootstrap.sh,生成project=-config.jam文件；
 需手工修改boost根目录下的 project-config.jam 文件, 找到 “using python” 所在行，手工添加python的版本、可执行文件、include目录，如：using python : 3.7 : “/Users/ljh/opt/anaconda3/bin/python3.7” : /Users/ljh/opt/anaconda3/include/python3.7m ;
 EOF
-  [ ! -d "boost_1_${boostver}_0" ] && tar xzvf ${boostfile} && cd "boost_1_${boostver}_0" && ./bootstrap.sh --exec-prefix=/usr/local &
 fi
-# 要改boost目录下的配置，指定python版本和路径
+# 第一次需要执行bootstrap,sh 产生配置文件
+[ ! -d "boost_1_${boostver}_0" ] && tar xzvf ${boostfile} && cd "boost_1_${boostver}_0" && ./bootstrap.sh --exec-prefix=/usr/local &
 
+# 要改boost目录下的配置，指定python版本和路径
 
 # 下载hikyuu源码
 # git clone https://github.com/fasiondog/hikyuu.git --recursive --depth 1

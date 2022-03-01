@@ -2,7 +2,7 @@
 # set hikyuu env
 
 # pythonver=3.8 # python version
-export boostver=79 # for boost 1.78.0
+export boostver=78 # for boost 1.78.0
 # conda python 路径
 conda3=$HOME/software/python3rd/anaconda3/envs/hikyuu
 kerneldev=/usr/include/c++/$(ls /usr/include/c++/)/
@@ -88,7 +88,7 @@ then
 fi
 
 grep "fastestmirror=1" /etc/dnf/dnf.conf
-if [[ $?!== 0 ]]
+if [[ $? != 0 ]]
 then
   # dnf fastestmirror
   echo "fastestmirror=1" | sudo tee -a /etc/proxychains.conf
