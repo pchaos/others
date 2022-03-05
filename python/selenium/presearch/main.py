@@ -156,13 +156,16 @@ def presearch_click():
         # already login
         #  el = driver.find_element_by_xpath('//*[@id="Home"]/div[1]/div/div[3]/a[1]')
         #  el = driver.find_element_by_class_name('hidden-xs.nav-reward-balance')
-        el = driver.find_element_by_xpath('//*[@id="main-nav"]/ul/li[5]')
+        #  el = driver.find_element_by_xpath('//*[@id="main-nav"]/ul/li[5]')
+        # 是否已经登录
+        el = driver.find_element_by_xpath('/html/body/div[1]/div/header/div[2]')
         if "Login" in el.text:
             raise Exception("not login!")
         else:
             print("already logined")
     except Exception as e:
-        driver.get("https://presearch.org/external-login?")
+        # 重新登录
+        driver.get("https://www.presearch.org/login?signin")
         el = driver.find_element_by_xpath(
             '//*[@id="login-form"]/form/div[2]/div/input')
         el.send_keys(PASSWORD)
@@ -171,6 +174,7 @@ def presearch_click():
         el.send_keys(USERNAME)
         print(
             input("Enter your Username and Password Menually then enter 1: "))
+
     driver.get("https://presearch.org")
     # print(input("Enter your Username and Password Menually then enter 1: "))
     driver.find_element_by_id("search").send_keys(random.choice(all_keys))

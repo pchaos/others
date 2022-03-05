@@ -26,7 +26,8 @@ then
 else
   export BOOST_ROOT=$HOME/install/boost_1_${boostver}_0
   # export BOOST_LIB=${BOOST_ROOT}/stage/lib
-  export BOOST_LIB=/usr/local/lib
+  # export BOOST_LIB=/usr/local/lib
+  export BOOST_LIB=${conda3}
   # export BOOST_LIB=${BOOST_ROOT}/libs
 fi
 echo "BOOST_ROOT: $BOOST_ROOT --- BOOST_LIB:$BOOST_LIB"
@@ -43,7 +44,7 @@ then
   echo " Run ‘sudo’ Command Without Entering a Password in Linux"
   echo "add:  %wheel ALL=(ALL) NOPASSWD: ALL"
   sudo visudo
-  echo "1" > ~/..visudo
+  echo "1" > ~/.visudo
 fi
 
 if [[ ! -f ~/.inputrc ]]
@@ -78,13 +79,17 @@ then
   sudo systemctl start sshd
 fi
 
-sudo dnf install -y proxychains-ng
-grep "socks4 	127.0.0.1 9050" /etc/proxychains.conf
-if [[ $? == 0 ]]
+which proxychains
+if [[ $? != 0 ]]
 then
-  echo "setting prochains"
-  sudo sed -i '/socks4 	127.0.0.1 9050/d' /etc/proxychains.conf
-  echo "socks5 	192.168.103.1 1081" | sudo tee -a /etc/proxychains.conf
+  sudo dnf install -y proxychains-ng
+  grep "socks4 	127.0.0.1 9050" /etc/proxychains.conf
+  if [[ $? == 0 ]]
+  then
+    echo "setting prochains"
+    sudo sed -i '/socks4 	127.0.0.1 9050/d' /etc/proxychains.conf
+    echo "socks5 	192.168.103.1 1081" | sudo tee -a /etc/proxychains.conf
+  fi
 fi
 
 grep "fastestmirror=1" /etc/dnf/dnf.conf
@@ -94,6 +99,7 @@ then
   echo "fastestmirror=1" | sudo tee -a /etc/proxychains.conf
 fi
 
-
+# echo "gui using :$XDG_SESSION_TYPE"
+env | grep -i wayland
 echo "export env end."
 

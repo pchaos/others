@@ -12,11 +12,11 @@ ping -c 1 ${proxyserver} && export ALL_PROXY=socks5:/${proxyserver}:1081 && git 
 python setup.py --help
 while getopts "c:v:" option 
 do 
- case "${option}" 
- in 
- v) ARG="-v -j 4";; 
- c) CLEAR="python setup.py clear";;
- esac 
+  case "${option}" 
+  in 
+    v) ARG="-v -j 4";; 
+    c) CLEAR="python setup.py clear";;
+  esac 
 done
 
 set -e # unset: set +e

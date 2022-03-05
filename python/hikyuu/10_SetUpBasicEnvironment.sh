@@ -2,13 +2,14 @@
 
 . ./hikyuuEnv.sh
 
-sudo dnf update -y
+# sudo dnf update -y
 sudo dnf install -y wget vim neovim proxychains-ng tree xsel powerline
 sudo dnf install -y gnome-desktop
 sudo dnf groupinstall -y "Development Tools" "Development Libraries"
 sudo dnf install -y clang
 sudo dnf install -y neovim python-neovim
-sudo dnf install -y mesa-libGLU
+sudo dnf install -y mesa-libGLU nodejs mesa-libOpenCL
+# sudo dnf install -y weston
 sudo dnf install -y hdf5 hdf5-devel sqlite-devel
 # sudo dnf install -y libconfig-devel
 
@@ -49,7 +50,8 @@ then
   file2del="${HOME}/${anaconda3}/envs/${hik}/lib/libstdc++.so.6"
   if [[ -f "$file2del" ]]
   then
-    rm ${file2del}
+    echo "${file2del} exits"
+    # rm ${file2del}
   fi
 fi
 # [ ! -d "${HOME}/${anaconda3}/envs/${hik}" ] && conda create -n ${hik} python=3.8 && echo "[ -d ${HOME}/${anaconda3}/envs/${hik}' ] && conda activate ${hik}" >> ~/.bashrc && . ~/.bashrc
@@ -59,6 +61,21 @@ proxyserver=192.168.103.1
 # ping -c 1 ${proxyserver} && export ALL_PROXY=socks5:/${proxyserver}:1081 && git config --global http.proxy socks5://${proxyserver}:1081
 ping -c 1 ${proxyserver} && git config --global http.proxy socks5://${proxyserver}:1081
 [ ! -d "$HOME/.SpaceVim" ] && curl -sLf https://spacevim.org/install.sh | bash
+
+ls ta-lib-0.4.0-src.tar.gz
+if [[ $? != 0 ]]
+then
+  # install talib
+  wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+  tar -xzf ta-lib-0.4.0-src.tar.gz
+  cd ta-lib
+  ./configure
+  make
+  sudo make install
+  pip install TA-Lib
+else
+  echo "ta-lib installed"
+fi
 
 printf "sudo免密码，使用sudo visudo\n your_login_name ALL=(ALL) NOPASSWD:ALL"
 echo "请注销当前登录，使conda ${hik}环境生效"

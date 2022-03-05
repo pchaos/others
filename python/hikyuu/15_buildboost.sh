@@ -7,7 +7,6 @@ export PYTHONPATH=$(ls $HOME/software/python3rd/anaconda3/envs/hikyuu/bin*)
 . hikyuuEnv.sh
 
 # boostver=78 # for boost 1.78.0
-set -e
 if [[ -d $usrsourcedir ]]
 then
   boostsource=$usrsourcedir/"boost_1_${boostver}_0.tar.gz"
@@ -18,14 +17,16 @@ echo "${boostsource}"
 
 usrsourcedir="$HOME/install/"
 cd ${usrsourcedir}
+# set -e
 
 # boost是否已经编译完成
-ls "${BOOST_ROOT}/libboost*"
+ls "${BOOST_LIB}/libboost*"
 # [ -f $boostsource ] && \
 [[ $? != 0 ]] && \
  # tar xzvf $boostsource && \
  cd boost_1_${boostver}_0 && \
- ./bootstrap.sh --exec-prefix=/usr/local && \
+ # ./bootstrap.sh --exec-prefix=/usr/local && \
+ ./bootstrap.sh --exec-prefix=${BOOST_LIB} && \
  ./b2 -q -j 4 threading=multi && \
  sudo ./b2 install threading=multi && \
  sudo cp b2 /usr/local/bin/ && \

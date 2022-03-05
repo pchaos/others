@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 
 # explicitly providing path to '.env'
 from pathlib import Path  # Python 3.6+ only
+
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path, verbose=True)
 
@@ -43,7 +44,7 @@ chrome_options.add_argument("--incognito")
 # 关闭提示条：”Chrome 正受到自动测试软件的控制”
 chrome_options.add_argument("--disable-infobars")
 # 不加载图片, 提升速度
-chrome_options.add_argument('blink-settings=imagesEnabled=false') 
+chrome_options.add_argument('blink-settings=imagesEnabled=false')
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.get("https://www.ipchicken.com/")
@@ -62,7 +63,8 @@ url = "https://my.racknerd.com/index.php"
 driver.get(url)
 
 try:
-    driver.find_element_by_name('username').send_keys(email)  # enter your email
+    driver.find_element_by_name('username').send_keys(
+        email)  # enter your email
     driver.find_element_by_name('password').send_keys(
         password)  # enter your password
     #  print(f"passwd:{password}")
@@ -81,6 +83,8 @@ except Exception as e:
     print(e.args)
 
 url = 'https://my.racknerd.com/clientarea.php'
+
+
 def checkurl(url):
     counts = 100
     print("waiting ", end='')
@@ -92,22 +96,30 @@ def checkurl(url):
             driver.switch_to.default_content()
             break
         print(".", end='', flush=True)
+
+
 checkurl(url)
 
 if not os.path.exists(cookieFileName):
     # 保存cookies，下次免登录
     pickle.dump(driver.get_cookies(), open(cookieFileName, "wb"))
 
-driver.find_element_by_id("ClientAreaHomePagePanels-Active_Products_Services-0").click()
+driver.find_element_by_id(
+    "ClientAreaHomePagePanels-Active_Products_Services-0").click()
 url = 'https://my.racknerd.com/clientarea.php?action=productdetails'
 checkurl(url)
 time.sleep(1)
 # scroll to end
 #  driver.execute_script("window.scrollTo(0,document.body.scrollHeight)")
+current_y = (driver.execute_script('return window.innerHeight') /
+             2) + driver.execute_script('return window.pageYOffset')
+scroll_y_by = current_y + 100
+driver.execute_script("window.scrollBy(0, arguments[0]);", scroll_y_by)
 
 #  reboot button
 #  driver.find_element_by_class_name("btn-default").click()
 #  print(driver.current_url)
+
 
 def restarting(isRestart):
     if isRestart:
@@ -116,9 +128,9 @@ def restarting(isRestart):
             if html:
                 html.send_keys(Keys.PAGE_DOWN)
             #  restart =driver.find_elements_by_link_text("Перезагрузите сервер")
-            restart=driver.find_elements_by_class_name("btn-default");
+            restart = driver.find_elements_by_class_name("btn-default")
         except Exception as e:
-            restart=driver.find_elements_by_class_name("btn-default");
+            restart = driver.find_elements_by_class_name("btn-default")
         if isinstance(restart, list):
             for i in restart:
                 print(f"'{i.text}'")
@@ -126,12 +138,15 @@ def restarting(isRestart):
                     print(f"found '{i.text}'")
                     i.click()
                     time.sleep(1)
-                    delay=10
+                    delay = 10
                     try:
-                        elem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.CLASS_NAME, 'modal-dialog')))
+                        elem = WebDriverWait(driver, delay).until(
+                            EC.presence_of_element_located(
+                                (By.CLASS_NAME, 'modal-dialog')))
                         #  elem=driver.find_elements_by_class_name("modal-dialog")
                         if elem:
-                            elems=driver.find_elements_by_class_name("btn-warning")
+                            elems = driver.find_elements_by_class_name(
+                                "btn-warning")
                             print(f"reboot type:{type(elems)}")
                             if isinstance(elems, list):
                                 for el in elems:
@@ -140,12 +155,14 @@ def restarting(isRestart):
                                         print(f"{el.get_attribute('value')}")
                                         el.send_keys("\n")
                                         time.sleep(5)
-                                    except Exception as e :
+                                    except Exception as e:
                                         pass
                             else:
                                 #  elems.send_keys(Keys.ENTER)
                                 #  print(f"reboot type:{type(elems)}")
-                                elems=driver.find_elements_by_xpath('//*[@id="confirm-reboot"]/div/div/div[3]/input')
+                                elems = driver.find_elements_by_xpath(
+                                    '//*[@id="confirm-reboot"]/div/div/div[3]/input'
+                                )
                                 if elems:
                                     elems.click()
 
@@ -155,6 +172,7 @@ def restarting(isRestart):
 
                     break
         print("restarting!!")
+
 
 def main():
     try:
