@@ -30,8 +30,9 @@ ls "${BOOST_LIB}/libboost*"
  ./b2 -q -j 4 threading=multi && \
  sudo ./b2 install threading=multi && \
  sudo cp b2 /usr/local/bin/ && \
- cd .. && \
- rm $boostsource
+ cd .. \
+ # rm $boostsource
  #  && ln -s /usr/lib/x86_64-linux-gnu/libboost_python-py34.so /usr/lib/x86_64-linux-gnu/libboost_python3.so
 
+echo "boost lib: ${BOOST_LIB}"
 echo done ................................. $0

@@ -22,14 +22,14 @@ export PYTHONPATH=${conda3}
 if [[ -f "boostroot.txt" ]] && [[ -n $(cat boostroot.txt) ]]
 then
   export BOOST_ROOT=$(cat boostroot.txt)
-  export BOOST_LIB=/usr/local/lib
+  # export BOOST_LIB=/usr/local
 else
   export BOOST_ROOT=$HOME/install/boost_1_${boostver}_0
   # export BOOST_LIB=${BOOST_ROOT}/stage/lib
   # export BOOST_LIB=/usr/local/lib
-  export BOOST_LIB=${conda3}
   # export BOOST_LIB=${BOOST_ROOT}/libs
 fi
+export BOOST_LIB=${conda3}
 echo "BOOST_ROOT: $BOOST_ROOT --- BOOST_LIB:$BOOST_LIB"
 # export LD_LIBRARY_PATH=./:${BOOST_LIB}:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}
 export LD_LIBRARY_PATH=./:${BOOST_LIB}:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}/build/release/linux/x86_64/lib 
@@ -49,6 +49,7 @@ fi
 
 if [[ ! -f ~/.inputrc ]]
 then
+  # 上下箭头bash搜索历史命令 
   echo '# Respect default shortcuts.
 $include /etc/inputrc' > ~/.inputrc
   echo '## arrow up

@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 # 安装xmake
-# git
-# https://github.com/xmake-io/xmake.git
 # bash <(wget https://xmake.io/shget.text -O -)
-[ ! -d ".xmake" ] && rm wget-log
-[ ! -d ".xmake" ] && bash <(wget https://xmake.io/shget.text -O -)
+[ ! -d "$HOME/.xmake" ] && rm wget-log
+[ ! -d "$HOME/.xmake" ] && bash <(wget https://xmake.io/shget.text -O -)
 
 # 第三方源码存放位置不存在就创建目录
 usrsourcedir="$HOME/install"
@@ -39,15 +37,16 @@ else
 EOF
 
   # 第一次需要执行bootstrap,sh 产生配置文件
-  [ ! -d "boost_1_${boostver}_0" ] && tar xzvf ${boostfile} && cd "boost_1_${boostver}_0" && ./bootstrap.sh --exec-prefix=/usr/local && ./15_buildboost.sh
+  [ ! -d "boost_1_${boostver}_0" ] && tar xzvf ${boostfile} && cd "boost_1_${boostver}_0" && ${usrsourcedir}/15_buildboost.sh
 fi
 
 # 要改boost目录下的配置，指定python版本和路径
 
 # 下载hikyuu源码
 # git clone https://github.com/fasiondog/hikyuu.git --recursive --depth 1
-if [ ! -d "hikyuu" ]
+if [ ! -d "${usrsourcedir}/hikyuu" ]
 then
+  cd ${usrsourcedir}
   git clone https://github.com/fasiondog/hikyuu.git --recursive --depth 1
 else
   # cd hikyuu && git pull && [ -f "../hikyuu.patch" ] && git apply ../hikyuu.patch ; cd ..
