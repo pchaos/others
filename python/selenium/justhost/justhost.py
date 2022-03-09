@@ -1,131 +1,147 @@
-# -*- coding: utf-8 -*- #
+# -*- coding: utf-8 -*-
+"""登录justhost cloud，重启vps
+"""
 import os
-#  import json
 import time
-#  import random
-from selenium import webdriver
-import pickle
 from dotenv import load_dotenv
-
 # explicitly providing path to '.env'
 from pathlib import Path  # Python 3.6+ only
-env_path = Path('.') / '.env'
-load_dotenv(dotenv_path=env_path, verbose=True)
+from seleniumbase import BaseCase
 
-email = os.getenv("EMAIL")
-password = os.getenv("PASSWORD")
-searchcounts = int(os.getenv("SEARCHCOUNTS"))  # 查询次数
-isProxy = int(os.getenv("PROXY"))  # 是否用proxy
-isRestart = int(os.getenv("RESTART"))  # 是否用重启vps
-headless = bool(int(os.getenv("HEADLESS")))
-if headless:
-    print("headless mode")
-try:
-    filename = os.path.splitext(os.path.basename(__file__))[0]
-except Exception as e:
-    filename = "justhost"
-cookieFileName = f'cookies.{filename}.pkl'
-#  PROXY = "127.0.0.1:1080"  #  HOST:PORT
-PROXY = "socks5://127.0.0.1:1081"  #  HOST:PORT
-chrome_options = webdriver.ChromeOptions()
-chrome_options.headless = headless
-if isProxy:
-    chrome_options.add_argument('--proxy-server=%s' % PROXY)
-chrome_options.add_argument("ignore-certificate-errors")
-chrome_options.add_argument("--window-size=1280,1080")
-chrome_options.add_argument("--lang=en-us")
-chrome_options.add_argument("--incognito")
-# 关闭提示条：”Chrome 正受到自动测试软件的控制”
-chrome_options.add_argument("--disable-infobars")
-# 不加载图片, 提升速度
-chrome_options.add_argument('blink-settings=imagesEnabled=false') 
+#  import pytest
 
-driver = webdriver.Chrome(options=chrome_options)
-#  driver.get("https://www.ipchicken.com/")
-try:
-    driver.get("https://www.justhost.ru/")
-except Exception as e:
-    print("url timeout.")
-    driver.get("https://www.justhost.ru/")
 
-if os.path.exists(cookieFileName):
-    #  url = 'https://justhost.ru'
-    cookies = pickle.load(open(cookieFileName, "rb"))
-    for cookie in cookies:
-        print(f"loading cookies:{cookie}")
-        driver.add_cookie(cookie)
-else:
-    pass
+#  @pytest.mark.marker_test_suite
+class JUSTHOSTTest(BaseCase):
+    """ JUSTHOST Cloud Test
+    """
+    @classmethod
+    def setUpClass(cls):
 
-url = "https://justhost.ru/billing/active"
-driver.get(url)
+        env_path = Path('.') / '.env'
+        load_dotenv(dotenv_path=env_path, verbose=True)
 
-try:
-    driver.find_element_by_name('login').send_keys(email)  # enter your email
-    driver.find_element_by_name('password').send_keys(
-        password)  # enter your password
-    #  print(f"passwd:{password}")
-    time.sleep(1.5)
-    loginbutton = driver.find_element_by_class_name('nextButton')
-    if loginbutton:
-        loginbutton.click()
-    time.sleep(2)
-
-    if os.path.exists(cookieFileName):
-        # 重新登录系统，删除以前的cookie文件
-        os.remove(cookieFileName)
-        print("loading cookies")
-    url = 'https://justhost.ru/auth/login/?returl=/billing/renew'
-except Exception as e:
-    url = 'https://justhost.ru/auth/login/?returl=/billing/renew'
-    print("using cookies, no need login")
-    print(e.args)
-
-counts = 100
-print("waiting ", end='')
-for i in range(counts):
-    time.sleep(2)
-    if driver.current_url != url:
-        print(driver.current_url)
-        driver.switch_to.default_content()
-        break
-    print(".", end='', flush=True)
-
-if not os.path.exists(cookieFileName):
-    # 保存cookies，下次免登录
-    pickle.dump(driver.get_cookies(), open(cookieFileName, "wb"))
-
-driver.get("https://justhost.ru/billing/active")
-time.sleep(1)
-#  control button
-driver.find_element_by_class_name("a-button").click()
-print(driver.current_url)
-
-def restarting(isRestart):
-    if isRestart:
+        cls.email = os.getenv("EMAIL")
+        cls.password = os.getenv("PASSWORD")
+        cls.isProxy = int(os.getenv("PROXY"))  # 是否用proxy
+        cls.isRestart = int(os.getenv("RESTART"))  # 是否用重启vps
+        cls.headless = bool(int(os.getenv("HEADLESS")))
+        if cls.headless:
+            print("headless mode")
         try:
-            #  restart =driver.find_elements_by_link_text("Перезагрузите сервер")
-            restart=driver.find_elements_by_class_name("ui-corner-all");
+            cls.filename = os.path.splitext(os.path.basename(__file__))[0]
         except Exception as e:
-            # english version
-            restart =driver.find_elements_by_link_text("Restart server")
-        if isinstance(restart, list):
-            for i in restart:
-                print(f"'{i.text}'")
-                if i.text == 'Перезапустить сервер':
-                    print(f"found '{i.text}' and restart server")
-                    i.click()
-                    time.sleep(2)
-                    break
-        print("restarting!!")
+            cls.filename = "justhost"
 
-def main():
-    try:
-        restarting(isRestart)
+    def login(self, user="", password=""):
+        if len(password) == 0:
+            raise Exception("密码不对")
+        if len(user) == 0:
+            raise Exception("用户名不对")
+        self.assert_element('input[name="login"]')
+        self.update_text("input#login", f"{user}\n")
+        #  self.assert_title("IBM Cloud")
+        self.update_text("input#password", f"{password}")
+        self.wait_for_element_present(
+            "#loginForm > div.jFormWrapperContainer > ul > li.nextLi > button",
+            timeout=20)
+        #  self.assert_text("Log in", "登录")
+        self.assert_element('input[id="password"]')
+        self.click(
+            "#loginForm > div.jFormWrapperContainer > ul > li.nextLi > button")
+
+    def restarting(self, isRestart=0):
+        self._print(f"prepare to restart")
+        if isRestart > 0:
+            try:
+                self.open("https://justhost.ru/tickets")
+                self.open("https://justhost.ru/billing/active")
+                self.assert_text("ID")
+                #  self.assert_text("div#formActiveServices")
+                #  self._print(f"formActiveServices exists")
+                self.wait_for_element_present('a[href="/tickets"]', timeout=35)
+                # click control
+                self.click('a:contains("управление")')
+                self._print(f"click control")
+                self.assert_text("VPS kvm", timeout=5)
+                self._print(f"Ready to restart vps")
+                url = self.get_current_url()
+                url=f'https://justhost.ru/vps_service/vpsReset/{url.split("/")[-1]}'
+                self._print(f"open {url}")
+                #  self.click('a:contains("Перезагрузить сервер")', timeout =30)
+                self.open(url)
+                #  self.click('tr.status-2[strong]')
+                #  restart =driver.find_elements_by_link_text("Перезагрузите сервер")
+                #  restart=driver.find_elements_by_class_name("ui-corner-all");
+                restart = self.find_elements("a.ui-corner-all")
+                self._print(f"{restart=}")
+            except Exception as e:
+                # english version
+                self._print(e.args)
+                restart = self.find_elements("Restart server")
+            if isinstance(restart, list):
+                for i in restart:
+                    self._print(f"'{i.text}'")
+                    if i.text == 'Перезапустить сервер':
+                        self._print(f"found '{i.text}' and restart server")
+                        i.click()
+                        time.sleep(2)
+                        break
+            self._print("restarting!!")
+
+    #  @pytest.mark.marker1
+    def test_basic(self):
+        url = "https://justhost.ru/billing/active"
+        try:
+            self.open("https://justhost.ru/")
+            #  self.asscert_text("VPS")
+            self.wait_for_element_present('a[href="/optimal-plan/"]',
+                                          timeout=5)
+        except Exception as e:
+            self._print("url timeout.")
+            time.sleep(3)
+        finally:
+            self.open(url)
+            self._print(f"open {url}")
+            time.sleep(1)
+            #  self.wait_for_element_present('a[href="/services/vps"]', timeout=10)
+
+        self.assert_element('a[href="https://justhost.ru/services/vps"]')
+        #  self.assert_title("IBM Cloud")
+        self.login(self.email, self.password)
+        #  time.sleep(1)
+        # click "Cloud Foundry apps"
+        try:
+            #active Services
+            css = 'a[href="/billing/active"]'
+            self.wait_for_element_present(css, timeout=5)
+            self.click(css)
+        except Exception as e:
+            self._print(e.args)
+            self.open(url)
+        # click "..."
+        self._print(f"prepare to restart")
+        self.restarting(self.isRestart)
         time.sleep(5)
-    finally:
-        driver.close()
 
+    def atest_D(self):
+        self.open("https://xkcd.com/2021/")
+        self.assert_text("Software Development", "div#ctitle")
+        print("ok")
 
-if __name__ == "__main__":
-    main()
+    def atest_google_tour(self):
+        self.open('https://google.com')
+        self.wait_for_element('input[title="Search"]')
+
+        self.create_tour(theme="dark")
+        self.add_tour_step("Welcome to Google!", title="SeleniumBase Tours")
+        self.add_tour_step("Type in your query here.", 'input[title="Search"]')
+        self.play_tour()
+
+        self.highlight_type('input[title="Search"]', "Google")
+        self.wait_for_element('[role="listbox"]')  # Wait for autocomplete
+
+        self.create_tour(theme="light")
+        self.add_tour_step("Then click to search.", '[value="Google Search"]')
+        self.add_tour_step("Or press [ENTER] after entry.", '[title="Search"]')
+        self.play_tour()
