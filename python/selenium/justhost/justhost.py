@@ -42,7 +42,12 @@ chrome_options.add_argument('blink-settings=imagesEnabled=false')
 
 driver = webdriver.Chrome(options=chrome_options)
 #  driver.get("https://www.ipchicken.com/")
-driver.get("https://www.justhost.ru/")
+try:
+    driver.get("https://www.justhost.ru/")
+except Exception as e:
+    print("url timeout.")
+    driver.get("https://www.justhost.ru/")
+
 if os.path.exists(cookieFileName):
     #  url = 'https://justhost.ru'
     cookies = pickle.load(open(cookieFileName, "rb"))
