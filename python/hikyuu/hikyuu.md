@@ -92,3 +92,11 @@ edit hikyuu_pywrap/xmake.lua
 切换到hikyuu代码目录，
 
   ipython hikyuu/gui/HikyuuTDX.py
+
+远程访问
+  jupyter-lab --ip "*" --no-browser --notebook-dir=~/install/hikyuu -y 
+
+### 密码
+hikyuu
+'argon2:$argon2id$v=19$m=10240,t=10,p=8$Dm/9zU/dWYV/g25QRrmHcg$fDjxlOLZhvsC4ARJSiP9UWGpTjumIlN5OQnZPOG4oTY'
+

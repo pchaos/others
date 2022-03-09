@@ -11,7 +11,7 @@ sudo dnf install -y neovim python-neovim
 sudo dnf install -y mesa-libGLU nodejs mesa-libOpenCL
 # sudo dnf install -y weston
 sudo dnf install -y hdf5 hdf5-devel sqlite-devel
-# sudo dnf install -y libconfig-devel
+# sudo dnf install -y chrpath
 
 # mysql devel
 : '
