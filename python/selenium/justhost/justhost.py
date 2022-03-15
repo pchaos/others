@@ -51,30 +51,31 @@ class JUSTHOSTTest(BaseCase):
             "#loginForm > div.jFormWrapperContainer > ul > li.nextLi > button")
 
     def restarting(self, isRestart=0):
-        self._print(f"prepare to restart")
         if isRestart > 0:
             try:
-                self.open("https://justhost.ru/tickets")
+                #  self.open("https://justhost.ru/tickets")
                 self.open("https://justhost.ru/billing/active")
                 self.assert_text("ID")
                 #  self.assert_text("div#formActiveServices")
                 #  self._print(f"formActiveServices exists")
-                self.wait_for_element_present('a[href="/tickets"]', timeout=35)
+                self.wait_for_element_present('a[href="/tickets"]', timeout=15)
+                self._print(f"{self.get_current_url()}")
                 # click control
-                self.click('a:contains("управление")')
+                #  self.click('a:contains("управление")')
+                self.click('a[href*="/services/control"]')
                 self._print(f"click control")
                 self.assert_text("VPS kvm", timeout=5)
                 self._print(f"Ready to restart vps")
                 url = self.get_current_url()
                 url=f'https://justhost.ru/vps_service/vpsReset/{url.split("/")[-1]}'
-                self._print(f"open {url}")
-                #  self.click('a:contains("Перезагрузить сервер")', timeout =30)
-                self.open(url)
+                self._print(f"open {url}\nclick vps reset")
+                #  self.open(url)
+                self.click('a[href*="/vps_service/vpsReset"]')
                 #  self.click('tr.status-2[strong]')
                 #  restart =driver.find_elements_by_link_text("Перезагрузите сервер")
                 #  restart=driver.find_elements_by_class_name("ui-corner-all");
-                restart = self.find_elements("a.ui-corner-all")
-                self._print(f"{restart=}")
+                restart = self.find_elements('a[class="ui-corner-all"')
+                self._print(f"restart elements:{restart=}")
             except Exception as e:
                 # english version
                 self._print(e.args)
