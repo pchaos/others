@@ -72,9 +72,10 @@ class presearchTest(BaseCase):
         return self.all_keys
 
     def get_weibo_keywors(
-            self, url="https://s.weibo.com/top/summary?cate=socialevent"):
+        self, url="https://s.weibo.com/top/summary?cate=socialevent"):
         self.open(url)
         self.wait_for_element_present(f'tr[class="thead_tr"', timeout=8)
+        self.press_down_arrow(times=8)
         elems = self.find_elements(".td-02")
         for elem in elems:
             #  self._print(elem)
