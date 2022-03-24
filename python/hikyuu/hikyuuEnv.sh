@@ -97,7 +97,7 @@ grep "fastestmirror=1" /etc/dnf/dnf.conf
 if [[ $? != 0 ]]
 then
   # dnf fastestmirror
-  echo "fastestmirror=1" | sudo tee -a /etc/proxychains.conf
+  echo "fastestmirror=1" | sudo tee -a /etc/dnf/dnf.conf
 fi
 
 # echo "gui using :$XDG_SESSION_TYPE"

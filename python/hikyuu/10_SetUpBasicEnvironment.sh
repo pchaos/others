@@ -4,7 +4,14 @@
 
 # sudo dnf update -y
 sudo dnf install -y wget vim neovim proxychains-ng tree xsel powerline
-sudo dnf install -y gnome-desktop
+uname -a|grep fc35
+if [ $? == 0 ] 
+then
+  # fedora 35
+  sudo dnf -y group install "Basic Desktop" GNOME
+else
+  sudo dnf install -y gnome-desktop
+fi
 sudo dnf groupinstall -y "Development Tools" "Development Libraries"
 sudo dnf install -y clang
 sudo dnf install -y neovim python-neovim
