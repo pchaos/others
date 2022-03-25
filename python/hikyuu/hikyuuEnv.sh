@@ -80,6 +80,13 @@ then
   sudo systemctl start sshd
 fi
 
+grep "fastestmirror=1" /etc/dnf/dnf.conf
+if [[ $? != 0 ]]
+then
+  # dnf fastestmirror
+  echo "fastestmirror=1\nmax_parallel_downloads=5" | sudo tee -a /etc/dnf/dnf.conf
+fi
+
 which proxychains
 if [[ $? != 0 ]]
 then
@@ -91,14 +98,12 @@ then
     sudo sed -i '/socks4 	127.0.0.1 9050/d' /etc/proxychains.conf
     echo "socks5 	192.168.103.1 1081" | sudo tee -a /etc/proxychains.conf
   fi
+  sudo dnf install -y update
+  echo "ready to reboot"
+  sleep 5
+  sudo reboot
 fi
 
-grep "fastestmirror=1" /etc/dnf/dnf.conf
-if [[ $? != 0 ]]
-then
-  # dnf fastestmirror
-  echo "fastestmirror=1" | sudo tee -a /etc/dnf/dnf.conf
-fi
 
 # echo "gui using :$XDG_SESSION_TYPE"
 env | grep -i wayland
