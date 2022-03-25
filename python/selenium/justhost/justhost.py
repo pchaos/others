@@ -51,6 +51,10 @@ class JUSTHOSTTest(BaseCase):
             "#loginForm > div.jFormWrapperContainer > ul > li.nextLi > button")
 
     def restarting(self, isRestart=0):
+        """restarting. 重启vps
+
+        :param isRestart:是否重启:1:重启， 0：不重启
+        """
         if isRestart > 0:
             try:
                 #  self.open("https://justhost.ru/tickets")
