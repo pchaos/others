@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 # set hikyuu env
 
+command_exists () {
+    command -v "$1" >/dev/null 2>&1;
+}
+
+function getproxy {
+  if command_exists proxychains
+  then
+    export PROXYCHAINS="proxychains"
+  else
+    export PROXYCHAINS=""
+  fi
+}
+
 # pythonver=3.8 # python version
 export boostver=78 # for boost 1.78.0
 # conda python 路径

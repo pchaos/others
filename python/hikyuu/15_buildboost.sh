@@ -28,7 +28,7 @@ ls "${BOOST_LIB}/libboost*"
  # ./bootstrap.sh --exec-prefix=/usr/local && \
  ./bootstrap.sh --exec-prefix=${BOOST_LIB} && \
  ./b2 -q -j 4 threading=multi && \
- sudo ./b2 install threading=multi && \
+ ./b2 install threading=multi && \
  sudo cp b2 /usr/local/bin/ && \
  cd .. \
  # rm $boostsource

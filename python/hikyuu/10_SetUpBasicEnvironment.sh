@@ -6,13 +6,15 @@ uname -a|grep fc35
 if [ $? == 0 ] 
 then
   # fedora 35
-  sudo dnf -y group install "Basic Desktop" "GNOME"
+  # sudo dnf -y group install "Basic Desktop" "GNOME"
+  sudo dnf -y group install "GNOME"
 else
   sudo dnf install -y gnome-desktop
 fi
-sudo dnf install -y wget vim neovim proxychains-ng tree xsel powerline
+sudo dnf install -y wget vim neovim tree xsel powerline
 sudo dnf groupinstall -y "Development Tools" "Development Libraries"
 sudo dnf install -y clang
+sudo dnf install -y zig ldc zlib zstd cmake nng
 sudo dnf install -y neovim python-neovim
 sudo dnf install -y mesa-libGLU nodejs mesa-libOpenCL
 # sudo dnf install -y weston
@@ -64,9 +66,10 @@ fi
 
 # proxy server 自己修改proxy server
 proxyserver=192.168.103.1
+getproxy
 # ping -c 1 ${proxyserver} && export ALL_PROXY=socks5:/${proxyserver}:1081 && git config --global http.proxy socks5://${proxyserver}:1081
 ping -c 1 ${proxyserver} && git config --global http.proxy socks5://${proxyserver}:1081
-[ ! -d "$HOME/.SpaceVim" ] && curl -sLf https://spacevim.org/install.sh | bash
+[ ! -d "$HOME/.SpaceVim" ] && curl -sLf https://spacevim.org/install.sh | ${PROXYCHAINS} bash
 
 ls ta-lib-0.4.0-src.tar.gz
 if [[ $? != 0 ]]
@@ -80,7 +83,7 @@ then
   sudo make install
   pip install TA-Lib
 else
-  echo "ta-lib installed"
+  echo "ta-lib has installed"
 fi
 
 printf "sudo免密码，使用sudo visudo\n your_login_name ALL=(ALL) NOPASSWD:ALL"
