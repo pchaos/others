@@ -8,3 +8,5 @@ then
   cd .. && rm -rf "${boostdir}"
 fi
 rm -rf hikyuu
+
+unset BOOST_LIB

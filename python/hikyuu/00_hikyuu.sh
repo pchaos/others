@@ -5,7 +5,8 @@
 [ ! -d "$HOME/.xmake" ] && bash <(wget https://xmake.io/shget.text -O -)
 
 # 第三方源码存放位置不存在就创建目录
-usrsourcedir="$HOME/install"
+# usrsourcedir="$HOME/install"
+. hikyuuEnv.sh
 [ ! -d ${usrsourcedir} ] && mkdir -p $usrsourcedir
 cd ${usrsourcedir}
 
@@ -15,9 +16,6 @@ cd ${usrsourcedir}
 # git clone --depth 1 https://github.com/fmtlib/fmt.git
 # [ ! d ${usrsourcedir}/fmt ] && echo fmt not clone
 
-# boost 版本号。修改boostver指定版本
-# boostver=70 # 1.70.0
-. ./hikyuuEnv.sh
 usingsystem=0
 boostfile="${usrsourcedir}/boost_1_${boostver}_0.tar.gz"
 if [[ -n $(ls -d /usr/include/boost/) ]] && [[ "${usingsytem}" -gt 0 ]]
@@ -28,7 +26,10 @@ else
   [ -f "boostroot.txt" ] && rm boostroot.txt
   # boostver=78 # for boost 1.74.0
   . ./hikyuuEnv.sh
+  getproxy
+  green "deal boost ${boostfile}"
   # [ ! -f ${boostfile} ] && wget -c -O $boostfile https://dl.bintray.com/boostorg/release/1.${boostver}.0/source/boost_1_${boostver}_0.tar.gz
+  [ ! -f ${boostfile} ] && ${PROXY_EXIST} wget -c -O $boostfile https://boostorg.jfrog.io/artifactory/main/release/1.${boostver}.0/source/boost_1_${boostver}_0.tar.gz
   [ ! -f ${boostfile} ] && wget -c -O $boostfile https://boostorg.jfrog.io/artifactory/main/release/1.${boostver}.0/source/boost_1_${boostver}_0.tar.gz
 
 : <<'EOF'
@@ -42,15 +43,19 @@ fi
 
 # 要改boost目录下的配置，指定python版本和路径
 
+set -e
+unset_env
 # 下载hikyuu源码
 # git clone https://github.com/fasiondog/hikyuu.git --recursive --depth 1
-if [ ! -d "${usrsourcedir}/hikyuu" ]
+if [ ! -d "${HIKYUU}" ]
 then
   cd ${usrsourcedir}
+  green "git clone hikyuu"
   git clone https://github.com/fasiondog/hikyuu.git --recursive --depth 1
 else
+  green "git pull hikyuu"
   # cd hikyuu && git pull && [ -f "../hikyuu.patch" ] && git apply ../hikyuu.patch ; cd ..
-  cd hikyuu && git pull
+  cd "${usrsourcedir}/hikyuu" && git pull
   cd ..
 fi
 

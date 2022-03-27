@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 # set hikyuu env
 
+# Console output colors
+bold() { echo -e "\e[1m$@\e[0m" ; }
+red() { echo -e "\e[31m$@\e[0m" ; }
+green() { echo -e "\e[32m$@\e[0m" ; }
+yellow() { echo -e "\e[33m$@\e[0m" ; }
+
+die() { red "ERR: $@" >&2 ; exit 2 ; }
+silent() { "$@" > /dev/null 2>&1 ; }
+output() { echo -e "- $@" ; }
+outputn() { echo -en "- $@ ... " ; }
+ok() { green "${@:-OK}" ; }
+
+
 command_exists () {
     command -v "$1" >/dev/null 2>&1;
 }
@@ -8,28 +21,35 @@ command_exists () {
 function getproxy {
   if command_exists proxychains
   then
-    export PROXYCHAINS="proxychains"
+    export PROXY_EXIST="proxychains"
   else
-    export PROXYCHAINS=""
+    export PROXY_EXIST=""
   fi
 }
 
 # pythonver=3.8 # python version
+
+# boost 版本号。修改boostver指定版本
 export boostver=78 # for boost 1.78.0
 # conda python 路径
 conda3=$HOME/software/python3rd/anaconda3/envs/hikyuu
 kerneldev=/usr/include/c++/$(ls /usr/include/c++/)/
 export usrsourcedir="$HOME/install/"
-cd ${usrsourcedir}
+cd "${usrsourcedir}"
 
-# 自动判断hikyuu 源码下载路径
-testb=$HOME/myDocs/YUNIO/tmp/gupiao/hikyuu
-if [[ -d ${testb} ]]
-then
-  export HIKYUU=${testb}
-else
-  export HIKYUU=$HOME/install/hikyuu
-fi
+function hikyuu_path {
+  # 自动判断hikyuu 源码下载路径
+  testb=$HOME/myDocs/YUNIO/tmp/gupiao/hikyuu
+  if [[ -d ${testb} ]]
+  then
+    export HIKYUU=${testb}
+  else
+    export HIKYUU=$HOME/install/hikyuu
+  fi
+  bold "HIKYUU: ${HIKYUU}"
+}
+
+hikyuu_path
 
 export PYTHONPATH=${conda3}
 if [[ -f "boostroot.txt" ]] && [[ -n $(cat boostroot.txt) ]]
@@ -42,20 +62,26 @@ else
   # export BOOST_LIB=/usr/local/lib
   # export BOOST_LIB=${BOOST_ROOT}/libs
 fi
-export BOOST_LIB=${conda3}
-echo "BOOST_ROOT: $BOOST_ROOT --- BOOST_LIB:$BOOST_LIB"
+# export BOOST_LIB="${conda3}/lib"
+export BOOST_LIB="${conda3}"
+function set_env {
+green "BOOST_ROOT: $BOOST_ROOT --- BOOST_LIB:$BOOST_LIB"
 # export LD_LIBRARY_PATH=./:${BOOST_LIB}:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}
-export LD_LIBRARY_PATH=./:${BOOST_LIB}:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}/build/release/linux/x86_64/lib 
+# export LD_LIBRARY_PATH=./:${BOOST_LIB}:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}/build/release/linux/x86_64/lib:$HOME/software/python3rd/anaconda3/lib
+export LD_LIBRARY_PATH=./:${BOOST_LIB}:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}/build/release/linux/x86_64/lib
+
 # export CPLUS_INCLUDE_PATH=${kerneldev}:${conda3}/include/python${pythonver}:/usr/include
 export CPLUS_INCLUDE_PATH=${kerneldev}:$(ls -d ${conda3}/include/python*):/usr/include
 echo  "CPLUS_INCLUDE_PATH: ${CPLUS_INCLUDE_PATH}"
 echo "LD_LIBRARY_PATH:${LD_LIBRARY_PATH}"
+}
+set_env
 cd -
 
 if [[ ! -f ~/.visudo ]]
 then
-  echo " Run ‘sudo’ Command Without Entering a Password in Linux"
-  echo "add:  %wheel ALL=(ALL) NOPASSWD: ALL"
+  yellow " Run ‘sudo’ Command Without Entering a Password in Linux"
+  yellow "add:  %wheel ALL=(ALL) NOPASSWD: ALL"
   sudo visudo
   echo "1" > ~/.visudo
 fi
@@ -97,22 +123,28 @@ grep "fastestmirror=1" /etc/dnf/dnf.conf
 if [[ $? != 0 ]]
 then
   # dnf fastestmirror
-  echo "fastestmirror=1\nmax_parallel_downloads=5" | sudo tee -a /etc/dnf/dnf.conf
+  echo "dnf fastestmirror"
+  echo -e "fastestmirror=1\nmax_parallel_downloads=8" | sudo tee -a /etc/dnf/dnf.conf
 fi
 
+# proxy server 自己修改proxy server
+export PROXYSERVER=192.168.103.1
 which proxychains
 if [[ $? != 0 ]]
 then
+  green "dnf install proxychains"
   sudo dnf install -y proxychains-ng
-  grep "socks4 	127.0.0.1 9050" /etc/proxychains.conf
+  oldproxy='socks4 	127.0.0.1 9050'
+  grep "${oldproxy}" /etc/proxychains.conf
   if [[ $? == 0 ]]
   then
-    echo "setting prochains"
-    sudo sed -i '/socks4 	127.0.0.1 9050/d' /etc/proxychains.conf
-    echo "socks5 	192.168.103.1 1081" | sudo tee -a /etc/proxychains.conf
+    green "setting prochains"
+    sudo sed -i "/${oldproxy}/d" /etc/proxychains.conf
+    # sudo sed -i '/socks4       127.0.0.1 9050/d' /etc/proxychains.conf
+    echo "socks5 ${PROXYSERVER} 1081" | sudo tee -a /etc/proxychains.conf
   fi
-  sudo dnf install -y update
-  echo "ready to reboot"
+  sudo dnf -y update
+  green "ready to reboot system"
   sleep 5
   sudo reboot
 fi
@@ -122,3 +154,40 @@ fi
 env | grep -i wayland
 echo "export env end."
 
+function unset_env {
+  unset LD_LIBRARY_PATH
+  unset BOOST_LIB
+  unset CPLUS_INCLUDE_PATH
+  unset PYTHONPATH
+  unset CPLUS_INCLUDE_PATH
+}
+# source ~/.bashrc
+
+# function rename_libk5crypto {
+  # new_libk5="/home/fedora/software/python3rd/anaconda3/lib/libk5crypto.so"
+  # old_libk5="/usr/lib64/libk5crypto.so"
+  # if [[ -f ${new_libk5} && -f ${old_libk5} ]]
+  # then
+    # sudo su -
+    # rm ${old_libk5} "${old_libk5}.3"
+    # ln -s "${new_libk5}" "${old_libk5}.3"
+    # ln -s  "${old_libk5}.3" "${old_libk5}"
+  # fi
+# }
+
+function install_required {
+   testb="${HIKYUU}/requirements.txt" ;
+   [ -f "${testb}" ] && pip install -r ${testb} || yellow "not found ${testb}"
+   if command -v "pip list|grep TA-Lib" 
+   then 
+     pip install TA-lib
+   fi
+}
+
+if command_exists conda 
+then
+  conda info &
+  green "conda info"
+else
+  yellow "conda not installed"
+fi

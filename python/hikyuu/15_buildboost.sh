@@ -13,26 +13,30 @@ then
 else
   boostsource="boost_1_${boostver}_0.tar.gz"
 fi
-echo "${boostsource}"
+green "${boostsource}"
 
 usrsourcedir="$HOME/install/"
 cd ${usrsourcedir}
 # set -e
 
 # boost是否已经编译完成
-ls "${BOOST_LIB}/libboost*"
+ls "${BOOST_LIB}//lib/libboost*"
 # [ -f $boostsource ] && \
 [[ $? != 0 ]] && \
  # tar xzvf $boostsource && \
  cd boost_1_${boostver}_0 && \
  # ./bootstrap.sh --exec-prefix=/usr/local && \
- ./bootstrap.sh --exec-prefix=${BOOST_LIB} && \
- ./b2 -q -j 4 threading=multi && \
- ./b2 install threading=multi && \
- sudo cp b2 /usr/local/bin/ && \
- cd .. \
+    ./bootstrap.sh --exec-prefix=${PYTHONPATH} && \
+    ./b2 release link=static runtime-link=shared address-model=64 -j 4 --with-date_time --with-filesystem --with-system --with-test 
+    ./b2 release link=shared runtime-link=shared address-model=64 -j 4 --with-python --with-serialization 
+  green "boost install threading-multi"
+  ./b2 install threading=multi && \
+  sudo cp b2 /usr/local/bin/ && \
+  cd .. \
+ # ./b2 -q -j 4 threading=multi && \
  # rm $boostsource
  #  && ln -s /usr/lib/x86_64-linux-gnu/libboost_python-py34.so /usr/lib/x86_64-linux-gnu/libboost_python3.so
 
-echo "boost lib: ${BOOST_LIB}"
-echo done ................................. $0
+green "boost lib: ${BOOST_LIB}"
+green "boost root: ${BOOST_ROOT}"
+echo "done ................................. $0"
