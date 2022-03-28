@@ -38,4 +38,5 @@ Do the following:
 
 2. Follow the directions above for navigating the GUI but remember that the printer que will not be installed through this process.
 
-hp-plugin 下载驱动组件
+---
+hp-plugin 下载驱动组件(可能需要proxy)
