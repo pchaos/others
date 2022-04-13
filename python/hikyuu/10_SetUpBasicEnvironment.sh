@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+echo "start ................................. $0"
 . ./hikyuuEnv.sh
 
 if ! command_exists nvim
@@ -14,7 +15,7 @@ then
     sudo dnf install -y gnome-desktop
   fi
   sudo dnf groupinstall -y "Development Tools" "Development Libraries"
-  sudo dnf install -y wget vim neovim tree xsel powerline clang
+  sudo dnf install -y wget vim neovim tree xsel powerline clang ccache
   sudo dnf install -y zig ldc zlib zstd cmake nng git
   sudo dnf install -y neovim python-neovim
   sudo dnf install -y mesa-libGLU nodejs mesa-libOpenCL
@@ -43,18 +44,18 @@ fi
 # wget -c -O hdf5-1.10.4.tar.gz https://www.hdfgroup.org/package/source-gzip-4/?wpdmdl=13048&refresh=6205cd76d19271644547446 2>&1
 
 # anaconda ; 安装anaconda env不能设置proxy
-anaconda3=software/python3rd/anaconda3
-[ ! -d "${HOME}/${anaconda3}" ] && wget -c -O anaconda3.sh https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh && chmod a+x anaconda3.sh \
+anaconda3="${HOME}/software/python3rd/anaconda"
+[ ! -d "${anaconda3}" ] && wget -c -O anaconda3.sh https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh && chmod a+x anaconda3.sh \
   && ./anaconda3.sh  -u < anacondainstall.txt && sleep 1 && source ~/.bashrc && echo "y" | conda update conda
 hik=hikyuu
-if [ ! -d "${HOME}/${anaconda3}/envs/${hik}" ] 
+if [ ! -d "${anaconda3}/envs/${hik}" ] 
 then
   echo "y" | conda create -n ${hik} python=3.8 \
-    && echo "[ -d '${HOME}/${anaconda3}/envs/${hik}' ] && conda activate ${hik}" >> ~/.bashrc \
+    && echo "[ -d '${anaconda3}/envs/${hik}' ] && conda activate ${hik}" >> ~/.bashrc \
     && . ~/.bashrc && conda install -n ${hik} -y click jupyterlab \
-    && testb="install/hikyuu/requirements.txt" ; [ -f "${testb}" ] && pip install -r ${testb}
+    && testb="${HIKYUU}/requirements.txt" ; [ -f "${testb}" ] && pip install -r ${testb}
   # libstdc++.so.6 version not equal to system libstdc++
-  file2del="${HOME}/${anaconda3}/envs/${hik}/lib/libstdc++.so.6"
+  file2del="${anaconda3}/envs/${hik}/lib/libstdc++.so.6"
   if [[ -f "$file2del" ]]
   then
     green "${file2del} exits"
@@ -66,7 +67,7 @@ then
   green "logout"
   logout
 fi
-# [ ! -d "${HOME}/${anaconda3}/envs/${hik}" ] && conda create -n ${hik} python=3.8 && echo "[ -d ${HOME}/${anaconda3}/envs/${hik}' ] && conda activate ${hik}" >> ~/.bashrc && . ~/.bashrc
+# [ ! -d "${anaconda3}/envs/${hik}" ] && conda create -n ${hik} python=3.8 && echo "[ -d ${anaconda3}/envs/${hik}' ] && conda activate ${hik}" >> ~/.bashrc && . ~/.bashrc
 
 # PROXYSERVER=192.168.103.1
 getproxy

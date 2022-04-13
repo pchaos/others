@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# 测试hikyuu python环境
 
 import inspect
 from PyQt5 import Qt

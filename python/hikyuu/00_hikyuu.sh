@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+echo "start ................................. $0"
 # 安装xmake
 # bash <(wget https://xmake.io/shget.text -O -)
 [ ! -d "$HOME/.xmake" ] && rm wget-log
@@ -6,7 +7,7 @@
 
 # 第三方源码存放位置不存在就创建目录
 # usrsourcedir="$HOME/install"
-. hikyuuEnv.sh
+source hikyuuEnv.sh
 [ ! -d ${usrsourcedir} ] && mkdir -p $usrsourcedir
 cd ${usrsourcedir}
 
@@ -62,3 +63,4 @@ fi
 # 自己fork的版本
 # [ ! -d "hikyuu" ] && git clone https://github.com/pchaos/hikyuu.git --recursive --depth 1
 
+yellow "done ................................. $0"

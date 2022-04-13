@@ -85,17 +85,36 @@ edit hikyuu_pywrap/xmake.lua
             加上前缀（lib）：
             os.cp(target:targetdir() .. '/libhikyuu.so', dst_dir)
 ``````
+
+## ImportError: /usr/lib64/libstdc++.so.6: cannot allocate memory in static TLS block
+  export LD_PRELOAD=/usr/lib64/libstdc++.so.6:$LD_PRELOAD
+
 ## Import Error: libGL.so.1 :cannot open shared object file
 sudo dnf install -y mesa-libGLU
 
+## 
+  pip uninstall pyside2, qt, pyqt5
+  conda install -c conda-forge pyside2
+
 ## python hikyuu/gui/HikyuuTDX.py ModuleNotFoundError: No module named 'hikyuu'
 * 切换到hikyuu代码目录，
+  编译完成后需要logout shell,重新登录系统才能继续
 
   ipython hikyuu/gui/HikyuuTDX.py
 
 * 远程访问
 
   jupyter-lab --ip "*" --no-browser --notebook-dir=~/install/hikyuu -y 
+
+直接在克隆的 hikyuu 目录下执行 python setup.py command , 支持的 command：
+
+python setup.py help – 查看帮助
+python setup.py build – 执行编译
+python setup.py install – 编译并执行安装（安装到 python 的 site-packages 目录下）
+python setup.py uninstall – 删除已安装的Hikyuu
+python setup.py test – 执行单元测试（可带参数 –compile=1，先执行编译）
+python setup.py clear – 清除本地编译结果
+python setup.py wheel – 生成wheel安装包
 
 ### 密码
 jupyter-lab password: hikyuu

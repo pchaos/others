@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+echo "start ................................. $0"
 # set hikyuu env
 
 # Console output colors
@@ -32,9 +33,10 @@ function getproxy {
 # boost 版本号。修改boostver指定版本
 export boostver=78 # for boost 1.78.0
 # conda python 路径
-conda3=$HOME/software/python3rd/anaconda3/envs/hikyuu
+conda3=$HOME/software/python3rd/anaconda/envs/hikyuu
 kerneldev=/usr/include/c++/$(ls /usr/include/c++/)/
 export usrsourcedir="$HOME/install/"
+[[ ! -d ${usrsourcedir} ]] && mkdir -p ${usrsourcedir}
 cd "${usrsourcedir}"
 
 function hikyuu_path {
@@ -62,18 +64,23 @@ else
   # export BOOST_LIB=/usr/local/lib
   # export BOOST_LIB=${BOOST_ROOT}/libs
 fi
+
 # export BOOST_LIB="${conda3}/lib"
 export BOOST_LIB="${conda3}"
 function set_env {
-green "BOOST_ROOT: $BOOST_ROOT --- BOOST_LIB:$BOOST_LIB"
-# export LD_LIBRARY_PATH=./:${BOOST_LIB}:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}
-# export LD_LIBRARY_PATH=./:${BOOST_LIB}:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}/build/release/linux/x86_64/lib:$HOME/software/python3rd/anaconda3/lib
-export LD_LIBRARY_PATH=./:${BOOST_LIB}:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}/build/release/linux/x86_64/lib
+  green "BOOST_ROOT: $BOOST_ROOT --- BOOST_LIB:$BOOST_LIB"
+  # export LD_LIBRARY_PATH=./:${BOOST_LIB}:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}
+  # export LD_LIBRARY_PATH=./:${BOOST_LIB}:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}/build/release/linux/x86_64/lib:$HOME/software/python3rd/anaconda/lib
+  if ! (grep -q libstdc <<< "$LD_PRELOAD") ; then
+    export LD_PRELOAD=/usr/lib64/libstdc++.so.6:$LD_PRELOAD
+  fi
+  export LD_LIBRARY_PATH=./:${BOOST_LIB}:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}/build/release/linux/x86_64/lib
+  # export LD_LIBRARY_PATH=./:/usr/local/lib64:/usr/lib64:/usr/lib64/mysql:${HIKYUU}/build/release/linux/x86_64/lib:${BOOST_LIB}
 
-# export CPLUS_INCLUDE_PATH=${kerneldev}:${conda3}/include/python${pythonver}:/usr/include
-export CPLUS_INCLUDE_PATH=${kerneldev}:$(ls -d ${conda3}/include/python*):/usr/include
-echo  "CPLUS_INCLUDE_PATH: ${CPLUS_INCLUDE_PATH}"
-echo "LD_LIBRARY_PATH:${LD_LIBRARY_PATH}"
+  # export CPLUS_INCLUDE_PATH=${kerneldev}:${conda3}/include/python${pythonver}:/usr/include
+  export CPLUS_INCLUDE_PATH=${kerneldev}:$(ls -d ${conda3}/include/python*):/usr/include
+  echo  "CPLUS_INCLUDE_PATH: ${CPLUS_INCLUDE_PATH}"
+  echo "LD_LIBRARY_PATH:${LD_LIBRARY_PATH}"
 }
 set_env
 cd -
@@ -184,6 +191,13 @@ function install_required {
    fi
 }
 
+function delete_libstdc {
+  filename=libstdc++.so
+  mv ${filename} ${filename}.old
+  mv ${filename}.6 ${filename}.6.old
+  mv ${filename}6.0.28 ${filename}.6.0.28.old
+}
+
 if command_exists conda 
 then
   conda info &
@@ -191,3 +205,5 @@ then
 else
   yellow "conda not installed"
 fi
+
+yellow "done ................................. $0"
