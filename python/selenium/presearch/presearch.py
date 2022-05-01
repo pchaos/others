@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""登录racknerd cloud，重启vps
+"""登录preseach enging，自动搜索
 https://github.com/seleniumbase/SeleniumBase/blob/master/seleniumbase/fixtures/base_case.py
 """
 import os
@@ -80,7 +80,9 @@ class presearchTest(BaseCase):
         for elem in elems:
             #  self._print(elem)
             self._print(elem.text)
-            self.all_keys.append(elem.text.replace("#", ""))
+            tmpelem=elem.text.split(" ")[0]
+            self.all_keys.append(tmpelem.replace("#", ""))
+        #  raise Exception("weibo")
         return self.all_keys
 
     def prepare(self):
