@@ -20,15 +20,15 @@ cd ${usrsourcedir}
 # set -e
 
 # boost是否已经编译完成
-ls "${BOOST_LIB}lib/"|grep libboost
+ls "${BOOST_LIB}/lib/"|grep libboost
 # [ -f $boostsource ] && \
 if [[ $? -gt 0 ]] 
 then
   # tar xzvf $boostsource && \
   cd boost_1_${boostver}_0 && \
     ./bootstrap.sh --prefix="${PYTHONPATH}" --exec-prefix="${PYTHONPATH}" && \
-    ./b2 release link=static runtime-link=shared address-model=64 -j 4 --with-date_time --with-filesystem --with-system --with-test 
-    ./b2 release link=shared runtime-link=shared address-model=64 -j 4 --with-python --with-serialization 
+    ./b2 release link=static runtime-link=shared address-model=64 -j 4 --with-date_time --with-filesystem --with-system --with-test threading=multi
+    ./b2 release link=shared runtime-link=shared address-model=64 -j 4 --with-python --with-serialization threading=multi
   green "boost install threading-multi"
   ./b2 install threading=multi && \
   sudo cp b2 /usr/local/bin/ && \
