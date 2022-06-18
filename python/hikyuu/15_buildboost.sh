@@ -2,7 +2,7 @@
 echo "start ................................. $0"
 
 export CPLUS_INCLUDE_PATH=$(ls $HOME/software/python3rd/anaconda/envs/hikyuu/include/python*)
-export PYTHONPATH=$(ls $HOME/software/python3rd/anaconda/envs/hikyuu/bin*)
+export PYTHONPATH=$(ls -d $HOME/software/python3rd/anaconda/envs/hikyuu/bin*)
 
 . hikyuuEnv.sh
 
