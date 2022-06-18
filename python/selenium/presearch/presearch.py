@@ -27,6 +27,7 @@ def is_chinese(uchar):
 class presearchTest(BaseCase):
     """ presearch Cloud Test
     """
+
     @classmethod
     def setUpClass(cls):
 
@@ -37,7 +38,7 @@ class presearchTest(BaseCase):
         cls.password = os.getenv("PASSWORD")
         try:
             cls.filename = os.path.splitext(os.path.basename(__file__))[0]
-        except Exception as e:
+        except Exception:
             cls.filename = "presearch"
         cls.restarturl = "https://www.presearch.org/"
         cls.all_keys = [
@@ -72,7 +73,7 @@ class presearchTest(BaseCase):
         return self.all_keys
 
     def get_weibo_keywors(
-        self, url="https://s.weibo.com/top/summary?cate=socialevent"):
+            self, url="https://s.weibo.com/top/summary?cate=socialevent"):
         self.open(url)
         self.wait_for_element_present(f'tr[class="thead_tr"', timeout=8)
         self.press_down_arrow(times=8)
@@ -80,7 +81,7 @@ class presearchTest(BaseCase):
         for elem in elems:
             #  self._print(elem)
             self._print(elem.text)
-            tmpelem=elem.text.split(" ")[0]
+            tmpelem = elem.text.split(" ")[0]
             self.all_keys.append(tmpelem.replace("#", ""))
         #  raise Exception("weibo")
         return self.all_keys
@@ -217,7 +218,7 @@ class presearchTest(BaseCase):
                 self._print(e.args)
                 self.switch_to_window(self.driver.window_handles[-1])
                 time.sleep(2)
-                self.get("https://presearch.org")
+                self.get("https://www.presearch.org")
                 self._print(f"{i}/{searchcounts} ... on Exception")
                 #  self.find_element_by_id("search").send_keys(search_key)
                 self.delay_sendkey(search_key)
@@ -255,6 +256,7 @@ class presearchTest(BaseCase):
 
         url = "https://www.presearch.org/"
         url2 = self.restarturl
+        logined_str = "//*/div[1]/span[2]"
         need_login_str = 'div:contains("Register or Login")'
         try:
             self.open(url)
@@ -275,12 +277,14 @@ class presearchTest(BaseCase):
                 self._print(f"prepare login {self.email} {self.password}")
                 self.login(user=self.email, password=self.password)
 
-            self.wait_for_element_present('//*/div/span[2]',
-                                          By.XPATH,
-                                          timeout=10)
+                self.open(url)
+                self.refresh_page()
+            elem_present=self.wait_for_element_present(logined_str, By.XPATH, timeout=10)
+            if not elem_present:
+                print(f"Not found: {logined_str} in current page.")
 
-        # PRE
-        self.assert_element('//*/div/span[2]', By.XPATH)
+        # 是否存在"PRE"
+        self.assert_element(logined_str, By.XPATH)
         #  time.sleep(1)
         try:
             # loginned
