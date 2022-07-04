@@ -67,10 +67,11 @@ class RACKNERDTest(BaseCase):
                 self.assert_text("Manage Product")
                 self._print(f"Ready to restart vps")
                 # reboot
-                self.wait_for_element_present('span[id="displayreboot"]', timeout=15)
+                self.wait_for_element_present('span[id="displayreboot"]', timeout=18)
                 self.click('//*[@id="displayreboot"]/a')
                 self.wait_for_element_present('div[class="modal-content"]', timeout=5)
                 # confirm
+                time.sleep(3)
                 self.click('input[type="button"]')
             except Exception as e:
                 self._print(e.args)
