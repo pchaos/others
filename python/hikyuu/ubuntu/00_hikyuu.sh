@@ -30,7 +30,23 @@ xmake r small-test
 ARG="-v -j 2"
 python3 setup.py build ${ARG}
 
+ls ta-lib-0.4.0-src.tar.gz
+if [[ $? != 0 ]]
+then
+  # install talib
+  wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz
+  tar -xzf ta-lib-0.4.0-src.tar.gz
+  cd ta-lib
+  ./configure
+  make
+  sudo make install
+  # pip install TA-Lib
+else
+  green "ta-lib has installed"
+fi
 
+# 导入收盘数据
+cd ~/hikyuu;ipython hikyuu/gui/importdata.py
 
 # local command
 sshpass -p "${vps_pass}" scp hikyuu.ini importdata-gui.ini hikyuu@120.25.145.60:~/.hikyuu/
