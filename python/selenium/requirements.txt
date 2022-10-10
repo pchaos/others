@@ -3,3 +3,4 @@ pytest
 nose
 pathlib
 seleniumbase
+numpy
