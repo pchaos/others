@@ -2,14 +2,10 @@
 echo  .............................. "$0"
 
 # fedora  > 34 install script
-# fedora 36 系统自带fmt-devel 9.0.0,会报错：static assertion failed: Cannot format an argument. To make type T formattable provide a formatter<T> specialization: https://fmt.dev/latest/api.html#udt   ，需要使用版本8.1.1
-# 更改hikyuu根目录下xmake.lua, \
-# add_requires("fmt 8.1.1", {system=false, configs = {header_only = true, vs_runtime = "MD"}})
-
 . hikyuuEnv.sh
 hikyuu_path
 # PROXYSERVER=192.168.103.1
-ping -c 1 ${PROXYSERVER} && export ALL_PROXY=socks5:/${PROXYSERVER}:1081 && git config --global http.proxy socks5://${PROXYSERVER}:1081
+ping -c 1 ${PROXYSERVER} && export ALL_PROXY=socks5:/${PROXYSERVER}:1080 && git config --global http.proxy socks5://${PROXYSERVER}:1080
 
 if [[ -d "${HIKYUU}" ]]
 then
@@ -32,7 +28,7 @@ then
 
   echo "${CLEAR}"
   # eval "${CLEAR}"
-  # python setup.py build ${ARG}
+  python setup.py build ${ARG}
   # 编译最后一个报错
   export BOOST_LIB="${conda3}/lib"
   set_env

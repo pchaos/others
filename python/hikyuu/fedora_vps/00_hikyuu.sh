@@ -56,9 +56,8 @@ then
 else
   green "git pull hikyuu"
   # cd hikyuu && git pull && [ -f "../hikyuu.patch" ] && git apply ../hikyuu.patch ; cd ..
-  # cd "${usrsourcedir}/hikyuu" && git pull
-  cd "${HIKYUU}" && git pull
-  cd -
+  cd "${usrsourcedir}/hikyuu" && git pull
+  cd ..
 fi
 
 # 自己fork的版本

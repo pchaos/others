@@ -25,20 +25,12 @@ ls "${BOOST_LIB}/lib/"|grep libboost
 if [[ $? -gt 0 ]] 
 then
   # tar xzvf $boostsource && \
-  green "python path: $PYTHONPATH"
-  export CXX="g++ -v -Wall -std=c++11 -stdlib=libc++"
-  export CC="gcc -v -std=c++11 -stdlib=libc++"
-  boostdir=boost_1_${boostver}_0/
-  buildfile=${boostdir}tools/build/src/engine/build.sh
-  if grep "( B2_VERBOSE_OPT=${TRUE} echo_run gcc ${CXXFLAGS} ${B2_CXXFLAGS} ${B2_SOURCES} -lstdc++ -o b2 )" ${buildfile}; then
-    sed "s|( B2_VERBOSE_OPT=${TRUE} echo_run ${B2_CXX} ${B2_CXXFLAGS} ${B2_SOURCES} -o b2 |/( B2_VERBOSE_OPT=${TRUE} echo_run gcc ${CXXFLAGS} ${B2_CXXFLAGS} ${B2_SOURCES} -lstdc++ -o b2 )|g" ${buildfile}
-  fi 
-  cd ${boostdir} && \
-    ./bootstrap.sh --prefix="${PYTHONPATH}" --exec-prefix="${PYTHONPATH}" --libdir="${PYTHONPATH}/lib" --includedir="${PYTHONPATH}/include" && \
+  cd boost_1_${boostver}_0 && \
+    ./bootstrap.sh --prefix="${PYTHONPATH}" --exec-prefix="${PYTHONPATH}" && \
     ./b2 release link=static runtime-link=shared address-model=64 -j 4 --with-date_time --with-filesystem --with-system --with-test threading=multi
     ./b2 release link=shared runtime-link=shared address-model=64 -j 4 --with-python --with-serialization threading=multi
   green "boost install threading-multi"
-  ./b2 install threading=multi --libdir="${PYTHONPATH}/lib" --includedir="${PYTHONPATH}/include" && \
+  ./b2 install threading=multi && \
   sudo cp b2 /usr/local/bin/ && \
   cd ..
   # ./b2 -q -j 4 threading=multi && \

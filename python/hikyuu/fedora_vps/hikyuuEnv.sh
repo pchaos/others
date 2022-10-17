@@ -31,10 +31,15 @@ function getproxy {
 # pythonver=3.8 # python version
 
 # boost 版本号。修改boostver指定版本
-export boostver=78 # for boost 1.78.0
+export boostver=75 # for boost 1.78.0
 # conda python 路径
 conda3=$HOME/software/python3rd/anaconda/envs/hikyuu
-kerneldev=/usr/include/c++/$(ls /usr/include/c++/)/
+if ls /usr/include/c++/ ;then
+  kerneldev=/usr/include/c++/$(ls /usr/include/c++/)/
+else
+  # 升级gcc后的路径
+  kerneldev=/usr/local/include/c++/$(ls /usr/local/include/c++/)/
+fi
 export usrsourcedir="$HOME/install/"
 [[ ! -d ${usrsourcedir} ]] && mkdir -p ${usrsourcedir}
 cd "${usrsourcedir}"
@@ -79,6 +84,7 @@ function set_env {
 
   # export CPLUS_INCLUDE_PATH=${kerneldev}:${conda3}/include/python${pythonver}:/usr/include
   export CPLUS_INCLUDE_PATH=${kerneldev}:$(ls -d ${conda3}/include/python*):/usr/include
+  # export CPLUS_INCLUDE_PATH=$(ls -d ${conda3}/include/python*):/usr/include:${kerneldev}
   echo  "CPLUS_INCLUDE_PATH: ${CPLUS_INCLUDE_PATH}"
   echo "LD_LIBRARY_PATH:${LD_LIBRARY_PATH}"
 }
@@ -130,12 +136,12 @@ grep "fastestmirror=1" /etc/dnf/dnf.conf
 if [[ $? != 0 ]]
 then
   # dnf fastestmirror
-  echo "dnf install fastestmirror"
+  echo "dnf fastestmirror"
   echo -e "fastestmirror=1\nmax_parallel_downloads=8" | sudo tee -a /etc/dnf/dnf.conf
 fi
 
 # proxy server 自己修改proxy server
-export PROXYSERVER=192.168.103.1
+export PROXYSERVER=127.0.0.1
 which proxychains
 if [[ $? != 0 ]]
 then
@@ -148,7 +154,7 @@ then
     green "setting prochains"
     sudo sed -i "/${oldproxy}/d" /etc/proxychains.conf
     # sudo sed -i '/socks4       127.0.0.1 9050/d' /etc/proxychains.conf
-    echo "socks5 ${PROXYSERVER} 1081" | sudo tee -a /etc/proxychains.conf
+    echo "socks5 ${PROXYSERVER} 1080" | sudo tee -a /etc/proxychains.conf
   fi
   sudo dnf -y update
   green "ready to reboot system"
@@ -201,11 +207,9 @@ function delete_libstdc {
 if command_exists conda 
 then
   conda info &
-  sleep 1
   green "conda info"
 else
   yellow "conda not installed"
 fi
 
 yellow "done ................................. $0"
-

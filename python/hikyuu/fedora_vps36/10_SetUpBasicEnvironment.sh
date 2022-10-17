@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
+# Modified: 2022-07-15 12:28:36
 echo "start ................................. $0"
 . ./hikyuuEnv.sh
 
-if ! command_exists zig
+if ! command_exists nvim
 then
   uname -a|grep fc35
   if [ $? == 0 ] 
@@ -16,10 +17,10 @@ then
   fi
   sudo dnf groupinstall -y "Development Tools" "Development Libraries"
   sudo dnf install -y wget vim neovim tree xsel powerline clang ccache
-  sudo dnf install -y zig ldc zlib zstd cmake nng git
+  sudo dnf install -y zig ldc zlib zstd cmake nng git screen
   sudo dnf install -y neovim python-neovim
-  sudo dnf install -y zig ldc icu zlib zstd cmake nng git
-  sudo dnf install -y hdf5 hdf5-devel sqlite-devel g++
+  sudo dnf install -y mesa-libGLU nodejs mesa-libOpenCL langpacks-zh_CN libtool
+  sudo dnf install -y hdf5 hdf5-devel sqlite-devel flatbuffers-devel zlib-devel nng nng-devel fmt fmt-devel spdlog spdlog-devel cpp-httplib-devel
 
   # mysql devel
   : '
@@ -29,7 +30,7 @@ then
   [mysql57-community]
   name=MySQL 5.7 Community Server
   baseurl=http://repo.mysql.com/yum/mysql-5.7-community/el/7/x86_64/
-  enabled=1
+enabled=1
   gpgcheck=0
   EOF
 
@@ -50,7 +51,7 @@ anaconda3="${HOME}/software/python3rd/anaconda"
 hik=hikyuu
 if [ ! -d "${anaconda3}/envs/${hik}" ] 
 then
-  echo "y" | conda create -n ${hik} python=3.8 \
+  echo "y" | conda create -n ${hik} python=3.9 \
     && echo "[ -d '${anaconda3}/envs/${hik}' ] && conda activate ${hik}" >> ~/.bashrc \
     && . ~/.bashrc && conda install -n ${hik} -y click jupyterlab \
     && testb="${HIKYUU}/requirements.txt" ; [ -f "${testb}" ] && pip install -r ${testb}
@@ -71,13 +72,13 @@ fi
 
 # PROXYSERVER=192.168.103.1
 getproxy
-# ping -c 1 ${PROXYSERVER} && export ALL_PROXY=socks5:/${PROXYSERVER}:1081 && git config --global http.proxy socks5://${PROXYSERVER}:1081
-ping -c 1 ${PROXYSERVER} && git config --global http.proxy socks5://${PROXYSERVER}:1081 && git config --global submodule.fetchJobs 5
+# ping -c 1 ${PROXYSERVER} && export ALL_PROXY=socks5:/${PROXYSERVER}:1080 && git config --global http.proxy socks5://${PROXYSERVER}:1080
+ping -c 1 ${PROXYSERVER} && git config --global http.proxy socks5://${PROXYSERVER}:1080 && git config --global submodule.fetchJobs 5
 
 unset_env
 echo "proxychains exist: ${PROXY_EXIST} BOOST_LIB:${BOOST_LIB}"
 # [ ! -d "$HOME/.SpaceVim" ] && curl -sLf https://spacevim.org/install.sh | ${PROXY_EXIST} bash
-[ ! -d "$HOME/.SpaceVim" ] && curl -sLf https://spacevim.org/install.sh | bash &
+# [ ! -d "$HOME/.SpaceVim" ] && curl -sLf https://spacevim.org/install.sh | bash &
 
 ls ta-lib-0.4.0-src.tar.gz
 if [[ $? != 0 ]]

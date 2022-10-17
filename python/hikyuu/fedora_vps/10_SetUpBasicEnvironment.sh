@@ -3,9 +3,9 @@
 echo "start ................................. $0"
 . ./hikyuuEnv.sh
 
-if ! command_exists zig
+if ! command_exists nvim
 then
-  uname -a|grep fc35
+  uname -a|grep -E "fc35|fc34"
   if [ $? == 0 ] 
   then
     # fedora 35
@@ -15,11 +15,11 @@ then
     sudo dnf install -y gnome-desktop
   fi
   sudo dnf groupinstall -y "Development Tools" "Development Libraries"
-  sudo dnf install -y wget vim neovim tree xsel powerline clang ccache
-  sudo dnf install -y zig ldc zlib zstd cmake nng git
+  sudo dnf install -y wget vim neovim tree xsel powerline clang g++ cmake
+  sudo dnf install -y zig ldc zlib zstd cmake nng git screen
   sudo dnf install -y neovim python-neovim
-  sudo dnf install -y zig ldc icu zlib zstd cmake nng git
-  sudo dnf install -y hdf5 hdf5-devel sqlite-devel g++
+  sudo dnf install -y mesa-libGLU nodejs mesa-libOpenCL langpacks-zh_CN libtool
+  sudo dnf install -y hdf5 hdf5-devel sqlite-devel flatbuffers-devel zlib-devel nng nng-devel fmt fmt-devel spdlog spdlog-devel cpp-httplib-devel
 
   # mysql devel
   : '
@@ -72,12 +72,12 @@ fi
 # PROXYSERVER=192.168.103.1
 getproxy
 # ping -c 1 ${PROXYSERVER} && export ALL_PROXY=socks5:/${PROXYSERVER}:1081 && git config --global http.proxy socks5://${PROXYSERVER}:1081
-ping -c 1 ${PROXYSERVER} && git config --global http.proxy socks5://${PROXYSERVER}:1081 && git config --global submodule.fetchJobs 5
+ping -c 1 ${PROXYSERVER} && git config --global http.proxy socks5://${PROXYSERVER}:1080 && git config --global submodule.fetchJobs 5
 
 unset_env
 echo "proxychains exist: ${PROXY_EXIST} BOOST_LIB:${BOOST_LIB}"
 # [ ! -d "$HOME/.SpaceVim" ] && curl -sLf https://spacevim.org/install.sh | ${PROXY_EXIST} bash
-[ ! -d "$HOME/.SpaceVim" ] && curl -sLf https://spacevim.org/install.sh | bash &
+# [ ! -d "$HOME/.SpaceVim" ] && curl -sLf https://spacevim.org/install.sh | bash &
 
 ls ta-lib-0.4.0-src.tar.gz
 if [[ $? != 0 ]]

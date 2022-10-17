@@ -1,0 +1,5 @@
+ 
+  
+yes
+~/software/python3rd/anaconda
+yes

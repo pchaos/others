@@ -130,12 +130,12 @@ grep "fastestmirror=1" /etc/dnf/dnf.conf
 if [[ $? != 0 ]]
 then
   # dnf fastestmirror
-  echo "dnf install fastestmirror"
+  echo "dnf fastestmirror"
   echo -e "fastestmirror=1\nmax_parallel_downloads=8" | sudo tee -a /etc/dnf/dnf.conf
 fi
 
 # proxy server 自己修改proxy server
-export PROXYSERVER=192.168.103.1
+export PROXYSERVER=127.0.0.1
 which proxychains
 if [[ $? != 0 ]]
 then
@@ -148,7 +148,7 @@ then
     green "setting prochains"
     sudo sed -i "/${oldproxy}/d" /etc/proxychains.conf
     # sudo sed -i '/socks4       127.0.0.1 9050/d' /etc/proxychains.conf
-    echo "socks5 ${PROXYSERVER} 1081" | sudo tee -a /etc/proxychains.conf
+    echo "socks5 ${PROXYSERVER} 1080" | sudo tee -a /etc/proxychains.conf
   fi
   sudo dnf -y update
   green "ready to reboot system"
@@ -201,11 +201,9 @@ function delete_libstdc {
 if command_exists conda 
 then
   conda info &
-  sleep 1
   green "conda info"
 else
   yellow "conda not installed"
 fi
 
 yellow "done ................................. $0"
-
