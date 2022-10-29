@@ -1,0 +1,4 @@
+pytest
+bs4
+lxml
+jinja2
