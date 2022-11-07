@@ -92,9 +92,15 @@ edit hikyuu_pywrap/xmake.lua
 ## Import Error: libGL.so.1 :cannot open shared object file
 sudo dnf install -y mesa-libGLU
 
-## 
-  pip uninstall pyside2, qt, pyqt5
-  conda install -c conda-forge pyside2
+## PyQt5/QtWidgets.abi3.so: undefined symbol
+```shell
+pip uninstall pyside2, qt, pyqt5
+conda install -c conda-forge pyside2
+pip install pyqt5==5.13
+dnf install egl-wayland wayvnc
+export QT_DEBUG_PLUGINS=1
+export QT_QPA_PLATFORM_PLUGIN_PATH=/usr/lib64/qt5/plugins
+```
 
 ## python hikyuu/gui/HikyuuTDX.py ModuleNotFoundError: No module named 'hikyuu'
 * 切换到hikyuu代码目录，

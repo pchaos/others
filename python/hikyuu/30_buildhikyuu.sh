@@ -3,8 +3,9 @@ echo  .............................. "$0"
 
 # fedora  > 34 install script
 # fedora 36 系统自带fmt-devel 9.0.0,会报错：static assertion failed: Cannot format an argument. To make type T formattable provide a formatter<T> specialization: https://fmt.dev/latest/api.html#udt   ，需要使用版本8.1.1
-# 更改hikyuu根目录下xmake.lua, \
+# 更改hikyuu根目录下xmake.lua
 # add_requires("fmt 8.1.1", {system=false, configs = {header_only = true, vs_runtime = "MD"}})
+# add_requires("fmt", { system = false, configs = { header_only = true, vs_runtime = "MD" }, version = "8.1.1" })  
 
 . hikyuuEnv.sh
 hikyuu_path

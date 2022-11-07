@@ -130,12 +130,13 @@ grep "fastestmirror=1" /etc/dnf/dnf.conf
 if [[ $? != 0 ]]
 then
   # dnf fastestmirror
-  echo "dnf install fastestmirror"
+  echo "dnf fastestmirror"
   echo -e "fastestmirror=1\nmax_parallel_downloads=8" | sudo tee -a /etc/dnf/dnf.conf
 fi
 
 # proxy server 自己修改proxy server
-export PROXYSERVER=192.168.103.1
+# export PROXYSERVER=192.168.103.1
+export PROXYSERVER=192.168.21.3
 which proxychains
 if [[ $? != 0 ]]
 then
