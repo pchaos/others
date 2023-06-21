@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """登录justhost cloud，重启vps
+Last Modified: 2023-05-23 18:27:27
 """
+
 import os
 import time
-from dotenv import load_dotenv
 # explicitly providing path to '.env'
 from pathlib import Path  # Python 3.6+ only
+
+from dotenv import load_dotenv
 from seleniumbase import BaseCase
 
 #  import pytest
@@ -13,12 +16,12 @@ from seleniumbase import BaseCase
 
 #  @pytest.mark.marker_test_suite
 class JUSTHOSTTest(BaseCase):
-    """ JUSTHOST Cloud Test
-    """
+    """JUSTHOST Cloud Test"""
+
     @classmethod
     def setUpClass(cls):
 
-        env_path = Path('.') / '.env'
+        env_path = Path(".") / ".env"
         load_dotenv(dotenv_path=env_path, verbose=True)
 
         cls.email = os.getenv("EMAIL")
@@ -44,11 +47,11 @@ class JUSTHOSTTest(BaseCase):
         self.update_text("input#password", f"{password}")
         self.wait_for_element_present(
             "#loginForm > div.jFormWrapperContainer > ul > li.nextLi > button",
-            timeout=20)
+            timeout=20,
+        )
         #  self.assert_text("Log in", "登录")
         self.assert_element('input[id="password"]')
-        self.click(
-            "#loginForm > div.jFormWrapperContainer > ul > li.nextLi > button")
+        self.click("#loginForm > div.jFormWrapperContainer > ul > li.nextLi > button")
 
     def restarting(self, isRestart=0):
         """restarting. 重启vps
@@ -57,8 +60,8 @@ class JUSTHOSTTest(BaseCase):
         """
         if isRestart > 0:
             try:
-                #  self.open("https://justhost.ru/tickets")
-                self.open("https://justhost.ru/billing/active")
+                #  self.open("https://justhost.asia/tickets")
+                self.open("https://justhost.asia/billing/active")
                 self.assert_text("ID")
                 #  self.assert_text("div#formActiveServices")
                 #  self._print(f"formActiveServices exists")
@@ -71,7 +74,7 @@ class JUSTHOSTTest(BaseCase):
                 self.assert_text("VPS kvm", timeout=5)
                 self._print(f"Ready to restart vps")
                 url = self.get_current_url()
-                url=f'https://justhost.ru/vps_service/vpsReset/{url.split("/")[-1]}'
+                url = f'https://justhost.asia/vps_service/vpsReset/{url.split("/")[-1]}'
                 self._print(f"open {url}\nclick vps reset")
                 #  self.open(url)
                 self.click('a[href*="/vps_service/vpsReset"]')
@@ -87,7 +90,7 @@ class JUSTHOSTTest(BaseCase):
             if isinstance(restart, list):
                 for i in restart:
                     self._print(f"'{i.text}'")
-                    if i.text == 'Перезапустить сервер':
+                    if i.text == "Перезапустить сервер":
                         self._print(f"found '{i.text}' and restart server")
                         i.click()
                         time.sleep(2)
@@ -96,12 +99,11 @@ class JUSTHOSTTest(BaseCase):
 
     #  @pytest.mark.marker1
     def test_basic(self):
-        url = "https://justhost.ru/billing/active"
+        url = "https://justhost.asia/billing/active"
         try:
-            self.open("https://justhost.ru/")
+            self.open("https://justhost.asia/")
             #  self.asscert_text("VPS")
-            self.wait_for_element_present('a[href="/optimal-plan/"]',
-                                          timeout=5)
+            self.wait_for_element_present('a[href="/optimal-plan/"]', timeout=5)
         except Exception as e:
             self._print("url timeout.")
             time.sleep(3)
@@ -111,13 +113,13 @@ class JUSTHOSTTest(BaseCase):
             time.sleep(1)
             #  self.wait_for_element_present('a[href="/services/vps"]', timeout=10)
 
-        self.assert_element('a[href="https://justhost.ru/services/vps"]')
+        self.assert_element('a[href="https://justhost.asia/services/vps"]')
         #  self.assert_title("IBM Cloud")
         self.login(self.email, self.password)
         #  time.sleep(1)
         # click "Cloud Foundry apps"
         try:
-            #active Services
+            # active Services
             css = 'a[href="/billing/active"]'
             self.wait_for_element_present(css, timeout=5)
             self.click(css)
@@ -135,7 +137,7 @@ class JUSTHOSTTest(BaseCase):
         print("ok")
 
     def atest_google_tour(self):
-        self.open('https://google.com')
+        self.open("https://google.com")
         self.wait_for_element('input[title="Search"]')
 
         self.create_tour(theme="dark")
