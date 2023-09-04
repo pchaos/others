@@ -1,0 +1,23 @@
+ibmcloud.py::IBMCloudTest::test_basic
+--------------------------------------------------------------------
+Last Page: [WARNING! Browser Not Open!]
+  Browser: chrome (99.0.4844.51)
+   Driver: chromedriver (2.44.609551)
+Timestamp: 1647529136  (Unix Timestamp)
+     Date: Thursday, 17 March 2022
+     Time: 10:58:56 PM  (PST, UTC+08:00)
+--------------------------------------------------------------------
+Traceback: File "/home/myuser/software/python3rd/anaconda/lib/python3.8/unittest/case.py", line 676, in run
+    self._callTestMethod(testMethod)
+  File "/home/myuser/software/python3rd/anaconda/lib/python3.8/unittest/case.py", line 633, in _callTestMethod
+    method()
+  File "/home/myuser/myDocs/YUNIO/tmp/gupiao/others/python/selenium/ibmcloud/ibmcloud.py", line 88, in test_basic
+    self.click('#modal > div > div.bx--modal-footer > button.bx--btn.bx--btn--primary')
+  File "/home/myuser/software/python3rd/anaconda/lib/python3.8/site-packages/seleniumbase/fixtures/base_case.py", line 232, in click
+    element = page_actions.wait_for_element_visible(
+  File "/home/myuser/software/python3rd/anaconda/lib/python3.8/site-packages/seleniumbase/fixtures/page_actions.py", line 377, in wait_for_element_visible
+    timeout_exception(ElementNotVisibleException, message)
+  File "/home/myuser/software/python3rd/anaconda/lib/python3.8/site-packages/seleniumbase/fixtures/page_actions.py", line 163, in timeout_exception
+    raise exception(message)
+Exception: Message: 
+ Element {#modal > div > div.bx--modal-footer > button.bx--btn.bx--btn--primary} was not visible after 6 seconds!

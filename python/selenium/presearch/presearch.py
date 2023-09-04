@@ -10,6 +10,7 @@ from pathlib import Path  # Python 3.6+ only
 
 import numpy as np
 from dotenv import load_dotenv
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from seleniumbase import BaseCase
@@ -25,12 +26,10 @@ def is_chinese(uchar):
 
 
 class presearchTest(BaseCase):
-    """ presearch Cloud Test
-    """
+    """presearch Cloud Test"""
 
     @classmethod
     def setUpClass(cls):
-
         env_path = Path('.') / '.env'
         load_dotenv(dotenv_path=env_path, verbose=True)
 
@@ -41,10 +40,7 @@ class presearchTest(BaseCase):
         except Exception:
             cls.filename = "presearch"
         cls.restarturl = "https://www.presearch.org/"
-        cls.all_keys = [
-            "username", "password", "country", "income", "funny",
-            "tdx function"
-        ]
+        cls.all_keys = ["username", "password", "country", "income", "funny", "tdx function"]
         cls.user_data_dir = os.getenv('chromeuserdatadir')
 
     def get_google_keywords(self):
@@ -52,8 +48,7 @@ class presearchTest(BaseCase):
         url = "https://www.mondovo.com/keywords/most-searched-words-on-google"
         self._print(f"get {url}")
         self.open(url)
-        elems = self.wait_for_element_present(f'table[class="top-100"',
-                                              timeout=8)
+        elems = self.wait_for_element_present(f'table[class="top-100"', timeout=8)
         self.press_down_arrow(times=5)
         if elems:
             #  soup = bs4.BeautifulSoup(self.get_beautiful_soup().text)
@@ -72,8 +67,7 @@ class presearchTest(BaseCase):
         self._print(self.all_keys)
         return self.all_keys
 
-    def get_weibo_keywors(
-            self, url="https://s.weibo.com/top/summary?cate=socialevent"):
+    def get_weibo_keywors(self, url="https://s.weibo.com/top/summary?cate=socialevent"):
         self.open(url)
         self.wait_for_element_present(f'tr[class="thead_tr"', timeout=8)
         self.press_down_arrow(times=8)
@@ -124,8 +118,7 @@ class presearchTest(BaseCase):
         if self.is_element_present(recaptcha):
             self._print("check recaptcha")
             self.click(recaptcha)
-        inputchar = input(
-            "Enter your Username and Password Menually then enter 1: ")
+        inputchar = input("Enter your Username and Password Menually then enter 1: ")
         if inputchar.lower() == "q":
             exit(3)
         #  print
@@ -169,8 +162,7 @@ class presearchTest(BaseCase):
         if len(key) > 1:
             time.sleep(random.random() * 5)
             # 非汉字搜索，随机获取关键字
-            self.random_down(
-                ischinese=is_chinese(key[1 if len(key) > 1 else 0]))
+            self.random_down(ischinese=is_chinese(key[1 if len(key) > 1 else 0]))
             self.send_keys(selector, Keys.ENTER)
         elif len(key) == 0:
             # 清空输入框
@@ -197,9 +189,7 @@ class presearchTest(BaseCase):
         #  searchcounts = 10
         self.get("https://presearch.org")
         # 随机产生搜索次数
-        searchcounts += int(
-            round(random.random() * 2 * (-1 if random.random() > 0.5 else 1),
-                  0))
+        searchcounts += int(round(random.random() * 2 * (-1 if random.random() > 0.5 else 1), 0))
         for i in range(searchcounts):
             time.sleep(1)
             search_key = random.choice(self.all_keys)
@@ -237,9 +227,7 @@ class presearchTest(BaseCase):
             time.sleep(4)
             time.sleep(random.random() * 15)
             delayseconds = random.random() * int(delays)
-            self._print(
-                f"delay {np.round(delayseconds, 2)} seconds ... {i}/{searchcounts}"
-            )
+            self._print(f"delay {np.round(delayseconds, 2)} seconds ... {i}/{searchcounts}")
             time.sleep(delayseconds)
             #  self.go_back()
             self.bring_active_window_to_front()
@@ -279,7 +267,7 @@ class presearchTest(BaseCase):
 
                 self.open(url)
                 self.refresh_page()
-            elem_present=self.wait_for_element_present(logined_str, By.XPATH, timeout=10)
+            elem_present = self.wait_for_element_present(logined_str, By.XPATH, timeout=10)
             if not elem_present:
                 print(f"Not found: {logined_str} in current page.")
 
