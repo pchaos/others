@@ -1,16 +1,21 @@
 # -*- coding: utf-8 -*-
 """
 # Run tests using: python manage.py test your_app_name.tests
-python manage.py test tests.sudayun.models.test_resource -v 2
+python manage.py test sudayun.tests.models.test_resource -v 2
 
-Last Modified: 2024-02-06 23:11:48
+Last Modified: 2024-02-16 18:26:06
 """
+
 
 from django.test import TestCase
 from sudayun.models import Resource
 
 
 class ResourceModelTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        print("test:\npython manage.py test tests.sudayun.models.test_resource -v 2")
+
     def setUp(self):
         # Create a sample Resource instance for testing
         self.resource = Resource.objects.create(
@@ -61,3 +66,7 @@ class ResourceModelTest(TestCase):
     # Clean up after each test
     def tearDown(self):
         self.resource.delete()
+
+    @classmethod
+    def tearDownClass(cls):
+        print("test done!!!")
