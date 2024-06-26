@@ -1,0 +1,5 @@
+pandas
+pyarrow
+flytekit
+flytekitplugins-duckdb
+duckdb
