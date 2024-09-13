@@ -26,6 +26,7 @@ import re
 import sys
 
 from seleniumbase import BaseCase
+from  dns_check import check_dns_availability
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -92,37 +93,52 @@ class DnsTestClass(BaseCase):
             current_page += step_size
 
     def test_singapore_dns(self):
+        """
+        测试新加坡DNS服务器的可用性。
+
+        此方法执行以下操作：
+        1. 遍历指定网页的所有页面，提取DNS IP地址。
+        2. 收集所有唯一的DNS IP地址。
+        3. 检查这些DNS服务器的可用性。
+        4. 记录结果。
+
+        步骤详解：
+        - 使用基础URL开始遍历页面。
+        - 对每个页面，提取HTML内容并解析DNS IP地址。
+        - 收集所有页面的DNS IP地址，去重。
+        - 使用check_dns_availability函数检查DNS服务器的可用性。
+        - 记录各个步骤的结果，包括每页的DNS IP地址、总的唯一DNS IP地址和可用的DNS IP地址。
+        """
         base_url = "https://dns.supfree.net/mabi.asp?id=SG"
-        page = 1
-        last_page_number = None
+        dns_servers = []
         for url, page in self.iterate_pages(base_url):
             html_content = self.get_html_content(url)
-            self.sleep(0.5)  # Wait for the page to load
+            self.sleep(0.5)  # 等待页面加载
             if self.headless:
                 self.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             else:
                 self.scroll_to_bottom()
 
-            self.sleep(0.5)  # Wait for the page to load
+            self.sleep(0.5)  # 再次等待页面加载完成
 
             logger.debug(f"HTML Content: {html_content}")
             tbody_content = extract_tbody(html_content)
             page_dns_servers = extract_dns_ips(tbody_content)
-            if 'dns_servers' not in locals():
-                dns_servers = []
             dns_servers.extend(page_dns_servers)
-            logger.info("DNS IP Addresses for this page:")
+            logger.info("当前页面的DNS IP地址:")
             for ip in page_dns_servers:
                 logger.info(ip)
-            logger.info(f"Total DNS IP Addresses on this page: {len(page_dns_servers)}")
+            logger.info(f"当前页面的DNS IP地址总数: {len(page_dns_servers)}")
 
-        # After the loop ends
+        # 遍历结束后的处理
         unique_dns_servers = list(dict.fromkeys(dns_servers))
-        logger.info(f"Total unique DNS IP Addresses across all pages: {len(unique_dns_servers)}")
-        logger.info("All unique DNS IP Addresses:")
+        logger.info(f"所有页面的唯一DNS IP地址总数: {len(unique_dns_servers)}")
+        logger.info("所有唯一的DNS IP地址:")
         for ip in unique_dns_servers:
             logger.info(ip)
-
+        if unique_dns_servers:
+            available_dns = check_dns_availability(unique_dns_servers)
+            logger.info(f"可用的DNS IP地址: {available_dns}")
     def get_html_content(self, url):
         self.open(url)
         self.wait_for_element_present("body")
@@ -152,7 +168,19 @@ def extract_dns_ips(html_content):
 
 
 def extract_tbody(html_content):
-    """Extract the content of the tbody tag from HTML."""
+    """
+    从HTML内容中提取tbody标签的内容。
+
+    此函数执行以下操作：
+    1. 使用正则表达式匹配HTML中的tbody标签。
+    2. 提取并返回tbody标签的内容。
+
+    参数:
+    html_content (str): 包含HTML内容的字符串。
+
+    返回:
+    str: tbody标签的内容。
+    """
     tbody_pattern = r'<tbody.*?>(.*?)</tbody>'
     match = re.search(tbody_pattern, html_content, re.DOTALL)
     return match.group(1) if match else ''
