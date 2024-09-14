@@ -27,6 +27,55 @@ except ImportError:
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+def get_country_from_ip(ip_address):
+    """
+    Get the country of an IP address using the GeoIP2 database.
+
+    Args:
+        ip_address (str): The IP address to look up.
+
+    Returns:
+        str: The country name if found, otherwise 'Unknown'.
+
+    Note:
+        This function requires the GeoIP2 database file (GeoLite2-Country.mmdb).
+        If the file is not present, it will be downloaded from a mirror site.
+    """
+    import requests
+    import shutil
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(script_dir, 'GeoLite2-Country.mmdb')
+    
+    if not os.path.exists(db_path):
+        logger.info("GeoIP database not found. Attempting to download...")
+        url = "https://gitee.com/mirrors/GeoLite2-Country/raw/master/GeoLite2-Country.mmdb"
+        try:
+            response = requests.get(url, stream=True)
+            if response.status_code == 200:
+                with open(db_path, 'wb') as f:
+                    response.raw.decode_content = True
+                    shutil.copyfileobj(response.raw, f)
+                logger.info("GeoIP database downloaded successfully.")
+            else:
+                logger.error(f"Failed to download GeoIP database. Status code: {response.status_code}")
+        except Exception as e:
+            logger.error(f"Error downloading GeoIP database: {str(e)}")
+
+    if not os.path.exists(db_path):
+        print(f"GeoIP database not found at {db_path}")
+        return 'Unknown'
+
+    try:
+        with geoip2.database.Reader(db_path) as reader:
+            response = reader.country(ip_address)
+            return response.country.name or 'Unknown'
+    except geoip2.errors.AddressNotFoundError:
+        return 'Unknown'
+    except Exception as e:
+        print(f"Error looking up country for IP {ip_address}: {str(e)}")
+        return 'Unknown'
+
 def check_dns_availability(dns_list, qname="www.dnspython.org", tcp=True):
     """
     检查给定的DNS列表中的DNS是否可用。
@@ -129,7 +178,7 @@ def check_dns_availability_query(dns_list, qname="www.dnspython.org"):
             res.lifetime = 5  # 设置查询生命周期为5秒
             try:
                 res.try_ddr()
-                answers = dns_resolver.query(qname, 'A')
+                answers = res.query(qname, 'A')
                 if answers:
                     # 验证返回的IP地址是否有效
                     ip_addresses = [rdata.address for rdata in answers]
@@ -150,41 +199,7 @@ def check_dns_availability_query(dns_list, qname="www.dnspython.org"):
             logger.error(f"Unexpected error with DNS {dns_checking}: {str(e)}")
     return available_dns
 
-def get_country_from_ip(ip_address):
-    """
-    Get the country of an IP address using the GeoLite2 database.
-
-    Args:
-        ip_address (str): The IP address to look up.
-
-    Returns:
-        str: The country name, or 'Unknown' if not found.
-    """
-    try:
-        # Download GeoLite2-Country.mmdb from a China-accessible mirror
-        import requests
-        import shutil
-
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        db_path = os.path.join(script_dir, 'GeoLite2-Country.mmdb')
-
-        if not os.path.exists(db_path):
-            url = "https://gitee.com/mirrors/GeoLite2-Country/raw/master/GeoLite2-Country.mmdb"
-            response = requests.get(url, stream=True)
-            logger.info(f"Downloading GeoLite2-Country.mmdb from {url} to {db_path}")
-            if response.status_code == 200:
-                with open(db_path, 'wb') as f:
-                    shutil.copyfileobj(response.raw, f)
-            else:
-                logger.error(f"Failed to download GeoLite2-Country.mmdb: HTTP {response.status_code}")
-        
-        with geoip2.database.Reader(db_path) as reader:
-            response = reader.country(ip_address)
-            return response.country.name
-    except Exception as e:
-        logger.error(f"Error getting country for IP {ip_address}: {str(e)}")
-        return 'Unknown'
-
+# This function has been moved to dns_check.py
 def check_dns_availability_with_country(dns_list, qname="www.dnspython.org"):
     """
     Check the availability of DNS servers and determine their countries.
@@ -233,7 +248,7 @@ def check_dns_availability_with_country(dns_list, qname="www.dnspython.org"):
     return available_dns
 
 if __name__ == "__main__":
-    dns_list = ["8.8.8.8", "1.1.1.1", "208.67.222.222", "192.168.100.1","192.168.1.1", "11.2.3.4","203.125.192.179", "116.12.188.65"]
+    dns_list = ["8.8.8.8", "1.0.0.1", "208.67.222.222", "192.168.100.1","192.168.1.1", "11.2.3.4","203.125.192.179", "116.12.188.65"]
     # available_dns = check_dns_availability(dns_list)
     available_dns= check_dns_availability_query(dns_list, qname="www.amazon.com")
     print("可用的DNS地址:", available_dns)
