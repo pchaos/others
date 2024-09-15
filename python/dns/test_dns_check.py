@@ -75,11 +75,11 @@ class TestDNSCheck(unittest.TestCase):
     def test_get_country_from_ip(self):
         ip_address = '1.0.0.1'
         result = get_country_from_ip(ip_address)
-        # self.assertEqual(result, 'Australia', f"{ip_address} Expected 'Australia', but got {result}")
+        self.assertEqual(result, 'Australia', f"{ip_address} Expected 'Australia', but got {result}")
 
-        ip_address = '101.167.180.1'
+        ip_address = 'www.mfa.gov.sg'
         result = get_country_from_ip(ip_address)
-        self.assertEqual(result, 'Singapore', f"{ip_address} Expected 'Singapore', but got {result}")
+        self.assertEqual(result, 'United States', f"{ip_address} Expected 'United States', but got {result}")
 
         ip_address = 'p19992003.duckdns.org'
         result = get_country_from_ip(ip_address)

@@ -26,6 +26,8 @@ except ImportError:
 import shutil
 import requests
 import re
+from run_limited import limit_calls, limit_calls_with_waiting
+
 
 # logging.basicConfig(level=logging.INFO)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -89,7 +91,38 @@ def download_geoip_database(db_path):
         logger.error(f"Error downloading GeoIP database: {str(e)}")
         return False
 
-def get_country_from_ip(ip_address, online_check=True):
+@limit_calls_with_waiting(max_calls=45, period=60)
+def get_country_from_api(ip_address):
+    """
+    Get the country of an IP address using the ip-api.com service.
+
+    Args:
+        ip_address (str): The IP address to look up.
+
+    Returns:
+        str: The country name if found, otherwise 'Unknown'.
+    """
+    # 使用ip-api.com查询IP地址 使用限制: 每分钟限制45个IP地址请求，超限将限流
+    url = "http://ip-api.com/json/" + ip_address
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raises an HTTPError if the response status code is 4XX/5XX
+        data = response.json()
+        return data.get('country', 'Unknown')
+    except requests.exceptions.HTTPError as http_err:
+        logger.error(f"HTTP error occurred: {http_err}")
+        return 'Unknown'
+    except requests.exceptions.ConnectionError as conn_err:
+        logger.error(f"Error connecting to the API: {conn_err}")
+        return 'Unknown'
+    except requests.exceptions.Timeout as timeout_err:
+        logger.error(f"Timeout error occurred: {timeout_err}")
+        return 'Unknown'
+    except requests.exceptions.RequestException as err:
+        logger.error(f"Request error occurred: {err}")
+        return 'Unknown'
+
+def get_country_from_geoip(ip_address):
     """
     Get the country of an IP address using the GeoIP2 database.
 
@@ -98,39 +131,49 @@ def get_country_from_ip(ip_address, online_check=True):
 
     Returns:
         str: The country name if found, otherwise 'Unknown'.
+    """
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(script_dir, 'GeoLite2-Country.mmdb')
+
+    if not os.path.exists(db_path) or os.path.getsize(db_path) < 1024 * 1024:
+        if not download_geoip_database(db_path):
+            print(f"GeoIP database not found at {db_path}")
+            return 'Unknown'
+
+    try:
+        with geoip2.database.Reader(db_path) as reader:
+            # todo response.country.nname返回不正确
+            response = reader.country(ip_address=ip_address)
+            return response.country.name or 'Unknown'
+    except geoip2.errors.AddressNotFoundError:
+        return 'Unknown'
+    except Exception as e:
+        print(f"Error looking up country for IP {ip_address}: {str(e)}")
+        return 'Unknown'
+
+def get_country_from_ip(ip_address, online_check=True):
+    """
+    Retrieve the country associated with an IP address using the GeoIP2 database and online API.
+
+    Args:
+        ip_address (str): The IP address to look up.
+        online_check (bool, optional): Flag to enable online API lookup if GeoIP2 fails. Defaults to True.
+
+    Returns:
+        str: The country name if found, otherwise 'Unknown'.
 
     Note:
         This function requires the GeoIP2 database file (GeoLite2-Country.mmdb).
         If the file is not present, it will be downloaded from a mirror site.
+        Online API lookup is used as a fallback if GeoIP2 lookup fails and online_check is True.
     """
     ip_pattern = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$'
     if not re.match(ip_pattern, ip_address):
         ip_address = resolve_ip_address(ip_address)
-    if online_check:
-        url = "http://ip-api.com/json/" + ip_address
-        response = requests.get(url)
-        data = response.json()
-        return data.get('country', 'Unknown')
-    else:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        db_path = os.path.join(script_dir, 'GeoLite2-Country.mmdb')
-    
-        if not os.path.exists(db_path) or os.path.getsize(db_path) < 1024 * 1024:
-            if not download_geoip_database(db_path):
-                print(f"GeoIP database not found at {db_path}")
-                return 'Unknown'
-
-        try:
-            with geoip2.database.Reader(db_path) as reader:
-                response = reader.country(ip_address=ip_address)
-                # response = reader.country(ip_address=ip_address, locales=['en'], mode=geoip2.database.MODE_FILE)
-                logger.info(f"Country response {ip_address}: {response} {r for r in response}")
-                return response.country.name or 'Unknown'
-        except geoip2.errors.AddressNotFoundError:
-            return 'Unknown'
-        except Exception as e:
-            print(f"Error looking up country for IP {ip_address}: {str(e)}")
-            return 'Unknown'
+    country = get_country_from_geoip(ip_address)
+    if country == 'Unknown' and online_check:
+        country = get_country_from_api(ip_address)
+    return country
 
 def check_dns_availability(dns_list, qname="www.dnspython.org", tcp=True):
     """
