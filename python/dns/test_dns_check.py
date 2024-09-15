@@ -1,18 +1,21 @@
 # -*- coding=utf-8 -*-
-import unittest
-from unittest.mock import patch, MagicMock
-import sys
+"""test dns_check.py
+pytest test_dns_check.py::TestDNSCheck
+pytest test_dns_check.py::TestDNSCheck::test_get_country_from_ip
+pytest test_dns_check.py::TestDNSCheck::test_check_dns_availability_with_country
+"""
 import os
+import sys
+import unittest
+from unittest.mock import MagicMock, patch
 
 # Add the parent directory to the Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from dns_check import (
-    check_dns_availability,
-    check_dns_availability_query,
-    get_country_from_ip,
-    check_dns_availability_with_country
-)
+from dns_check import (check_dns_availability, check_dns_availability_query,
+                       check_dns_availability_with_country,
+                       get_country_from_ip)
+
 
 class TestDNSCheck(unittest.TestCase):
 
@@ -25,7 +28,7 @@ class TestDNSCheck(unittest.TestCase):
 
         dns_list = ['8.8.8.8', '1.1.1.1']
         result = check_dns_availability(dns_list)
-        
+
         self.assertEqual(result, dns_list)
 
     @patch('dns.resolver.Resolver')
@@ -37,8 +40,8 @@ class TestDNSCheck(unittest.TestCase):
 
         dns_list = ['8.8.8.8', '114.114.1.1']
         result = check_dns_availability_query(dns_list)
-        
-        self.assertEqual(result, dns_list,f"Expected {dns_list}, but got {result}")
+
+        self.assertEqual(result, dns_list, f"Expected {dns_list}, but got {result}")
 
     @patch('geoip2.database.Reader')
     @patch('requests.get')
@@ -46,7 +49,7 @@ class TestDNSCheck(unittest.TestCase):
     # @patch('geoip2.database.Reader') 模拟了geoip2.database.Reader类，用于测试时替换真实的GeoIP数据库读取操作。
     # @patch('requests.get') 模拟了requests.get函数，用于测试时替换真实的HTTP请求操作。
     # 这些模拟（mock）操作允许我们在不实际访问外部资源（如GeoIP数据库或进行HTTP请求）的情况下进行单元测试。
-    def test_get_country_from_ip(self, mock_get, mock_reader):
+    def test_get_country_from_ip_mock(self, mock_get, mock_reader):
         # Mock the GeoIP2 reader
         mock_reader_instance = MagicMock()
         mock_reader.return_value.__enter__.return_value = mock_reader_instance
@@ -56,11 +59,32 @@ class TestDNSCheck(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_get.return_value = mock_response
-
+        ip_address = '1.1.1.1'
         # result = get_country_from_ip('8.8.8.8')
-        result = get_country_from_ip('1.1.1.1')
-        
-        self.assertEqual(result, 'United States', f"Expected 'United States', but got {result}")
+        result = get_country_from_ip(ip_address)
+        self.assertEqual(result, 'United States', f"{ip_address} Expected 'United States', but got {result}")
+
+        ip_address = '101.167.180.1'
+        result = get_country_from_ip(ip_address)
+        self.assertEqual(result, 'Singapore', f"{ip_address} Expected 'Singapore', but got {result}")
+
+        ip_address = 'p19992003.duckdns.org'
+        result = get_country_from_ip(ip_address)
+        self.assertEqual(result, 'China', f"{ip_address} Expected 'China', but got {result}")
+
+    def test_get_country_from_ip(self):
+        ip_address = '1.0.0.1'
+        result = get_country_from_ip(ip_address)
+        # self.assertEqual(result, 'Australia', f"{ip_address} Expected 'Australia', but got {result}")
+
+        ip_address = '101.167.180.1'
+        result = get_country_from_ip(ip_address)
+        self.assertEqual(result, 'Singapore', f"{ip_address} Expected 'Singapore', but got {result}")
+
+        ip_address = 'p19992003.duckdns.org'
+        result = get_country_from_ip(ip_address)
+        self.assertEqual(result, 'China', f"{ip_address} Expected 'China', but got {result}")
+
 
     @patch('dns.resolver.Resolver')
     @patch('dns_check.get_country_from_ip')
@@ -75,13 +99,10 @@ class TestDNSCheck(unittest.TestCase):
 
         dns_list = ['8.8.8.8', '1.1.1.1']
         result = check_dns_availability_with_country(dns_list)
-        
-        expected_result = [
-            {'ip': '8.8.8.8', 'country': 'United States'},
-            {'ip': '1.1.1.1', 'country': 'United States'}
-        ]
-        self.assertEqual(result, expected_result,f"Expected {expected_result}, but got {result}")
+
+        expected_result = [{'ip': '8.8.8.8', 'country': 'United States'}, {'ip': '1.1.1.1', 'country': 'United States'}]
+        self.assertEqual(result, expected_result, f"Expected {expected_result}, but got {result}")
+
 
 if __name__ == '__main__':
     unittest.main()
-    
