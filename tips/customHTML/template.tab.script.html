@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <!--  <meta http-equiv="refresh" content="30"> -->
+    <link href="styles.tab.css" rel="stylesheet">
+    <title>{{ title }}</title>
+</head>
+<body class="{{ title }}" onload="checkMain()">
+<div class="box">
+    <ul class="nav">
+        {%- for item in sites %}
+            {{ item }}
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+
+    function checkMain() {
+        document.getElementById("main").checked = "True";
+    }
+</script>
+
+    <script src="script.js"></script> 
+
+</body>
+</html>
