@@ -1,0 +1,23 @@
+<li class="navI">
+      <!-- Modified : 2024-10-22 00:34:38-->
+    <input class="navI-radio" name="nav" type="radio" id="{{ title }}" checked="False">
+    <label class="navI-tit" for="{{ title }}">{{ title }}</label>
+
+    <div align="center" class="navI-txt box">
+        <table class="{{ title }}" hint="点击切换">
+            {%- for item in sites %}
+      {% if loop.index0 % numPerLine  == 0 %}
+                    <tr>
+                {% endif -%}
+                <td><a href="{{ item.href }}" target="_blank"
+                  {% if '://' not in item.href %} {# 判断是否本地文件 #}
+                   id="local"
+                  {% endif %}
+                >
+                    {{ item.caption }}</a></td>
+        {%- if loop.index0 % numPerLine == numPerLine -1 or loop.last %}
+                </tr>{% endif %}
+            {%- endfor %} {# end of sites #}
+        </table>
+    </div>
+</li>
