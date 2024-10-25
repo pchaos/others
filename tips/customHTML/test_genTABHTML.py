@@ -3,7 +3,7 @@
    File Name：     test_genTABHTML
    Description :  tab css style test
    Author :       pchaos
-   Last Modified: 2024-10-22 00:15:22
+   Last Modified: 2024-10-25 17:22:43
    date：          2019/9/9
 """
 import time
@@ -70,7 +70,7 @@ class TestGenPchaosGitIo(TestCase):
     def test_genHTML(self):
         # 需要生成的文件名list。模板文件为：template.html，模板数据文件名为：需要生成的文件名+".ini"
         flist = [
-            "index.html",
+            "k15.index.html",
             "xiaoxue_enhanced.html",
         ]
 
@@ -118,7 +118,7 @@ class TestGenPchaosGitIo(TestCase):
     def test_genHTML_phone(self):
         # 需要生成的文件名list。模板文件为：template.html，模板数据文件名为：需要生成的文件名+".ini"
         flist = [
-            "index.html",
+            "k15.index.html",
             "xiaoxue_enhanced.html",
         ]
 
