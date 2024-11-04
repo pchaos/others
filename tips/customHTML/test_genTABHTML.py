@@ -3,7 +3,7 @@
    File Name：     test_genTABHTML
    Description :  tab css style test
    Author :       pchaos
-   Last Modified: 2024-10-29 13:49:54
+   Last Modified: 2024-11-04 19:56:49
    date：          2019/9/9
 """
 import time
@@ -69,10 +69,10 @@ class TestGenTABHTML(TestCase):
 class TestGenPchaosGitIo(TestCase):
     def setUp(self) -> None:
         self.flist = [
-            "k12.html",
-            "k12A.html",
-            "k15.html",
             "k6.html",
+            "k6A.html",
+            "k12.html",
+            "k0.html",
         ]
 
     def test_genHTML(self):
@@ -166,6 +166,34 @@ class TestGenPchaosGitIo(TestCase):
         gh.save("index_phone.html", saveText)
         print("输出文件完成 {}".format(render))
         print(f"{flist} saved in main.htm")
+
+
+class TestUnGenHTML(TestCase):
+    """从 HTML 文件中提取 URL 和文本
+
+     pytest -v -s test_genTABHTML.py::TestUnGenHTML > /tmp/url.txt
+"""
+
+     def test_unGenHTML(self):
+        from bs4 import BeautifulSoup
+
+        # 读取 HTML 文件
+        with open('/tmp/index.html', 'r', encoding='utf-8') as file:
+            html_content = file.read()
+
+            # 使用 BeautifulSoup 解析 HTML
+            soup = BeautifulSoup(html_content, 'html.parser')
+
+            # 提取所有链接及其文本
+            url_text_pairs = []
+            for link in soup.find_all('a'):
+                url = link.get('href')
+                text = link.text.strip()
+                url_text_pairs.append((text, url))
+
+            # 打印提取的 URL 和对应文本
+            for text, url in url_text_pairs:
+                print(f'{text}||URL: {url}')
 
 
 if __name__ == "__main__":
