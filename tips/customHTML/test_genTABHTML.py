@@ -3,7 +3,7 @@
    File Name：     test_genTABHTML
    Description :  tab css style test
    Author :       pchaos
-   Last Modified: 2024-10-25 17:22:43
+   Last Modified: 2024-10-29 13:49:54
    date：          2019/9/9
 """
 import time
@@ -67,13 +67,17 @@ class TestGenTABHTML(TestCase):
 
 
 class TestGenPchaosGitIo(TestCase):
-    def test_genHTML(self):
-        # 需要生成的文件名list。模板文件为：template.html，模板数据文件名为：需要生成的文件名+".ini"
-        flist = [
-            "k15.index.html",
-            "xiaoxue_enhanced.html",
+    def setUp(self) -> None:
+        self.flist = [
+            "k12.html",
+            "k12A.html",
+            "k15.html",
+            "k6.html",
         ]
 
+    def test_genHTML(self):
+        # 需要生成的文件名list。模板文件为：template.html，模板数据文件名为：需要生成的文件名+".ini"
+        flist = self.flist
         renderList = []
         for fn in flist:
             if ".ini" in fn:
@@ -117,14 +121,10 @@ class TestGenPchaosGitIo(TestCase):
 
     def test_genHTML_phone(self):
         # 需要生成的文件名list。模板文件为：template.html，模板数据文件名为：需要生成的文件名+".ini"
-        flist = [
-            "k15.index.html",
-            "xiaoxue_enhanced.html",
-        ]
-
+        flist = self.flist
         renderList = []
         for fn in flist:
-            if ".ini" in fn:
+            if fn.endswith(".ini"):
                 inifile = "{}".format(fn)
             else:
                 inifile = "{}.ini".format(fn)
