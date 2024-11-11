@@ -1,0 +1,27 @@
+{
+    gcc_arch_x86_64_plat_linux = {
+        __checked = true,
+        plat = "linux",
+        arch = "x86_64",
+        __global = true
+    },
+    zig_arch_x86_64_plat_linux = {
+        __checked = true,
+        __global = true,
+        zig = "/usr/bin/zig",
+        plat = "linux",
+        arch = "x86_64"
+    },
+    nim_arch_x86_64_plat_linux = {
+        __checked = true,
+        plat = "linux",
+        arch = "x86_64",
+        __global = true
+    },
+    cross_arch_x86_64_plat_linux = {
+        __checked = true,
+        plat = "linux",
+        arch = "x86_64",
+        __global = true
+    }
+}

@@ -1,0 +1,7 @@
+{
+    find_program = {
+        nim = false,
+        zig = "/usr/bin/zig",
+        gcc = "/usr/lib64/ccache/gcc"
+    }
+}

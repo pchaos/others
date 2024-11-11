@@ -3,7 +3,7 @@
    File Name：     test_genTABHTML
    Description :  tab css style test
    Author :       pchaos
-   Last Modified: 2024-11-04 19:56:49
+   Last Modified: 2024-11-11 10:30:30
    date：          2019/9/9
 """
 import time
@@ -71,7 +71,7 @@ class TestGenPchaosGitIo(TestCase):
         self.flist = [
             "k6.html",
             "k6A.html",
-            "k12.html",
+            "k9.html",
             "k0.html",
         ]
 
@@ -154,12 +154,12 @@ class TestGenPchaosGitIo(TestCase):
         gh.iniFilename = inifile
         try:
             templateFile = "template.tab.script.phone.html"
-            render = gh.renders(renderList, prettify=True, template=templateFile, title="K15教育")
+            render = gh.renders(renderList, prettify=True, template=templateFile, title="K12教育")
         except Exception as e:
             templateFile = "customHTML/template.tab.script.phone.html"
             print(f"{e} something error with {inifile}")
             time.sleep(1)
-            render = gh.renders(renderList, prettify=True, template=templateFile, title="K15教育")
+            render = gh.renders(renderList, prettify=True, template=templateFile, title="K12教育")
         saveText = ""
         for r in render:
             saveText += r
@@ -171,10 +171,10 @@ class TestGenPchaosGitIo(TestCase):
 class TestUnGenHTML(TestCase):
     """从 HTML 文件中提取 URL 和文本
 
-     pytest -v -s test_genTABHTML.py::TestUnGenHTML > /tmp/url.txt
-"""
+    pytest -v -s test_genTABHTML.py::TestUnGenHTML > /tmp/url.txt
+    """
 
-     def test_unGenHTML(self):
+    def test_unGenHTML(self):
         from bs4 import BeautifulSoup
 
         # 读取 HTML 文件
