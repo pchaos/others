@@ -135,3 +135,4 @@ dmypy.json
 # temp file
 tmp*.png
 *~
+.xmake
