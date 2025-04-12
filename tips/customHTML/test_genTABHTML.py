@@ -3,7 +3,7 @@
    File Name：     test_genTABHTML
    Description :  tab css style test
    Author :       pchaos
-   Last Modified: 2024-11-11 10:30:30
+   Last Modified: 2024-12-04 22:44:37
    date：          2019/9/9
 """
 import time
@@ -22,7 +22,7 @@ from .genTabHTML import genTABHTML
 class TestGenTABHTML(TestCase):
     def test_genHTML(self):
         # 需要生成的文件名list。模板文件为：template.html，模板数据文件名为：需要生成的文件名+".ini"
-        flist = ["main.htm", "main_tech.htm", "hacker.html"]
+        flist = ["main.htm", "main_tech.htm", "tech_hardware.html", "hacker.html"]
 
         # inifile = '{}.ini'.format(flist[0])
         renderList = []
