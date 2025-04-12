@@ -1,0 +1,505 @@
+<base href="https://c.xxt.cn">
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><script type="text/javascript" async="" charset="utf-8" src="https://c.cnzz.com/core.php?web_id=3162006&amp;t=z"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=GBK" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="keywords" content="作业邦天天练、作业邦、天天练、教材同步" />
+  <title>作业邦天天练-教材同步</title>
+  <!-- 静态资源  -->
+
+
+
+
+
+    
+    <link href="//static.xxt.cn/nb/base/eoc/common/css/common_a1b846e.css" rel="stylesheet" type="text/css" />
+    <link href="//static.xxt.cn/nb/etest/otherdomainres/eoc/common/css/grade_1946883.css" rel="stylesheet" type="text/css" />
+    <link href="//static.xxt.cn/nb/etest/otherdomainres/eoc/common/css/search_02bf177.css" rel="stylesheet" type="text/css" />
+    <link href="//static.xxt.cn/nb/etest/etestdomain/ttl/css/student_3f0dfcb.css" rel="stylesheet" type="text/css" /> 
+    
+    
+
+<link href="//static.xxt.cn/nb/etest/etestdomain/ttl/css/standardSearch_bba07c1.css" rel="stylesheet" type="text/css" />
+
+
+<script type="text/javascript" async="" src="//s21.cnzz.com/stat.php?id=3162006&amp;web_id=3162006"></script><script type="text/javascript" src="//static.xxt.cn/n/jquery/1.4.4/jquery.min.js"></script>
+<script type="text/javascript" src="//static.xxt.cn/nb/etest/ttl/js/examTtlAllCommon_88d7d6a.js"></script>
+<script type="text/javascript" src="//static.xxt.cn/nb/etest/ttl/js/examTtlStudentAndUnitCommon_d64a486.js"></script>
+<script type="text/javascript" src="//static.xxt.cn/nb/etest/ttl/js/examTtlSearch_94eb065.js"></script>
+<script type="text/javascript" src="//static.xxt.cn/n/laydate/1.1/laydate.js"></script><link type="text/css" rel="stylesheet" href="https://static.xxt.cn/n/laydate/1.1/need/laydate.css" /><link type="text/css" rel="stylesheet" href="https://static.xxt.cn/n/laydate/1.1/skins/default/laydate.css" id="LayDateSkin" />
+
+
+
+<script type="text/javascript">
+var webId = 0;
+var uid = 0;
+var noBlogId = -1;
+var isAdmin = false;
+var tmpUid = 0;
+var __charset = "GBK";
+var pids = [];
+var actId = 0;
+var examTtlComponentList = [{"gradeId":22,"name":"八年级上册","termId":11},{"gradeId":22,"name":"八年级下册","termId":21},{"gradeId":23,"name":"九年级","termId":11}]
+var examTtlComponent = null;
+var currUrl = "";
+var pageNameForClickLog = "";
+var eocHostUrl = "http://v.xxt.cn";
+var blogHostUrl = "http://blog.xxt.cn";
+
+$(function() {  
+    //天天练的消息通知
+    var tNotice=new ttlNotice();
+    tNotice.ajaxNotice();
+});
+
+function ttlNotice(){   
+}
+ttlNotice.prototype.ajaxNotice=function(){
+    $("#noticeNum").hide();
+    var theTtlNotice=this;  
+    $.getJSON("//hi.xxt.cn/ajax/userremindget.do?msg=true&amp;callback=?",function(data){
+        switch (data._rc) {
+        case "success":theTtlNotice.backAjaxNoticeSuccess(data);break;
+        default:theTtlNotice.backAjaxNoticeSuccessError();break;    
+        }
+    });
+}
+ttlNotice.prototype.backAjaxNoticeSuccess=function(data){
+    if(data['newNoticeCount']&lt;=0){
+        this.backAjaxNoticeSuccessError();
+        return;
+    }
+    $("#noticeImg").attr("src","http://image.xxt.cn/etest/common/ttl/img/ttl_notice_news.gif");
+    $("#noticeNum").text(data['newNoticeCount']);
+    $("#noticeNum").show(); 
+}
+ttlNotice.prototype.backAjaxNoticeSuccessError=function(){
+    $("#noticeImg").attr("src","http://image.xxt.cn/etest/common/ttl/img/ttl_notice_none.gif");
+    $("#noticeNum").hide();
+}
+</script>
+  <link href="//static.xxt.cn/nb/etest/etestdomain/ttlBookShow/css/ttl_book_show_3b4ac1c.css" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="//static.xxt.cn/nb/etest/ttl/js/ttlBookShow_fc904dd.js"></script>
+  <script>
+    var province = '';
+    var curGradeId = 22;
+    var curTermId = 11;
+    var curBookVersion = 1;
+    var hasData = 6
+  </script>
+  <style>
+  	.catalog-item-text-p-cur {
+  	  color: #458fce !important;
+  	}
+  </style>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.5.0/css/messenger.min.css" /><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.5.0/css/messenger-theme-flat.min.css" /><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.5.0/css/messenger-theme-future.min.css" /><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.5.0/css/messenger-theme-block.min.css" /><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.5.0/css/messenger-theme-air.min.css" /><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.5.0/css/messenger-theme-ice.min.css" /><link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.5.0/css/messenger-spinner.min.css" /><style type="text/css">    .messenger-message-inner {        font-family: "Proxima Nova","proxima-nova",Arial,sans-serif !important;        font-size: 17px;    }    ul.messenger-theme-flat {        box-shadow: 2px 2px 5px 2px rgba(16, 128, 120, 0.34),        2px 2px 10px 2px rgba(16, 128, 120, 0.28) !important;    }    </style></head>
+<body style="">
+  <link href="//static.xxt.cn/nb/etest/otherdomainres/eoc/common/css/jquery.autocomplete_38b70e6.css" rel="stylesheet" type="text/css" />
+<link href="//static.xxt.cn/nb/etest/otherdomainres/eoc/common/css/tool_bar_42ab8ef.css" rel="stylesheet" type="text/css" />
+<link href="//static.xxt.cn/nb/etest/otherdomainres/eoc/common/css/v-head_bdd9901.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="//static.xxt.cn/nb/etest/otherdomainres/eoc/common/js/jquery.autocomplete_94cfa64.js"></script>
+<script type="text/javascript" src="//static.xxt.cn/nb/etest/otherdomainres/eoc/common/js/template.min_12cdcbc.js"></script>
+<script type="text/javascript">
+    var loginFlag = false;
+    var webId = 0;
+    var jxlxUserType = -2;
+</script>
+<script type="text/javascript" src="//static.xxt.cn/nb/etest/otherdomainres/eoc/common/js/common_4775c82.js"></script>
+<script type="text/javascript" src="//static.xxt.cn/nb/etest/otherdomainres/eoc/common/js/shoppingCart_ad42356.js"></script>
+<script type="text/javascript" src="//static.xxt.cn/nb/base/common/js/cookie.attribute_ae1ce4c.js" charset="utf-8"></script>
+<script type="text/javascript" src="//static.xxt.cn/nb/etest/otherdomainres/eoc/common/js/header.pro_e05d590.js"></script>
+<script type="text/javascript" src="//static.xxt.cn/nb/etest/otherdomainres/eoc/common/js/tool_bar_9a23d69.js"></script>
+
+<!-- 非河南 -->
+
+
+<!-- {顶部导航  -->
+<div id="site-nav-top-ttl" class="clearfix">
+    <div id="site-nav-top-bd-ttl" style="font-size:12px">
+        <!-- {左侧导航  -->
+        <!-- {ttl相关页面 -->
+        <div name="henan-index-left" style="" class="site-nav-mobile"><a href="/app/main.jsp" style="color:#333;" target="_blank">手机客户端</a></div>
+          <div style="" class="site-nav-sub" onclick="addClickSourceFn('site-nav-sub-ttl');">
+              <span id="hn-site-nav-sub">
+                  <a href="//www.xxt.cn/" target="_blank" style="color:#333;width:60px">校讯通首页</a>
+                    <a name="gotoJxlx" target="_blank" style="color:#333;width:50px" href="https://www.xxt.cn">家校互动</a>
+                    <a href="https://v.xxt.cn/" target="_blank" style="color:#333;width:50px">在线课程</a>
+                    <a href="/ttl" target="_blank" style="color:#333;width:37px">天天练</a>
+                  <a href="http://blog.xxt.cn/" target="_blank" style="color:#333;width:27px">博客</a>
+              </span>
+              
+            
+          </div> 
+        <!-- ttl相关页面} -->
+        <!-- 左侧导航} -->
+        <!-- {右侧导航 -->
+        <div class="top-quick-menu">
+            <input type="hidden" id="hbjxtWebIdDiffer" value="80000000" />
+            <div id="loginOrNotDealDisplay" class="menu-l">
+<!-- {已登录  -->
+
+<!-- 已登录} -->
+<!-- {未登录  -->
+
+	<a class="F-nav" href="###">登录</a>  |  
+	<a class="F-nav" href="//login.xxt.cn/account/mobileregisterpre.do" target="_blank">注册</a>
+
+<!-- 未登录} -->
+<!--  因部分页面对ajax请求的type设置成post，而在tophtml.jsp中需请求login工程下内容，ajax post提交是不支持跨域的。故在此处，先改成get形式，再还原为原始配置。 -->
+
+
+</div>
+            <!--
+            
+            -->
+            <div class="menu" id="my_zx">
+                <a href="https://v.xxt.cn/course/studyhome.do" onclick="addClickSourceFn('my_zx');clickBox.setClickEvent('学习中心', 'ttl-顶部导航');" class="F-nav">学习中心</a><b> </b>
+                <!-- {我的众享下拉层 -->
+                <div class="top-drop-menu my-v" style="display:none;">
+                    <div class="prompt">
+                        <span class="fleft">您好，请<a href="###" onclick="addClickFn('登录','顶部导航');" class="btn-login F_blue">登录</a></span>
+                        <span class="fright"><a href="###" onclick="addClickFn('c登录','顶部导航');" class="btn-login F_blue">登录学科测评</a></span>
+                    </div>
+                    <div class="mylist clearfix">
+                        <ul class="col1 fleft blank">
+                            <li><a href="https://v.xxt.cn/etest/etestmine.do?url=//c.xxt.cn/assignment/assignmentlistmine.do" class="F_blue" onclick="addClickSourceFn('ASSIGNMENT_MINE_HEADER');">学习资料</a></li>
+                            <li><a href="https://v.xxt.cn/course/tearecresource.do" class="F_blue" onclick="addClickSourceFn('TEACHERRE_MINE_HEADER');">老师推荐</a></li>
+                            <li><a href="http://hi.xxt.cn/message/notice.do" class="F_blue" onclick="addClickSourceFn('NOTICE_HEADER');">系统通知</a></li>
+                            <li><a href="https://v.xxt.cn/account/ordermine.do" class="F_blue" onclick="addClickSourceFn('ORDER_MINE_HEADER');">订单</a></li>
+                            <li id="productmineforcmcc" style=""><a href="https://v.xxt.cn/product/productmineforcmcc.do" class="F_blue" onclick="addClickSourceFn('BAOYUECMCC_MINE_HEADER');">包月订单</a></li>
+                        </ul>
+                        <ul class="col2 fleft blank">
+                            <li><a href="https://v.xxt.cn/course/coursestuding.do" class="F_blue" onclick="addClickSourceFn('BUYEDCOURSE_MINE_HEADER');">课程</a></li>
+                            <li><a href="/ttl" class="F_blue" onclick="addClickSourceFn('ETEST_MINE_HEADER');">天天练</a></li>
+                            <li><a href="https://v.xxt.cn/course/coursefavoritemine.do" class="F_blue" onclick="addClickSourceFn('FAVORITE_MINE_HEADER');">收藏</a></li>
+                            
+                            
+                              <li><a href="https://v.xxt.cn/course/subscriptionmine.do" class="F_blue" onclick="addClickSourceFn('SUBSC_MINE_HEADER');">关注</a></li>
+                            
+                            <li style=""><a class="F_blue" href="//jxlx.xxt.cn/jxlx/main/main.action?#3000000" onclick="addClickSourceFn('JXLX_CJ_HEADER');">成绩</a></li>
+                            <li style="display: none;"></li>
+                        </ul>
+                        <ul id="J-zx-tv" class="bline" style="display: none;">
+                        </ul>
+                    </div>
+                </div>
+                <!-- 我的众享下拉层} -->
+            </div>
+            <div class="menu-s"><a href="http://hi.xxt.cn/message/notice.do" title="查看通知" target="_blank" onclick="addClickSourceFn('NOTICE');">消息</a></div>
+            <div class="menu-s" onclick="addClickSourceFn('menu-s');">
+                <a target="_blank" href="https://v.xxt.cn/help/help.do" class="F-nav">帮助</a><b> </b>
+                <div class="top-drop-menu v-help" style="display: none; ">
+                    <a target="_blank" href="https://v.xxt.cn/help/help.do">新手帮助</a>
+                    <a target="_blank" href="https://v.xxt.cn/help/help.do?id=31">购课指南</a>
+                    <a target="_blank" href="https://v.xxt.cn/help/help.do?id=45">支付说明</a>
+                </div>
+            </div>
+        </div>
+        <!-- 右侧导航} -->
+    </div>
+</div>
+<!-- 顶部导航} -->
+
+
+  <!-- 顶部导航 -->
+<div class="tts-head">
+    <div id="site-nav-hd" class="clearfix">
+        <div class="tts-layout-hd">
+            <div class="logo"> 
+            	<a href="/ttl"><img src="//static.xxt.cn/nb/etest/etestdomain/ttl/img/tts-logo-book.png" /></a>
+				<font style="font-size:20px;display:none;" id="resourceA">  <a href="http://sd.xxt.cn/course/resourcebase.do">资源库</a></font>
+				<font style="font-size:20px;display:none;" id="sdUnitDataA">  <a href="http://sd.xxt.cn/sd/classproddata.do">班级数据</a></font>
+			</div>
+			<img class="newTtlImg" src="//static.xxt.cn/nb/etest/etestdomain/ttlBookShow/img/newTtl.png" style="float:left;margin-top:18px;margin-left:-130px;display:none;position:relative;z-index:1000;cursor:pointer" />
+            <img class="oldTtlImg" src="//static.xxt.cn/nb/etest/etestdomain/ttlBookShow/img/oldTtl.png" style="float: left; margin-top: 22px; margin-left: -130px; position: relative; z-index: 1000; cursor: pointer;" />
+            <div class="tts-nav-search">
+                <div class="inner">
+                	<input type="hidden" id="standardKeyword" value="" />
+                    <form id="search_form" method="get" action="//c.xxt.cn/searchpaper.do" target="" accept-charset="GBK">
+                        <input type="text" autocomplete="off" value="" class="searchtxt ac_input" id="search_keyWord" name="psm.keyWord" /> 
+                        <input type="button" value="天天练" class="tts-btn-searcht" id="search_btn" name="button" />
+			            <input type="button" value="搜本站" class="tts-btn-search" id="search_btn_all" name="button" />
+                        <!-- 隐藏参数 -->
+                        <input type="hidden" name="sm.keyWord" id="sm-keyWord" value="" />
+                        <input type="hidden" name="psm.plateId" id="plate_id" value="20" />
+                        <input type="hidden" name="psm.plateType" id="plate_type" value="ttl" />
+	                    <input type="hidden" name="psm.oldKeyWord" id="searchKeyWordParam" value="" />
+						<input type="hidden" name="psm.gradeId" id="search_gradeId_ttl" value="" />
+					    <input type="hidden" name="psm.subjectId" id="search_subjectId_ttl" value="" />
+						<input type="hidden" name="psm.bookVersion" id="search_bookVersion_ttl" value="" />
+					    <input type="hidden" name="psm.sortBy" id="sortBy" value="" />
+					    <input type="hidden" name="psm.inputType" id="search_inputType" value="1" />
+						<input type="hidden" name="psm.searchType" id="search_searchType" value="3" />
+						<input type="hidden" name="psm.paperType" id="sm_type" value="18" />	
+						<input type="hidden" name="pms.gradeId" id="search_gradeId" value="22" />
+					</form>
+                </div>
+                <div class="hot_tag">热门：<a href="###" data-name="因式分解" data-url="http://v.xxt.cn/unitlearn/unitvideoplay.do?courseId=3116&amp;chapterId=6344&amp;videoId=&amp;sectionId=3417" data-grade="undefined">因式分解</a><a href="###" data-name="分式" data-url="http://v.xxt.cn/unitlearn/unitvideoplay.do?courseId=3117&amp;chapterId=6345&amp;videoId=19092&amp;sectionId=3420" data-grade="undefined">分式</a><a href="###" data-name="一次函数" data-url="http://v.xxt.cn/unitlearn/unitvideoplay.do?courseId=3150&amp;chapterId=6438&amp;videoId=17769&amp;sectionId=3564" data-grade="undefined">一次函数</a><a href="###" data-name="四边形" data-url="http://v.xxt.cn/unitlearn/unitvideoplay.do?courseId=3149&amp;chapterId=6434&amp;videoId=17682&amp;sectionId=3556" data-grade="undefined">四边形</a><a href="###" data-name="勾股定理" data-url="http://v.xxt.cn/unitlearn/unitvideoplay.do?courseId=3148&amp;chapterId=6432&amp;videoId=16910&amp;sectionId=3550" data-grade="undefined">勾股定理</a><a href="###" data-name="二元一次方程组" data-url="" data-grade="undefined">二元一次方程组</a><a href="###" data-name="全等三角形" data-url="http://v.xxt.cn/unitlearn/unitvideoplay.do?courseId=2889&amp;chapterId=5739&amp;videoId=&amp;sectionId=3520" data-grade="undefined">全等三角形</a></div>
+            </div>
+            <div class="tts-nav-search" id="sdNavRight" style="display:none">
+            	<div class="sdlogin sd" style="display:none">
+					<a href="" style="display:none">用户登录</a>
+					<div class="ulog fr">
+						<ul>
+							<li>  
+								<span class="w100" id="sdUserName"></span>
+								<span class="w200" id="schoolName"></span>
+							</li>
+							<li>
+								<span class="w100"><a href="//login.xxt.cn/pwd/pwdModify.do" class="f_blue">修改密码</a></span>
+								<span class="w200"><a id="sdLoginOut" href="###">退出登录</a></span>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="login fr sd" id="my_zx" style="display:none">
+					<a href="###" id="login" class="btn-login">用户登录</a>
+				</div>
+            </div>
+        </div>
+    </div>
+</div><div class="clear"></div>
+
+  <div class="commonWidth">
+    <!-- 全国推广时候的展示元素 -->
+    <div class="all-country" style="margin:10px 0;display:none;">
+      <p style="color:#458fce;font-size:32px;height:50px;line-height:50px;float:left;">天天练</p>
+      <div style="clear:both"></div>
+    </div>
+    <ul class="ttl-period-ul clear">
+      <li class="ttl-period-cur" schoolgrade="2">
+        初中
+      </li>
+      <li schoolgrade="3">
+        高中
+      </li>
+    </ul>
+    <ul class="ttl-subject-ul">
+      <li subjectid="3">
+        数学
+      </li>
+      <!-- 初中有英语和物理，高中没有 -->
+      
+        <li subjectid="2">
+          英语
+        </li>
+        <li class="ttl-subject-cur" "="" subjectid="4">
+          物理
+        </li>
+      
+      <li subjectid="5">
+        化学
+      </li>
+    </ul>
+    <div class="grade-menu">
+      <p>年级</p>
+      <ul class="grade-menu-ul">
+      	
+          <li gradeid="22" termid="11" class="grade-menu-cur">
+            八年级上册
+          </li>
+        
+          <li gradeid="22" termid="21">
+            八年级下册
+          </li>
+        
+          <li gradeid="23" termid="11">
+            九年级
+          </li>
+        
+      </ul>
+    </div>
+    
+    <!--外省且科目为数学时 含有版本模块，不同年级的版本规则不一样 -->
+    
+    
+    
+	    <div class="body-left">
+	      <p class="catalog">目录</p>
+	      <ul class="book-catalog-ul">
+	        
+	          
+	            <li class="catalog-item">
+		          <div class="catalog-item-text">
+		            <img src="//static.xxt.cn/nb/etest/etestdomain/ttlBookShow/img/close.png" isopen="1" />
+		            <p bookid="1107" level="1">第一章 机械运动</p>
+		          </div>
+		          <ul class="catalog-item-ul">
+		              
+		              <li bookid="1119" level="2" class="catalog-item-ul-li-cur">
+		                基础训练
+		              </li>
+		              
+		              <li bookid="1120" level="2">
+		                单元复习
+		              </li>
+		              
+		              <li bookid="1121" level="2">
+		                单元测试
+		              </li>
+		            
+		          </ul>
+	            </li>
+	          
+	           
+	        
+	          
+	          
+	          	<li class="catalog-item">
+		          <div class="catalog-item-text">
+		            <img src="//static.xxt.cn/nb/etest/etestdomain/ttlBookShow/img/open.png" isopen="0" />
+		            <p bookid="1108" level="1">第二章 声现象</p>
+		          </div>
+		          <ul class="catalog-item-ul" style="display:none">
+		            
+		              <li bookid="1122" level="2">基础训练</li>
+		            
+		              <li bookid="1123" level="2">单元复习</li>
+		            
+		              <li bookid="1124" level="2">单元测试</li>
+		            
+		          </ul>
+	            </li>
+	           
+	        
+	          
+	          
+	          	<li class="catalog-item">
+		          <div class="catalog-item-text">
+		            <img src="//static.xxt.cn/nb/etest/etestdomain/ttlBookShow/img/open.png" isopen="0" />
+		            <p bookid="1109" level="1">第三章 物态变化</p>
+		          </div>
+		          <ul class="catalog-item-ul" style="display:none">
+		            
+		              <li bookid="1125" level="2">基础训练</li>
+		            
+		              <li bookid="1126" level="2">单元复习</li>
+		            
+		              <li bookid="1127" level="2">单元测试</li>
+		            
+		          </ul>
+	            </li>
+	           
+	        
+	          
+	          
+	          	<li class="catalog-item">
+		          <div class="catalog-item-text">
+		            <img src="//static.xxt.cn/nb/etest/etestdomain/ttlBookShow/img/open.png" isopen="0" />
+		            <p bookid="1110" level="1">第四章 光现象</p>
+		          </div>
+		          <ul class="catalog-item-ul" style="display:none">
+		            
+		              <li bookid="1128" level="2">基础训练</li>
+		            
+		              <li bookid="1129" level="2">单元复习</li>
+		            
+		              <li bookid="1130" level="2">单元测试</li>
+		            
+		          </ul>
+	            </li>
+	           
+	        
+	          
+	          
+	          	<li class="catalog-item">
+		          <div class="catalog-item-text">
+		            <img src="//static.xxt.cn/nb/etest/etestdomain/ttlBookShow/img/open.png" isopen="0" />
+		            <p bookid="1111" level="1">第五章 透镜及其应用</p>
+		          </div>
+		          <ul class="catalog-item-ul" style="display:none">
+		            
+		              <li bookid="1131" level="2">基础训练</li>
+		            
+		              <li bookid="1132" level="2">单元复习</li>
+		            
+		              <li bookid="1133" level="2">单元测试</li>
+		            
+		          </ul>
+	            </li>
+	           
+	        
+	          
+	          
+	          	<li class="catalog-item">
+		          <div class="catalog-item-text">
+		            <img src="//static.xxt.cn/nb/etest/etestdomain/ttlBookShow/img/open.png" isopen="0" />
+		            <p bookid="1112" level="1">第六章 质量与密度</p>
+		          </div>
+		          <ul class="catalog-item-ul" style="display:none">
+		            
+		              <li bookid="1134" level="2">基础训练</li>
+		            
+		              <li bookid="1135" level="2">单元复习</li>
+		            
+		              <li bookid="1136" level="2">单元测试</li>
+		            
+		          </ul>
+	            </li>
+	           
+	        
+	      </ul>
+	    </div>
+    	<div class="body-right">
+      	  <iframe id="iframe" src="/ttl/examttlpaperlist.do?bookId=1119&amp;level=2" frameborder="0" scrolling="no" height="734"></iframe>
+    	</div>
+    
+    
+    
+  </div>
+  <div class="clear"></div>
+  
+  <div id="sendMessageHiddenDiv" style="display:none"></div>
+  <style type="text/css">
+.footer{width:950px;margin:12px auto;text-align:center;line-height:2.0;font-size:12px;border-top:3px solid #f1f1f1;padding-top:15px; color:#333;}
+</style>
+<div class="footer copyright">
+	<a href="http://www.xxt.cn/gsjs/gsjs.jsp" target="_blank">公司简介</a> |
+	<a href="http://www.xxt.cn/gsjs/yw_xx.jsp" target="_blank">校讯通简介 </a> |
+	<a href="http://www.xxt.cn/gsjs/lxwm.jsp" target="_blank">联系我们</a> |
+	<a href="http://www.xxt.cn/help/xxt_help/index.jsp" target="_blank">帮助信息</a>
+    <br />
+    <span>版权所有：河南校信通教育科技有限公司  Copyright©2021 All Rights Reserved.</span>
+    <br />
+    <a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=41010702002041" target="_blank">
+        <img src="//static.xxt.cn/nb/eoc/common/img/icon_gh.png" />
+        <span>豫公网安备 41010702002041号</span>
+    </a>
+      增值电信经营许可证编号：豫B2-20070021
+      教APP备4100044号
+</div>
+<div style="display:none;">
+    <script type="text/javascript">
+		var clickBox = clickBox || {};
+		clickBox.setClickEvent = function(){};
+		clickBox.setClickSource = function(){};
+		
+		// 山东用户，隐藏底部版权
+		var provCode = CookieUtil.get("_PROV_CODE");
+		if (provCode == 16) {$('.footer').hide();}
+		
+		var province = '';
+		if (province != "" &amp;&amp; province != '1') {
+		  $('.footer').hide();
+		  setTimeout("$('.tool_bar').remove()", 0);
+		}
+	</script>
+	<script type="text/javascript" src="//click.xxt.cn/click/stat.do?ck=XXT_ID"></script>
+	<script type="text/javascript">
+	  (function() {
+	    var ga = document.createElement('script');
+	    ga.type = 'text/javascript';
+	    ga.async = true;
+	    if(/^ttl\.lexue\.cn/.test(location.host)){
+	    	ga.src = '//s13.cnzz.com/stat.php?id=5786058&amp;web_id=5786058';
+	    }else{
+	    	ga.src = '//s21.cnzz.com/stat.php?id=3162006&amp;web_id=3162006';
+	    }	
+	    var s = document.getElementsByTagName('script')[0];
+	    s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+</div>
+  <script type="text/javascript" src="//static.xxt.cn/nb/base/common/js/xxtkf_9f6e3a9.js" charset="utf-8"></script>
+
+<div id="do_xxtkf_panel" style="position: fixed; _position:absolute;cursor:pointer;bottom: 316px; right: 1px; width: 44px; height: 66px; background-image: url(//static.xxt.cn/nb/base/eoc/common/img/zxzx1222xz.png); display: block; "></div><a href="//www.xxt.cn/feedback.html" target="_blank" style="position: fixed;_position:absolute;cursor:pointer;bottom: 247px;right: 1px;width: 44px;height: 66px;background-image: url(//www.xxt.cn/image/feedback-blue.png);display: block;"></a><script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.12.1/underscore-min.js" type="text/javascript"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/messenger/1.5.0/js/messenger.min.js" type="text/javascript"></script></body></html>

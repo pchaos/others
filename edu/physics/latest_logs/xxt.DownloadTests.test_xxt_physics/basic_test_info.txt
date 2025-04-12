@@ -1,0 +1,15 @@
+xxt.py::DownloadTests::test_xxt_physics
+--------------------------------------------------------------------
+Last Page: https://c.xxt.cn/ttl/examttlbook.do?schoolGrade=2&subjectId=4
+  Browser: chrome
+Timestamp: 1627401831  (Unix Timestamp)
+     Date: Wednesday, 28 July 2021
+     Time: 12:03:51 AM  (PST, UTC+08:00)
+--------------------------------------------------------------------
+Traceback: File "/home/myuser/software/python3rd/anaconda/lib/python3.8/unittest/case.py", line 676, in run
+    self._callTestMethod(testMethod)
+  File "/home/myuser/software/python3rd/anaconda/lib/python3.8/unittest/case.py", line 633, in _callTestMethod
+    method()
+  File "/home/myuser/myDocs/YUNIO/tmp/gupiao/others/edu/physics/xxt.py", line 141, in test_xxt_physics
+    size = self.findElements("iframe").size()
+Exception: 'DownloadTests' object has no attribute 'findElements'
