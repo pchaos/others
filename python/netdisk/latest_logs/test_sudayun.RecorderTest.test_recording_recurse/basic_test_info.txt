@@ -1,0 +1,32 @@
+test_sudayun.py::RecorderTest::test_recording_recurse
+--------------------------------------------------------------------
+Last Page: [WARNING! Browser Not Open!]
+ Duration: 53.93s
+  Browser: Chrome 122.0.6261.94
+   Driver: chromedriver 122.0.6261.128
+Timestamp: 1714808979  (Unix Timestamp)
+     Date: Saturday, 4 May 2024
+     Time: 3:49:39 PM  (WITA, UTC+08:00)
+--------------------------------------------------------------------
+Traceback:
+  File "/home/user/myDocs/YUNIO/tmp/gupiao/others/python/netdisk/test_sudayun.py", line 67, in test_recording_recurse
+    self.main_dirs(url)
+  File "/home/user/myDocs/YUNIO/tmp/gupiao/others/python/netdisk/test_sudayun.py", line 149, in main_dirs
+    self.dirs(click_string)
+  File "/home/user/myDocs/YUNIO/tmp/gupiao/others/python/netdisk/test_sudayun.py", line 105, in dirs
+    self.dirs(click_string)
+  File "/home/user/myDocs/YUNIO/tmp/gupiao/others/python/netdisk/test_sudayun.py", line 105, in dirs
+    self.dirs(click_string)
+  File "/home/user/myDocs/YUNIO/tmp/gupiao/others/python/netdisk/test_sudayun.py", line 105, in dirs
+    self.dirs(click_string)
+  [Previous line repeated 1 more time]
+  File "/home/user/myDocs/YUNIO/tmp/gupiao/others/python/netdisk/test_sudayun.py", line 86, in dirs
+    self.wait_for_element_visible(f"span:contains('{click_string}')")
+  File "/home/user/software/python3rd/anaconda/envs/aa/lib/python3.10/site-packages/seleniumbase/fixtures/base_case.py", line 8617, in wait_for_element_visible
+    return page_actions.wait_for_element_visible(
+  File "/home/user/software/python3rd/anaconda/envs/aa/lib/python3.10/site-packages/seleniumbase/fixtures/page_actions.py", line 494, in wait_for_element_visible
+    timeout_exception(NoSuchElementException, message)
+  File "/home/user/software/python3rd/anaconda/envs/aa/lib/python3.10/site-packages/seleniumbase/fixtures/page_actions.py", line 252, in timeout_exception
+    raise exc(msg)
+Exception: Message: 
+ Element {span:contains('806')} was not present after 10 seconds!

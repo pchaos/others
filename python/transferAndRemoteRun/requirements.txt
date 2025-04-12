@@ -1,0 +1,4 @@
+paramiko
+fabric
+telnetlib3 
+pywinrm

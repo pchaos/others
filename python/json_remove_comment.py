@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 '''Python3 去掉json中带的注释
+Last Modified:     Mon 23 May 2022 10:59:02 AM PST
 '''
 
+import sys
 import re
 try:
     import commentjson
@@ -47,6 +49,17 @@ def parse_json_str(jsonStr: str):
 
     return jsonStr
 
+def extract_comments(txt):
+    '''查找注释（“//”， “/* ... */”内容
+    '''
+    comments = [ j.lstrip() for i in re.findall(r'(//[^\n]*|/\*.*?\*/)',
+        txt, re.MULTILINE | re.DOTALL) for j in i.split('\n')]
+    return '\n'.join(comments)
+
+def remove_comments(txt):
+    '''删除注释（“//”， “/* ... */”内容
+    '''
+    return re.sub(r"(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|(//.*)",'', txt)
 
 if __name__ == "__main__":
     json_str = '''{// 中文
@@ -83,6 +96,9 @@ if __name__ == "__main__":
 '''
     print(f"before json:\n{json_str}")
     result = parse_json_str(json_str)
+    
     print(f"after:\n{result}")
-    result = commentjson.loads(json_str)
-    print(f"after2:\n{result}")
+    print(extract_comments(json_str))
+
+    print(f"removed comment text")
+    print(remove_comments(json_str))

@@ -1,0 +1,16 @@
+test_url_directory.py::RecorderTest::test_recording
+--------------------------------------------------------------------
+Last Page: http://192.168.124.80:5344/%E6%95%99%E8%82%B2/%E7%BC%96%E7%A8%8B%E5%BC%80%E5%8F%91/07-%E3%80%90%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80%E3%80%91
+ Duration: 81.47s
+  Browser: Chrome 127.0.6533.72
+   Driver: chromedriver 127.0.6533.88
+Timestamp: 1722917614  (Unix Timestamp)
+     Date: Tuesday, 6 August 2024
+     Time: 12:13:34 PM  (WITA, UTC+08:00)
+--------------------------------------------------------------------
+Traceback:
+  File "/home/user/myDocs/YUNIO/tmp/gupiao/others/python/url2directory/test_url_directory.py", line 30, in test_recording
+    self.get_elements(url, self.selector[0], None, data=data)
+  File "/home/user/myDocs/YUNIO/tmp/gupiao/others/python/url2directory/test_url_directory.py", line 91, in get_elements
+    self.get_elements(elem.get('href'), selector, len(data) - 1, data)
+Exception: 'WebElement' object has no attribute 'get'

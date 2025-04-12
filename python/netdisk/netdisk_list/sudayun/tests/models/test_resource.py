@@ -3,7 +3,7 @@
 # Run tests using: python manage.py test your_app_name.tests
 python manage.py test sudayun.tests.models.test_resource -v 2
 
-Last Modified: 2024-02-16 18:26:06
+Last Modified: 2024-02-22 15:16:31
 """
 
 
@@ -69,4 +69,4 @@ class ResourceModelTest(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        print("test done!!!")
+        print(f"{cls.__name__} test done!!!")

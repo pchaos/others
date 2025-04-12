@@ -1,0 +1,27 @@
+presearch.py::presearchTest::test_basic
+--------------------------------------------------------------------
+Last Page: https://presearch.com/
+ Duration: 54.30s
+  Browser: Chrome 114.0.5735.0
+   Driver: chromedriver 114.0.5735.90
+Timestamp: 1700798671  (Unix Timestamp)
+     Date: Friday, 24 November 2023
+     Time: 12:04:31 PM  (WITA, UTC+08:00)
+--------------------------------------------------------------------
+Traceback:
+  File "/home/user/software/python3rd/conda3/lib/python3.9/unittest/case.py", line 59, in testPartExecutor
+    yield
+  File "/home/user/software/python3rd/conda3/lib/python3.9/unittest/case.py", line 592, in run
+    self._callTestMethod(testMethod)
+  File "/home/user/software/python3rd/conda3/lib/python3.9/site-packages/seleniumbase/fixtures/base_case.py", line 15617, in _callTestMethod
+    method()
+  File "/home/user/myDocs/YUNIO/tmp/gupiao/others/python/selenium/presearch/presearch.py", line 270, in test_basic
+    elem_present = self.wait_for_element_present(logined_str, By.XPATH, timeout=10)
+  File "/home/user/software/python3rd/conda3/lib/python3.9/site-packages/seleniumbase/fixtures/base_case.py", line 9018, in wait_for_element_present
+    return page_actions.wait_for_element_present(
+  File "/home/user/software/python3rd/conda3/lib/python3.9/site-packages/seleniumbase/fixtures/page_actions.py", line 441, in wait_for_element_present
+    timeout_exception(NoSuchElementException, message)
+  File "/home/user/software/python3rd/conda3/lib/python3.9/site-packages/seleniumbase/fixtures/page_actions.py", line 266, in timeout_exception
+    raise exc(msg)
+Exception: Message: 
+ Element {//*/div[1]/span[2]} was not present after 10 seconds!
