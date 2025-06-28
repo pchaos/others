@@ -6,25 +6,10 @@
 日期: 2025-06-28
 """
 
-import inspect
+# import inspect
 import re
-from typing import Union
+# from typing import Union
 from urllib.parse import quote, unquote
-
-print(inspect.signature(unquote))
-
-
-def safe_unquote(url: str, encoding: str = "utf-8", errors: str = "replace", plus_handling: bool = False) -> str:
-    """安全的URL解码函数（兼容Python 3.8~3.12）"""
-    # 检测环境是否支持原生plus参数
-    use_native_plus = hasattr(unquote, "__code__") and "plus" in unquote.__code__.co_varnames
-
-    if use_native_plus:
-        return unquote(url, encoding=encoding, errors=errors, plus=plus_handling)
-    else:
-        decoded = unquote(url, encoding=encoding, errors=errors)
-        # 手动处理加号：当plus_handling=False时保留+号原义
-        return decoded.replace("+", "%2B") if not plus_handling else decoded
 
 
 class URLEncoder:
