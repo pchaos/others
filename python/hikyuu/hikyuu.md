@@ -2,7 +2,7 @@
 
 [官网 https://hikyuu.org/](https://hikyuu.org/)
 
-Modified: 2025-05-10 23:41:28
+Modified: 2025-07-08 20:29:23
 
 ## fedora 34安装hikyuu
 
@@ -92,6 +92,110 @@ EOF
 sudo dnf install -y mysql-community-devel
 ```
 
+### mariadb
+
+```bash
+sudo dnf install MariaDB-server MariaDB-client -y
+sudo systemctl start mariadb
+# sudo systemctl enable --now mariadb
+mysql -u root -p -e "SELECT VERSION();"
+```
+
+第一次安装MariaDB，需要设置root密码
+
+```bash
+sudo mysql_secure_installation
+```
+
+操作流程：
+
+- 当前 root 密码：首次安装直接回车（密码为空）
+- 设置新密码：输入 Y → 设置强密码（包含大小写字母、数字、特殊符号）
+- 删除匿名用户：输入 Y（提升安全性）
+- 禁止 root 远程登录：按需选择（生产环境建议 Y）
+- 移除测试数据库：输入 Y
+- 重载权限表：输入 Y 使配置生效
+
+```MySQL
+CREATE USER 'hikyuu'@'localhost' IDENTIFIED BY 'Hikyuu123!';
+GRANT ALL PRIVILEGES ON hikyuu.* TO 'hikyuu'@'localhost';
+GRANT CREATE ON *.* TO 'hikyuu'@'localhost';
+GRANT ALTER, DROP ON *.* TO 'hikyuu'@'localhost'; -- 全局管理权限
+GRANT SELECT, INSERT, UPDATE, DELETE ON `hku_base`.* TO 'hikyuu'@'localhost';
+GRANT FILE ON *.* TO 'hikyuu'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON `sh_*`.* TO 'hikyuu'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON `sz_*`.* TO 'hikyuu'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON `bj_*`.* TO 'hikyuu'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON `hku_base`.* TO 'hikyuu'@'localhost';
+
+-- 仅开放必要权限（根据历史报错优化）
+GRANT 
+    CREATE, DROP,                 -- 库/表操作
+    INSERT, SELECT, UPDATE,        -- 数据操作
+    DELETE,
+    FILE                           -- 文件导入(LOAD DATA)
+ON *.* TO 'hikyuu'@'localhost';
+FLUSH PRIVILEGES;
+
+drop database hku_base ;
+drop database bj_day;
+drop database bj_min5;
+drop database sz_day;
+drop database sz_min5;
+drop database sh_day;
+drop database sh_min5;
+
+SHOW GRANTS FOR 'hikyuu'@'localhost';
+SHOW VARIABLES LIKE 'default_storage_engine';
+
+SELECT SCHEMA_NAME AS database_name
+   FROM INFORMATION_SCHEMA.SCHEMATA
+   WHERE SCHEMA_NAME LIKE 'sz\\_%';
+
+DELIMITER //
+CREATE PROCEDURE batch_drop_databases()
+BEGIN
+    -- 创建数组（MySQL用临时表模拟）
+    CREATE TEMPORARY TABLE db_list (db_name VARCHAR(64));
+    
+    -- 向数组添加待删除数据库（示例）
+    INSERT INTO db_list VALUES 
+        ('sz_stock1'),
+        ('sz_stock2'),
+        ('finance_data');
+    
+    -- 生成并执行删除语句
+    SET @sql = '';
+    SELECT GROUP_CONCAT(
+        CONCAT('DROP DATABASE IF EXISTS `', db_name, '`; ') 
+        SEPARATOR ''
+    ) INTO @sql FROM db_list;
+    
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    
+    -- 清理临时表
+    DROP TEMPORARY TABLE db_list;
+END //
+DELIMITER ;
+
+-- 执行存储过程
+CALL batch_drop_databases();
+
+
+<!-- 无密码用户（仅限开发环境） -->
+CREATE USER 'test'@'localhost' IDENTIFIED BY ''; -- 空密码登录
+
+用户维护操作
+
+1. 修改密码
+   ALTER USER 'hikyuu'@'localhost' IDENTIFIED BY 'NewPassword2025!';
+2. 删除用户
+   DROP USER 'hikyuu'@'localhost'; -- 同步清除关联权限
+3. 权限回收
+   REVOKE DELETE ON hikyuu.* FROM 'hikyuu'@'localhost';
+```
+
 ### error: cannot copy file build/release/linux/x86_64/lib/hikyuu.so, not found this file
 
 edit hikyuu_pywrap/xmake.lua
@@ -162,6 +266,7 @@ jupyter-lab password: hikyuu
 
 ```python
 from hikyuu.interactive import *
+from hikyuu import *
 get_hub_name_list()
 get_hub_path("default")
 get_part_name_list("default")
@@ -192,4 +297,23 @@ print(spend_time.__module__)  # 直接输出模块名
 # 或使用inspect
 import inspect
 print(inspect.getmodule(spend_time))
+
+module= sm
+members = inspect.getmembers(module)
+for name, obj in members:
+    if name == "get_history_finance_all_fields":
+        print(f"对象来源：{name} -> {obj}")
+
+import importlib
+module = importlib.import_module("hikyuu.interactive")
+# 列出所有公共对象（过滤私有成员）
+public_members = [name for name in dir(module) if not name.startswith("_")]
+print(public_members)
+print(f"{len(public_members)}")
+
+module = importlib.import_module("hikyuu")
+# 列出所有公共对象（过滤私有成员）
+public_members = [name for name in dir(module) if not name.startswith("_")]
+print(public_members)
+print(f"{len(public_members)}")
 ```
