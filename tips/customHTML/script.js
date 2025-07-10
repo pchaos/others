@@ -2,7 +2,7 @@
  * @class       : script
  * @author      : user (user@fedora)
  * @created     : 星期五 10月 18, 2024 10:29:51 WITA
- * Modified    : 2024-10-25 18:08:07
+ * Modified    : 2025-07-10 19:27:51
  * @description : script
  */
 
@@ -49,13 +49,18 @@ function activateTab(tabId) {
     console.warn(`未找到对应的链接: ${tabId}`);
   }
 }
-
+function isHarmonyOS(userAgent) {
+  const harmonyRegex = /harmonyos|huawei/i;
+  return harmonyRegex.test(userAgent);
+}
 function isMobileBrowser() {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
   console.log(userAgent);
-  return /android|iphone|ipad|ipod|blackberry|iemobile|opera mini|AppleWebKit/i.test(
-    userAgent,
-  );
+  // return /android|iphone|ipad|ipod|blackberry|iemobile|opera mini|AppleWebKit/i.test(
+  const mobileKeywords =
+    /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+  const isHarmony = isHarmonyOS(userAgent);
+  return mobileKeywords.test(userAgent) || isHarmony;
 }
 
 function redirectToMobile() {

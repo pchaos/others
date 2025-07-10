@@ -1,4 +1,4 @@
-/* Modified: 2025-07-10 18:54:08*/
+/* Modified: 2025-07-10 18:59:30*/
 
 /* * { */
 /* scrollbar-width: thin; */
@@ -145,7 +145,7 @@ td:hover {
   float: left;
   /* width: 25%; */
   /* width根据需要调整,100/n */
-  width: 20%;
+  width: {{ 100 / n|int  }}%;
   box-sizing: border-box;
 }
 

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-   File Name：     test_genTABHTML
-   Description :  tab css style test
-   Author :       pchaos
-   Last Modified: 2024-12-04 22:44:37
-   date：          2019/9/9
+File Name：     test_genTABHTML
+Description :  tab css style test
+Author :       pchaos
+Last Modified: 2025-07-10 19:04:59
+date：          2019/9/9
 """
 import time
 
@@ -73,6 +73,7 @@ class TestGenPchaosGitIo(TestCase):
             "k6A.html",
             "k9.html",
             "k0.html",
+            "k12.html",
         ]
 
     def test_genHTML(self):
@@ -87,7 +88,7 @@ class TestGenPchaosGitIo(TestCase):
             gh = genTABHTML()
             gh.outputFilename = "test"
             gh.iniFilename = inifile
-            gh.numPerLine = 5
+            gh.numPerLine = 4
             try:
                 templateFile = "customHTML/template.tab.table.html"
                 of, render = gh.genHTML(None, title=fn.split(".")[0], prettify=False, template=templateFile)
