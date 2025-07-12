@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# Modified: 2024-11-04 20:15:45
+# Modified: 2025-07-12 22:07:14
 
 # pytest test_genTABHTML.py
-pytest --headless -vvv test_genTABHTML.py::TestGenPchaosGitIo
+# pytest --headless -vvv test_genTABHTML.py::TestGenPchaosGitIo
+# 使用 -s 参数来禁用标准输出捕获，print 的输出就会在测试运行时显示出来
+pytest -s --headless -vvv test_genTABHTML.py::TestGenPchaosGitIo
 # pytest --headless -vvv test_genTABHTML.py::TestGenPchaosGitIo::test_genHTML_phone
 echo copy files ... $HOME/myDocs/YUNIO/tmp/gupiao/pchaos.github.io/index.html index_phone.html
 cp -v --update script.js styles.tab.css styles.tab.phone.css $HOME/myDocs/YUNIO/tmp/gupiao/pchaos.github.io/

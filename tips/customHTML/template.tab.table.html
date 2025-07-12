@@ -1,22 +1,21 @@
+<!-- for all k12 education template -->
 <li class="navI">
-    <input class="navI-radio" name="nav" type="radio" id="{{ title }}" checked="False">
-    <label class="navI-tit" for="{{ title }}">{{ title }}</label>
+  <!-- template Modified : 2025-07-12 22:01:10-->
+  <input class="navI-radio" name="nav" type="radio" id="{{ title }}" checked="False">
+  <label class="navI-tit" for="{{ title }}">{{ title }}</label>
 
-    <div align="center" class="navI-txt box">
-        <table class="{{ title }}">
-            {%- for item in sites %}
-                {% if loop.index0 % 5 == 0 %}
-                    <tr>
-                {% endif -%}
-            <td><a href="{{ item.href }}" target="_blank"
-                    {% if '://' not in item.href %} {# 判断是否本地文件 #}
-                   id="local"
-                    {% endif %}
-            >
-                {{ item.caption }}</a></td>
-            {%- if loop.index0 % 5 == 4 or loop.last %}
-                </tr>{% endif %}
-            {%- endfor %} {# end of sites #}
-        </table>
-    </div>
+  <div align="center" class="navI-txt box">
+    <table class="{{ title }}">
+      {%- for item in sites %}
+      {% if loop.index0 % numPerLine == 0 %}
+      <tr>
+        {% endif -%}
+        <td><a href="{{ item.href }}" target="_blank" {% if '://' not in item.href %} {# 判断是否本地文件 #} id="local" {% endif
+            %}>
+            {{ item.caption }}</a></td>
+        {% if loop.index0 % numPerLine == numPerLine - 1 or loop.last %}
+      </tr>{% endif %}
+      {%- endfor %} {# end of sites #}
+    </table>
+  </div>
 </li>
