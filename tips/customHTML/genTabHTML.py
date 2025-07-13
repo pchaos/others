@@ -14,5 +14,8 @@ __author__ = 'pchaos'
 
 from .genHTML import genHTML
 
+
 class genTABHTML(genHTML):
-	pass
+    @classmethod
+    def replaceTxt(cls, txt, src_str, to_replaced_str) -> str:
+        return txt.replace(src_str, to_replaced_str)

@@ -3,7 +3,7 @@
 File Name：     test_genTABHTML
 Description :  tab css style test
 Author :       pchaos
-Last Modified: 2025-07-12 22:03:58
+Last Modified: 2025-07-13 20:17:47
 date：          2019/9/9
 """
 import time
@@ -90,23 +90,27 @@ class TestGenPchaosGitIo(TestCase):
             gh.iniFilename = inifile
             gh.numPerLine = 4
             try:
-                templateFile = "customHTML/template.tab.table.html"
+                templateFile = "templates/template.tab.table.html"
                 of, render = gh.genHTML(
                     None, title=fn.split(".")[0], prettify=False, template=templateFile, numPerLine=gh.numPerLine
                 )
             except Exception as e:
                 templateFile = "template.tab.table.html"
-                print(f"{e} something error with {inifile}")
-                time.sleep(1)
+                print(f"warning: {e} something error with {inifile}")
+                time.sleep(0.5)
                 of, render = gh.genHTML(
                     None, title=fn.split(".")[0], prettify=False, template=templateFile, numPerLine=gh.numPerLine
                 )
-            print("输出文件完成 {}".format(of))
+            print(f"{inifile}输出文件完成 {of}, 处理{len(render)}bytes")
             # print(render)
-            self.assertTrue(len(render) > 100)
-            renderList.append(render)
+            # 确保处理的数据大于100字节
+            self.assertTrue(len(render) > 100, f"something error with {inifile}")
+            # renderList.append(render)
+            # 替换内网地址
+            renderList.append(gh.replaceTxt(render, "192.168.124.80", "p19992003.duckdns.org"))
 
         print(f"{len(renderList)=}")
+        # print(f"{renderList[:2]=}")
         gh = genTABHTML()
         gh.iniFilename = inifile
         try:
@@ -115,7 +119,7 @@ class TestGenPchaosGitIo(TestCase):
         except Exception as e:
             templateFile = "customHTML/template.tab.script.html"
             print(f"{e} something error with {inifile}")
-            time.sleep(1)
+            time.sleep(0.5)
             render = gh.renders(renderList, prettify=True, template=templateFile, title="Education")
         saveText = ""
         for r in render:

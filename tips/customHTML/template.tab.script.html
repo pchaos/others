@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <!-- Modified : 2024-10-20 23:40:16-->
-    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <!--  <meta http-equiv="refresh" content="30"> -->
-    <link href="styles.tab.css" rel="stylesheet" id="stylesheet" w>
-    <title>{{ title }}</title>
-<script src="script.js"></script> 
+  <!-- Modified : 2025-07-13 19:57:15-->
+  <!-- education template -->
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+  <!--  <meta http-equiv="refresh" content="30"> -->
+  <link href="styles.tab.css" rel="stylesheet" id="stylesheet" w>
+  <title>{{ title }}</title>
+  <script src="script.js"></script>
 </head>
-<body class="{{ title }}" >
-<div class="box">
+
+<body class="{{ title }}">
+  <div class="box">
     <ul class="nav">
-        {%- for item in sites %}
-            {{ item }}
-        {% endfor %}
+      {%- for item in sites %}
+      {{ item }}
+      {% endfor %}
     </ul>
-</div>
+  </div>
 </body>
+
 </html>
