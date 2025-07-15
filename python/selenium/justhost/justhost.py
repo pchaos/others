@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """登录justhost cloud，重启vps
-Last Modified: 2023-05-23 18:27:27
+Last Modified: 2025-07-12 16:21:26
 """
 
 import os
@@ -62,6 +62,7 @@ class JUSTHOSTTest(BaseCase):
             try:
                 #  self.open("https://justhost.asia/tickets")
                 self.open("https://justhost.asia/billing/active")
+                self.open("https://justhost.asia/auth/login")
                 self.assert_text("ID")
                 #  self.assert_text("div#formActiveServices")
                 #  self._print(f"formActiveServices exists")
