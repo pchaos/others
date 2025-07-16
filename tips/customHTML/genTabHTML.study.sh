@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Modified: 2025-07-15 13:04:24
+# Modified: 2025-07-16 14:55:05
 
 # 是否启用详细模式的参数是 -v
 verbose_mode=false
@@ -18,7 +18,7 @@ if $verbose_mode; then
   # 使用 -s 参数来禁用标准输出捕获，print 的输出就会在测试运行时显示出来
   pytest -s --headless -vvv test_genTABHTML.py::TestGenPchaosGitIo
 else
-  传入"-v"参数,显示更多内容
+  # 传入"-v"参数,显示更多内容
   # pytest test_genTABHTML.py
   pytest --headless -vvv test_genTABHTML.py::TestGenPchaosGitIo
   # pytest --headless -vvv test_genTABHTML.py::TestGenPchaosGitIo::test_genHTML_phone

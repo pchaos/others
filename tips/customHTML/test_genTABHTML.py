@@ -3,7 +3,7 @@
 File Name：     test_genTABHTML
 Description :  tab css style test
 Author :       pchaos
-Last Modified: 2025-07-13 20:17:47
+Last Modified: 2025-07-16 14:52:20
 date：          2019/9/9
 """
 import time
@@ -107,7 +107,7 @@ class TestGenPchaosGitIo(TestCase):
             self.assertTrue(len(render) > 100, f"something error with {inifile}")
             # renderList.append(render)
             # 替换内网地址
-            renderList.append(gh.replaceTxt(render, "192.168.124.80", "p19992003.duckdns.org"))
+            renderList.append(gh.replaceTxt(render, "192.168.124.80", "singlelogin.duckdns.org"))
 
         print(f"{len(renderList)=}")
         # print(f"{renderList[:2]=}")
