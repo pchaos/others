@@ -2,7 +2,7 @@
 
 [官网 https://hikyuu.org/](https://hikyuu.org/)
 
-Modified: 2025-07-08 20:29:23
+Modified: 2025-07-16 21:22:25
 
 ## fedora 34安装hikyuu
 
@@ -129,7 +129,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON `bj_*`.* TO 'hikyuu'@'localhost';
 GRANT SELECT, INSERT, UPDATE, DELETE ON `hku_base`.* TO 'hikyuu'@'localhost';
 
 -- 仅开放必要权限（根据历史报错优化）
-GRANT 
+GRANT
     CREATE, DROP,                 -- 库/表操作
     INSERT, SELECT, UPDATE,        -- 数据操作
     DELETE,
@@ -157,23 +157,23 @@ CREATE PROCEDURE batch_drop_databases()
 BEGIN
     -- 创建数组（MySQL用临时表模拟）
     CREATE TEMPORARY TABLE db_list (db_name VARCHAR(64));
-    
+
     -- 向数组添加待删除数据库（示例）
-    INSERT INTO db_list VALUES 
+    INSERT INTO db_list VALUES
         ('sz_stock1'),
         ('sz_stock2'),
         ('finance_data');
-    
+
     -- 生成并执行删除语句
     SET @sql = '';
     SELECT GROUP_CONCAT(
-        CONCAT('DROP DATABASE IF EXISTS `', db_name, '`; ') 
+        CONCAT('DROP DATABASE IF EXISTS `', db_name, '`; ')
         SEPARATOR ''
     ) INTO @sql FROM db_list;
-    
+
     PREPARE stmt FROM @sql;
     EXECUTE stmt;
-    
+
     -- 清理临时表
     DROP TEMPORARY TABLE db_list;
 END //
@@ -317,3 +317,8 @@ public_members = [name for name in dir(module) if not name.startswith("_")]
 print(public_members)
 print(f"{len(public_members)}")
 ```
+
+### mysql
+
+[ERROR] MySQL Connection not available. [import_to_db] (/home/user/.local/lib/python3.11/site-packages/hikyuu/gui/data/ImportHistoryFinanceTask.py:97) [hikyuu::hku_error]
+2025-07-16 21:05:57,343 [INFO] Import finance file: /home/user/software/finacing/hikyuuData/hdf5/downloads/finance/gpcw20241231.dat [download_file] (/home/user/.local/lib/python3.11/site-packages/hikyuu/gui/data/ImportHistoryFinanceTask.py:124) [hikyuu::hku_info]
