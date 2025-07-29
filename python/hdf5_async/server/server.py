@@ -21,10 +21,6 @@ class HDF5Server:
 
         self.hdf5_file_path = hdf5_file_path if hdf5_file_path is not None else config.get('server', 'hdf5_file_path', fallback='my_async_hdf5_file.h5')
 
-        config = configparser.ConfigParser()
-        config_path = os.path.join(os.path.dirname(__file__), '..', 'config.ini')
-        config.read(config_path)
-
         self._host = host if host is not None else config.get('server', 'host', fallback='127.0.0.1')
         self._port = port if port is not None else config.getint('server', 'port', fallback=8888)
         self.use_compression = config.getboolean('server', 'use_compression', fallback=False)
@@ -55,7 +51,11 @@ class HDF5Server:
                 data = request.get("data")
 
                 response = {}
-                if command == "create_group":
+                if command == "get_config":
+                    response = {"status": "success", 
+                                "serialization_format": self.serializer.__class__.__name__.replace("Serializer", "").lower(),
+                                "use_compression": self.use_compression}
+                elif command == "create_group":
                     await self._run_blocking_io(self._create_group, path)
                     response = {"status": "success", "message": f"Group {path} created"}
                 elif command == "write":
