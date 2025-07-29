@@ -109,16 +109,23 @@ class HDF5Server:
             
             # 对于非numpy数组的复杂数据类型，先序列化为字节字符串
             is_serialized = False
+            if isinstance(data, np.ndarray) and (data.dtype.kind == 'U' or data.dtype.kind == 'S'):
+                # Convert numpy string arrays to Python list of strings for serialization
+                data = data.tolist()
+            
             if not isinstance(data, (int, float, str, bytes, bool)) and not isinstance(data, np.ndarray):
                 data = self.serializer.encode(data)
                 is_serialized = True
 
             if is_serialized:
                 # Store serialized bytes as a raw byte array (uint8 numpy array)
-                f.create_dataset(path, data=np.frombuffer(data, dtype=np.uint8))
+                if self.use_compression:
+                    f.create_dataset(path, data=np.frombuffer(data, dtype=np.uint8), compression='gzip')
+                else:
+                    f.create_dataset(path, data=np.frombuffer(data, dtype=np.uint8))
             else:
                 # For other data types, let h5py infer or use default
-                if self.use_compression:
+                if self.use_compression and isinstance(data, (np.ndarray, list)):
                     f.create_dataset(path, data=data, compression='gzip')
                 else:
                     f.create_dataset(path, data=data)

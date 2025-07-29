@@ -79,14 +79,57 @@ async def main():
         print(f"Read direct data: {read_direct_data}")
         assert np.array_equal(read_direct_data, direct_data)
 
+        print("\n--- Testing various NumPy data types ---")
+
+        # Test np.int32 array
+        int32_data = np.array([100, 200, 300], dtype=np.int32)
+        await client.write("/numpy_types/int32_dataset", int32_data)
+        response = await client.read("/numpy_types/int32_dataset")
+        read_int32_data = response.get("data")
+        print(f"Read np.int32 data: {read_int32_data}")
+        assert np.array_equal(read_int32_data, int32_data)
+        assert read_int32_data.dtype == np.int32
+
+        # Test np.float64 array
+        float64_data = np.array([1.1, 2.2, 3.3], dtype=np.float64)
+        await client.write("/numpy_types/float64_dataset", float64_data)
+        response = await client.read("/numpy_types/float64_dataset")
+        read_float64_data = response.get("data")
+        print(f"Read np.float64 data: {read_float64_data}")
+        assert np.array_equal(read_float64_data, float64_data)
+        assert read_float64_data.dtype == np.float64
+
+        # Test np.bool_ array
+        bool_data = np.array([True, False, True], dtype=np.bool_)
+        await client.write("/numpy_types/bool_dataset", bool_data)
+        response = await client.read("/numpy_types/bool_dataset")
+        read_bool_data = response.get("data")
+        print(f"Read np.bool_ data: {read_bool_data}")
+        assert np.array_equal(read_bool_data, bool_data)
+        assert read_bool_data.dtype == np.bool_
+
+        # Test np.str_ array
+        str_data = np.array(["apple", "banana", "cherry"], dtype=np.str_)
+        await client.write("/numpy_types/str_dataset", str_data)
+        response = await client.read("/numpy_types/str_dataset")
+        read_str_data = response.get("data")
+        print(f"Read np.str_ data: {read_str_data}")
+        assert isinstance(read_str_data, list)
+        assert read_str_data == str_data.tolist()
+
         # Clean up
         await client.delete("/my_group/string_dataset")
         await client.delete("/my_group/float_dataset")
         await client.delete("/my_group/list_dataset")
         await client.delete("/nested/group/path/nested_dataset")
         await client.delete("/direct_dataset")
+        await client.delete("/numpy_types/int32_dataset")
+        await client.delete("/numpy_types/float64_dataset")
+        await client.delete("/numpy_types/bool_dataset")
+        await client.delete("/numpy_types/str_dataset")
         await client.delete("/my_group") # Delete the group itself
         await client.delete("/nested") # Delete the top-level nested group
+        await client.delete("/numpy_types") # Delete the numpy types group
 
     finally:
         await client.close()
