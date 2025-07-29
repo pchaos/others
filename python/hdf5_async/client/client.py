@@ -1,7 +1,9 @@
 
 import asyncio
-import msgpack
 import msgpack_numpy as m
+import configparser
+import os
+from common.serializers import get_serializer
 
 m.patch()
 
@@ -11,6 +13,7 @@ class HDF5Client:
         self.port = port
         self.reader = None
         self.writer = None
+        self.serializer = get_serializer()
 
     async def connect(self):
         self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
@@ -24,9 +27,8 @@ class HDF5Client:
         if data is not None:
             request["data"] = data
 
-        message = msgpack.packb(request, use_bin_type=True)
-        self.writer.write(len(message).to_bytes(4, 'big'))
-        self.writer.write(message)
+        message_bytes = self.serializer.encode(request)
+        self.writer.write(message_bytes)
         await self.writer.drain()
 
         # Read response length
@@ -35,7 +37,7 @@ class HDF5Client:
 
         # Read response message
         response_message = await self.reader.readexactly(response_len)
-        response = msgpack.unpackb(response_message, raw=False)
+        response, _ = self.serializer.decode(len_bytes + response_message)
         return response
 
     async def create_group(self, path):
