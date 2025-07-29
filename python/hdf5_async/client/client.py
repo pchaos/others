@@ -1,20 +1,16 @@
 
 import asyncio
 import msgpack_numpy as m
-import configparser
 import os
 from common.serializers import MessagePackSerializer, JsonSerializer
+from common.config_manager import config_manager
 
 m.patch()
 
 class HDF5Client:
     def __init__(self, host=None, port=None):
-        config = configparser.ConfigParser()
-        config_path = os.path.join(os.path.dirname(__file__), '..', 'config.ini')
-        config.read(config_path)
-
-        self.host = host if host is not None else config.get('server', 'host', fallback='127.0.0.1')
-        self.port = port if port is not None else config.getint('server', 'port', fallback=8888)
+        self.host = host if host is not None else config_manager.get('server', 'host', fallback='127.0.0.1')
+        self.port = port if port is not None else config_manager.getint('server', 'port', fallback=8888)
         self.reader = None
         self.writer = None
         self.serializer = None # Will be set after getting config from server

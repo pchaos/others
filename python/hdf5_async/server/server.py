@@ -10,20 +10,17 @@ import numpy as np
 from concurrent.futures import ThreadPoolExecutor
 from common.serializers import get_serializer
 import configparser
+from common.config_manager import config_manager
 
 m.patch()
 
 class HDF5Server:
     def __init__(self, hdf5_file_path=None, host=None, port=None):
-        config = configparser.ConfigParser()
-        config_path = os.path.join(os.path.dirname(__file__), '..', 'config.ini')
-        config.read(config_path)
+        self.hdf5_file_path = hdf5_file_path if hdf5_file_path is not None else config_manager.get('server', 'hdf5_file_path', fallback='my_async_hdf5_file.h5')
 
-        self.hdf5_file_path = hdf5_file_path if hdf5_file_path is not None else config.get('server', 'hdf5_file_path', fallback='my_async_hdf5_file.h5')
-
-        self._host = host if host is not None else config.get('server', 'host', fallback='127.0.0.1')
-        self._port = port if port is not None else config.getint('server', 'port', fallback=8888)
-        self.use_compression = config.getboolean('server', 'use_compression', fallback=False)
+        self._host = host if host is not None else config_manager.get('server', 'host', fallback='127.0.0.1')
+        self._port = port if port is not None else config_manager.getint('server', 'port', fallback=8888)
+        self.use_compression = config_manager.getboolean('server', 'use_compression', fallback=False)
         print(f"Server initialized with host: {self._host}, port: {self._port}, compression: {self.use_compression}")
 
         self.executor = ThreadPoolExecutor(max_workers=4) # For blocking HDF5 operations
