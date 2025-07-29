@@ -14,8 +14,12 @@ import configparser
 m.patch()
 
 class HDF5Server:
-    def __init__(self, hdf5_file_path='my_async_hdf5_file.h5', host=None, port=None):
-        self.hdf5_file_path = hdf5_file_path
+    def __init__(self, hdf5_file_path=None, host=None, port=None):
+        config = configparser.ConfigParser()
+        config_path = os.path.join(os.path.dirname(__file__), '..', 'config.ini')
+        config.read(config_path)
+
+        self.hdf5_file_path = hdf5_file_path if hdf5_file_path is not None else config.get('server', 'hdf5_file_path', fallback='my_async_hdf5_file.h5')
 
         config = configparser.ConfigParser()
         config_path = os.path.join(os.path.dirname(__file__), '..', 'config.ini')
