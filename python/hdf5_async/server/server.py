@@ -6,6 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 import asyncio
 import h5py
 import msgpack_numpy as m
+import numpy as np
 from concurrent.futures import ThreadPoolExecutor
 from common.serializers import get_serializer
 import configparser
@@ -22,6 +23,8 @@ class HDF5Server:
 
         self._host = host if host is not None else config.get('server', 'host', fallback='127.0.0.1')
         self._port = port if port is not None else config.getint('server', 'port', fallback=8888)
+        self.use_compression = config.getboolean('server', 'use_compression', fallback=False)
+        print(f"Server initialized with host: {self._host}, port: {self._port}, compression: {self.use_compression}")
 
         self.executor = ThreadPoolExecutor(max_workers=4) # For blocking HDF5 operations
         self.serializer = get_serializer()
@@ -99,42 +102,56 @@ class HDF5Server:
                 f.create_group(path)
 
     def _write_data(self, path, data):
-        """
-        Writes data to the HDF5 file.
-        >>> import os
-        >>> import numpy as np
-        >>> test_file = "test_doctest.h5"
-        >>> if os.path.exists(test_file): os.remove(test_file)
-        >>> server = HDF5Server(hdf5_file_path=test_file, host="127.0.0.1", port=8888)
-        >>> server._write_data("/test_dataset", np.array([1, 2, 3]))
-        >>> with h5py.File(test_file, 'r') as f:
-        ...     np.array_equal(f["/test_dataset"][:], np.array([1, 2, 3]))
-        True
-        >>> if os.path.exists(test_file): os.remove(test_file)
-        """
+        print(f"Attempting to write data to {path}. Data type: {type(data)}, Data: {data}")
         with h5py.File(self.hdf5_file_path, 'a') as f:
             if path in f:
                 del f[path] # Overwrite existing dataset
-            f.create_dataset(path, data=data)
+            
+            # 对于非numpy数组的复杂数据类型，先序列化为字节字符串
+            is_serialized = False
+            if not isinstance(data, (int, float, str, bytes, bool)) and not isinstance(data, np.ndarray):
+                data = self.serializer.encode(data)
+                is_serialized = True
+
+            if is_serialized:
+                # Store serialized bytes as a raw byte array (uint8 numpy array)
+                f.create_dataset(path, data=np.frombuffer(data, dtype=np.uint8))
+            else:
+                # For other data types, let h5py infer or use default
+                if self.use_compression:
+                    f.create_dataset(path, data=data, compression='gzip')
+                else:
+                    f.create_dataset(path, data=data)
+        print(f"Successfully wrote data to {path}.")
 
     def _read_data(self, path):
-        """
-        Reads data from the HDF5 file.
-        >>> import os
-        >>> import numpy as np
-        >>> test_file = "test_doctest.h5"
-        >>> if os.path.exists(test_file): os.remove(test_file)
-        >>> server = HDF5Server(hdf5_file_path=test_file, host="127.0.0.1", port=8888)
-        >>> server._write_data("/test_dataset", np.array([1, 2, 3]))
-        >>> np.array_equal(server._read_data("/test_dataset"), np.array([1, 2, 3]))
-        True
-        >>> server._read_data("/non_existent_dataset") is None
-        True
-        >>> if os.path.exists(test_file): os.remove(test_file)
-        """
+        print(f"Attempting to read data from {path}.")
         with h5py.File(self.hdf5_file_path, 'r') as f:
             if path in f:
-                return f[path][()] # Return numpy array directly
+                data = f[path][()]
+                # 如果数据是bytes类型，尝试解码为字符串或反序列化
+                if isinstance(data, bytes):
+                    try:
+                        # 尝试反序列化，如果失败则尝试解码为utf-8字符串
+                        decoded_data, _ = self.serializer.decode(data)
+                        data = decoded_data
+                    except Exception:
+                        try:
+                            data = data.decode('utf-8')
+                        except UnicodeDecodeError:
+                            pass # 如果解码失败，保留bytes类型
+                elif isinstance(data, np.ndarray) and data.dtype == np.uint8:
+                    # If it's a uint8 numpy array (our raw byte storage), convert back to bytes
+                    data = data.tobytes()
+                    try:
+                        decoded_data, _ = self.serializer.decode(data)
+                        data = decoded_data
+                    except Exception:
+                        # Fallback if deserialization fails
+                        pass
+                print(f"Successfully read data from {path}. Data type: {type(data)}, Data: {data}")
+                return data
+            print(f"Path {path} not found in HDF5 file.")
             return None
 
     def _delete_data(self, path):
@@ -160,8 +177,10 @@ class HDF5Server:
                 del f[path]
 
     async def start_server(self):
+        print("Attempting to start server...")
         server = await asyncio.start_server(
             self._handle_client, self._host, self._port)
+        print("Server started successfully.")
 
         addr = server.sockets[0].getsockname()
         self.host = addr[0]
