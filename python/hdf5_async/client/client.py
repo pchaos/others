@@ -1,6 +1,9 @@
 
 import asyncio
-import json
+import msgpack
+import msgpack_numpy as m
+
+m.patch()
 
 class HDF5Client:
     def __init__(self, host='127.0.0.1', port=8888):
@@ -21,7 +24,7 @@ class HDF5Client:
         if data is not None:
             request["data"] = data
 
-        message = json.dumps(request).encode('utf-8')
+        message = msgpack.packb(request, use_bin_type=True)
         self.writer.write(len(message).to_bytes(4, 'big'))
         self.writer.write(message)
         await self.writer.drain()
@@ -32,7 +35,7 @@ class HDF5Client:
 
         # Read response message
         response_message = await self.reader.readexactly(response_len)
-        response = json.loads(response_message.decode('utf-8'))
+        response = msgpack.unpackb(response_message, raw=False)
         return response
 
     async def create_group(self, path):
@@ -43,6 +46,12 @@ class HDF5Client:
 
     async def read(self, path):
         return await self._send_request("read", path)
+
+    async def update(self, path, data):
+        return await self._send_request("update", path, data)
+
+    async def delete(self, path):
+        return await self._send_request("delete", path)
 
     async def close(self):
         if self.writer:

@@ -1,8 +1,11 @@
 
 import asyncio
 import h5py
-import json
+import msgpack
+import msgpack_numpy as m
 from concurrent.futures import ThreadPoolExecutor
+
+m.patch()
 
 class HDF5Server:
     def __init__(self, hdf5_file_path='my_async_hdf5_file.h5', host='127.0.0.1', port=8888):
@@ -23,7 +26,7 @@ class HDF5Server:
 
                 # Read message
                 message_data = await reader.readexactly(message_len)
-                request = json.loads(message_data.decode('utf-8'))
+                request = msgpack.unpackb(message_data, raw=False)
 
                 command = request.get("command")
                 path = request.get("path")
@@ -39,10 +42,16 @@ class HDF5Server:
                 elif command == "read":
                     read_data = await self._run_blocking_io(self._read_data, path)
                     response = {"status": "success", "data": read_data}
+                elif command == "update":
+                    await self._run_blocking_io(self._write_data, path, data)
+                    response = {"status": "success", "message": f"Data updated at {path}"}
+                elif command == "delete":
+                    await self._run_blocking_io(self._delete_data, path)
+                    response = {"status": "success", "message": f"Data deleted from {path}"}
                 else:
                     response = {"status": "error", "message": "Unknown command"}
 
-                response_message = json.dumps(response).encode('utf-8')
+                response_message = msgpack.packb(response, use_bin_type=True)
                 writer.write(len(response_message).to_bytes(4, 'big'))
                 writer.write(response_message)
                 await writer.drain()
@@ -72,8 +81,13 @@ class HDF5Server:
     def _read_data(self, path):
         with h5py.File(self.hdf5_file_path, 'r') as f:
             if path in f:
-                return f[path][()].tolist() # Convert numpy array to list for JSON serialization
+                return f[path][()] # Return numpy array directly
             return None
+
+    def _delete_data(self, path):
+        with h5py.File(self.hdf5_file_path, 'a') as f:
+            if path in f:
+                del f[path]
 
     async def start_server(self):
         server = await asyncio.start_server(
