@@ -1,6 +1,6 @@
 # Project Overview
 
-Modified: 2025-07-29 17:10:08
+Modified: 2025-07-29 18:18:51
 
 This project is a Python library for asynchronous HDF5 operations.
 提供HDF5文件的异步操作功能。支持多进程和多线程操作，旨在提高HDF5文件的读写效率。
@@ -10,7 +10,9 @@ This project is a Python library for asynchronous HDF5 operations.
 代码注释使用中文;
 测试时,config.ini中shutdown_delay 不要超过1分钟,以免测试卡住;
 程序从config.ini读取服务端ip,端口和是否使用压缩等配置参数;
-客户端从服务端获取配置参数,并根据配置参数进行操作;
+
+<!-- 客户端从服务端获取配置参数,并根据配置参数进行操作; -->
+
 当测试client端时，默认使用时长为1分钟,当尝过超过1分钟时，并且当前无新的提示时，将自动关闭客户端和服务端,重新根据程序输出信息修改代码;
 
 服务端可以通过"ctrl-c"终止运行;
@@ -36,6 +38,8 @@ To set up the development environment, follow these steps:
 ## Running Tests
 
 To run the tests, use pytest:
+
+测试代码前,前检查端口号是否被占用(以及是否有runserver.py进程),如果端口号被占用,终止该端口号对应的服务端程序。
 
 ```bash
 pytest
