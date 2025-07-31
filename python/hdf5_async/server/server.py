@@ -207,16 +207,35 @@ class HDF5Server:
         with h5py.File(self.hdf5_file_path, 'a') as f:
             if path in f and isinstance(f[path], h5py.Dataset):
                 dset = f[path]
-                original_shape = dset.shape
-                insert_len = len(data_to_insert)
-                new_shape = (original_shape[0] + insert_len,) + original_shape[1:]
-                dset.resize(new_shape)
+
+                # --- Universal Read-Modify-Write for maximum stability ---
                 
-                # Shift existing data to make space for new data
-                dset[index + insert_len:] = dset[index:-insert_len]
+                # 1. Read original data into a list
+                if dset.dtype.kind in ('O', 'S', 'U'):
+                    original_list = dset.asstr()[:].tolist()
+                else:
+                    original_list = dset[:].tolist()
                 
-                # Insert the new data
-                dset[index:index + insert_len] = data_to_insert
+                if not isinstance(original_list, list):
+                    original_list = [original_list]
+
+                # 2. Normalize data_to_insert into a list
+                insert_list = data_to_insert.tolist()
+                if not isinstance(insert_list, list):
+                    insert_list = [insert_list]
+
+                # 3. Perform insertion in the Python list
+                new_data_list = original_list[:index] + insert_list + original_list[index:]
+
+                # 4. Recreate the dataset
+                del f[path]
+                
+                is_string = any(isinstance(item, str) for item in new_data_list)
+                if is_string:
+                    f.create_dataset(path, data=[str(item) for item in new_data_list], dtype=h5py.string_dtype(encoding='utf-8'), maxshape=(None,), chunks=True)
+                else:
+                    f.create_dataset(path, data=np.array(new_data_list), maxshape=(None,), chunks=True)
+
             else:
                 # If dataset doesn't exist, this is equivalent to a write operation
                 self._write_data(path, data_to_insert)

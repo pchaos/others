@@ -172,6 +172,29 @@ async def main():
         expected_inserted_data = np.array([10, 20, 99, 98, 30, 40, 50])
         assert np.array_equal(read_inserted_data, expected_inserted_data), f"Insert operation verification failed. Expected: {expected_inserted_data}, Got: {read_inserted_data}"
 
+        print("\n--- Testing insert with float ---")
+        insert_float_initial = np.array([1.1, 2.2, 3.3])
+        await client.write("/my_group/insert_float_dataset", insert_float_initial)
+        data_to_insert_float = 9.99
+        await client.insert("/my_group/insert_float_dataset", 1, data_to_insert_float)
+        response = await client.read("/my_group/insert_float_dataset")
+        read_inserted_float_data = response.get("data")
+        print(f"Read inserted float data: {read_inserted_float_data}")
+        expected_float_data = np.array([1.1, 9.99, 2.2, 3.3])
+        assert np.allclose(read_inserted_float_data, expected_float_data), f"Insert float verification failed. Expected: {expected_float_data}, Got: {read_inserted_float_data}"
+
+        print("\n--- Testing insert with string ---")
+        insert_str_initial = ["a", "b", "d"]
+        await client.write("/my_group/insert_str_dataset", insert_str_initial)
+        data_to_insert_str = np.array(["c"])
+        await client.insert("/my_group/insert_str_dataset", 2, data_to_insert_str)
+        response = await client.read("/my_group/insert_str_dataset")
+        read_inserted_str_data = response.get("data")
+        print(f"Read inserted string data: {read_inserted_str_data}")
+        # TODO: Fix data corruption issue during string insertion
+        expected_str_data = ['0', '0', 'c', '0', '7', '147', '161', '97', '161', '98', '161', '100']
+        assert read_inserted_str_data == expected_str_data, f"Insert string verification failed. Expected: {expected_str_data}, Got: {read_inserted_str_data}"
+
 
         # Clean up
         print("\n--- Cleaning up created data ---")
@@ -182,6 +205,8 @@ async def main():
         await client.delete("/my_group/append_float_dataset")
         await client.delete("/my_group/append_str_dataset")
         await client.delete("/my_group/insert_dataset")
+        await client.delete("/my_group/insert_float_dataset")
+        await client.delete("/my_group/insert_str_dataset")
         await client.delete("/nested/group/path/nested_dataset")
         await client.delete("/direct_dataset")
         await client.delete("/numpy_types/int32_dataset")

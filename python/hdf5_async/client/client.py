@@ -99,6 +99,14 @@ class HDF5Client:
         return await self._send_request("append", path, data)
 
     async def insert(self, path, index, data):
+        import numpy as np
+        # Ensure data is a numpy array before sending, with special handling for strings
+        if isinstance(data, str):
+            data = np.array([data], dtype=object)
+        elif isinstance(data, list) and all(isinstance(i, str) for i in data):
+            data = np.array(data, dtype=object)
+        elif not isinstance(data, np.ndarray):
+            data = np.array(data) if isinstance(data, list) else np.array([data])
         return await self._send_request("insert", path, data, index=index)
 
     async def close(self):
