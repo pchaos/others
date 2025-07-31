@@ -139,6 +139,28 @@ async def main():
         expected_data = np.concatenate((append_data_initial, data_to_append))
         assert np.array_equal(read_appended_data, expected_data), f"Append operation verification failed. Expected: {expected_data}, Got: {read_appended_data}"
 
+        print("\n--- Testing append with float ---")
+        append_float_initial = 3.14
+        await client.write("/my_group/append_float_dataset", append_float_initial)
+        data_to_append_float = 2.718
+        await client.append("/my_group/append_float_dataset", data_to_append_float)
+        response = await client.read("/my_group/append_float_dataset")
+        read_appended_float_data = response.get("data")
+        print(f"Read appended float data: {read_appended_float_data}")
+        expected_float_data = np.array([3.14, 2.718])
+        assert np.allclose(read_appended_float_data, expected_float_data), f"Append float verification failed. Expected: {expected_float_data}, Got: {read_appended_float_data}"
+
+        print("\n--- Testing append with string ---")
+        append_str_initial = "hello"
+        await client.write("/my_group/append_str_dataset", append_str_initial)
+        data_to_append_str = "world"
+        await client.append("/my_group/append_str_dataset", data_to_append_str)
+        response = await client.read("/my_group/append_str_dataset")
+        read_appended_str_data = response.get("data")
+        print(f"Read appended string data: {read_appended_str_data}")
+        expected_str_data = ["hello", "world"]
+        assert read_appended_str_data == expected_str_data, f"Append string verification failed. Expected: {expected_str_data}, Got: {read_appended_str_data}"
+
         print("\n--- Testing insert operation ---")
         insert_data_initial = np.array([10, 20, 30, 40, 50])
         await client.write("/my_group/insert_dataset", insert_data_initial)
@@ -157,6 +179,8 @@ async def main():
         await client.delete("/my_group/float_dataset")
         await client.delete("/my_group/list_dataset")
         await client.delete("/my_group/append_dataset")
+        await client.delete("/my_group/append_float_dataset")
+        await client.delete("/my_group/append_str_dataset")
         await client.delete("/my_group/insert_dataset")
         await client.delete("/nested/group/path/nested_dataset")
         await client.delete("/direct_dataset")

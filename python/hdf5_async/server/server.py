@@ -129,23 +129,23 @@ class HDF5Server:
     def _read_data(self, path):
         with h5py.File(self.hdf5_file_path, 'r') as f:
             if path in f:
-                data = f[path][()]
+                dset = f[path]
+                data = dset[()]
+
+                # Decode bytes to string for individual elements or arrays
                 if isinstance(data, bytes):
-                    try:
-                        decoded_data, _ = self.serializer.decode(data)
-                        data = decoded_data
-                    except Exception:
+                    data = data.decode('utf-8')
+                elif isinstance(data, np.ndarray):
+                    if dset.dtype.kind in ('O', 'S', 'U'):
+                        # Decode each element if it's bytes
+                        data = [item.decode('utf-8') if isinstance(item, bytes) else item for item in data.tolist()]
+                    elif data.dtype == np.uint8:
+                        # Handle serialized data
                         try:
-                            data = data.decode('utf-8')
-                        except UnicodeDecodeError:
-                            pass
-                elif isinstance(data, np.ndarray) and data.dtype == np.uint8:
-                    data = data.tobytes()
-                    try:
-                        decoded_data, _ = self.serializer.decode(data)
-                        data = decoded_data
-                    except Exception:
-                        pass
+                            decoded_data, _ = self.serializer.decode(data.tobytes())
+                            data = decoded_data
+                        except Exception:
+                            pass # Keep as numpy array if deserialization fails
                 return data
             return None
 
@@ -156,14 +156,52 @@ class HDF5Server:
 
     def _append_data(self, path, data_to_append):
         with h5py.File(self.hdf5_file_path, 'a') as f:
+            # --- 1. Normalize data_to_append to a list ---
+            if isinstance(data_to_append, np.ndarray):
+                append_list = data_to_append.tolist()
+            elif isinstance(data_to_append, list):
+                append_list = data_to_append
+            else:  # Handles scalars (int, float, str, bytes)
+                append_list = [data_to_append]
+
+            # --- 2. Handle existing dataset ---
             if path in f and isinstance(f[path], h5py.Dataset):
                 dset = f[path]
-                original_shape = dset.shape
-                new_shape = (original_shape[0] + len(data_to_append),) + original_shape[1:]
-                dset.resize(new_shape)
-                dset[original_shape[0]:] = data_to_append
+                
+                # Read existing data and normalize to a list
+                if dset.shape == ():
+                    original_data = dset[()]
+                    if isinstance(original_data, bytes):
+                        original_list = [original_data.decode('utf-8')]
+                    else:
+                        original_list = [original_data]
+                else:
+                    original_list = dset[:].tolist()
+
+                # Combine the lists
+                new_data_list = original_list + append_list
+                
+                # Determine dtype for recreation
+                is_string = any(isinstance(item, (str, bytes)) for item in new_data_list)
+                
+                del f[path]
+                
+                if is_string:
+                    # Ensure all items are strings for h5py
+                    new_data_list = [item.decode() if isinstance(item, bytes) else str(item) for item in new_data_list]
+                    f.create_dataset(path, data=new_data_list, dtype=h5py.string_dtype(encoding='utf-8'), maxshape=(None,), chunks=True)
+                else:
+                    f.create_dataset(path, data=np.array(new_data_list), maxshape=(None,), chunks=True)
+
+            # --- 3. Handle new dataset ---
             else:
-                f.create_dataset(path, data=data_to_append, maxshape=(None,) + data_to_append.shape[1:], chunks=True)
+                is_string = any(isinstance(item, (str, bytes)) for item in append_list)
+                if is_string:
+                    # Ensure all items are strings for h5py
+                    new_data_list = [item.decode() if isinstance(item, bytes) else str(item) for item in append_list]
+                    f.create_dataset(path, data=new_data_list, dtype=h5py.string_dtype(encoding='utf-8'), maxshape=(None,), chunks=True)
+                else:
+                    f.create_dataset(path, data=np.array(append_list), maxshape=(None,), chunks=True)
 
     def _insert_data(self, path, index, data_to_insert):
         with h5py.File(self.hdf5_file_path, 'a') as f:
