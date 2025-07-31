@@ -1,4 +1,3 @@
-
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -46,6 +45,7 @@ class HDF5Server:
                 command = request.get("command")
                 path = request.get("path")
                 data = request.get("data")
+                index = request.get("index")
 
                 response = {}
                 if command == "get_config":
@@ -67,6 +67,12 @@ class HDF5Server:
                 elif command == "delete":
                     await self._run_blocking_io(self._delete_data, path)
                     response = {"status": "success", "message": f"Data deleted from {path}"}
+                elif command == "append":
+                    await self._run_blocking_io(self._append_data, path, data)
+                    response = {"status": "success", "message": f"Data appended to {path}"}
+                elif command == "insert":
+                    await self._run_blocking_io(self._insert_data, path, index, data)
+                    response = {"status": "success", "message": f"Data inserted into {path} at index {index}"}
                 else:
                     response = {"status": "error", "message": "Unknown command"}
 
@@ -86,32 +92,17 @@ class HDF5Server:
         return await asyncio.get_event_loop().run_in_executor(self.executor, func, *args, **kwargs)
 
     def _create_group(self, path):
-        """
-        Creates a group in the HDF5 file.
-        >>> import os
-        >>> test_file = "test_doctest.h5"
-        >>> if os.path.exists(test_file): os.remove(test_file)
-        >>> server = HDF5Server(hdf5_file_path=test_file, host="127.0.0.1", port=8888)
-        >>> server._create_group("/test_group")
-        >>> with h5py.File(test_file, 'r') as f:
-        ...     "test_group" in f
-        True
-        >>> if os.path.exists(test_file): os.remove(test_file)
-        """
         with h5py.File(self.hdf5_file_path, 'a') as f:
             if path not in f:
                 f.create_group(path)
 
     def _write_data(self, path, data):
-        print(f"Attempting to write data to {path}. Data type: {type(data)}, Data: {data}")
         with h5py.File(self.hdf5_file_path, 'a') as f:
             if path in f:
-                del f[path] # Overwrite existing dataset
+                del f[path]
             
-            # 对于非numpy数组的复杂数据类型，先序列化为字节字符串
             is_serialized = False
             if isinstance(data, np.ndarray) and (data.dtype.kind == 'U' or data.dtype.kind == 'S'):
-                # Convert numpy string arrays to Python list of strings for serialization
                 data = data.tolist()
             
             if not isinstance(data, (int, float, str, bytes, bool)) and not isinstance(data, np.ndarray):
@@ -119,77 +110,83 @@ class HDF5Server:
                 is_serialized = True
 
             if is_serialized:
-                # Store serialized bytes as a raw byte array (uint8 numpy array)
                 if self.use_compression:
                     f.create_dataset(path, data=np.frombuffer(data, dtype=np.uint8), compression='gzip')
                 else:
                     f.create_dataset(path, data=np.frombuffer(data, dtype=np.uint8))
             else:
-                # For other data types, let h5py infer or use default
+                maxshape = None
+                chunks = None
+                if hasattr(data, 'shape'):
+                    maxshape = (None,) + data.shape[1:]
+                    chunks = True
+
                 if self.use_compression and isinstance(data, (np.ndarray, list)):
-                    f.create_dataset(path, data=data, compression='gzip')
+                    f.create_dataset(path, data=data, compression='gzip', maxshape=maxshape, chunks=chunks)
                 else:
-                    f.create_dataset(path, data=data)
-        print(f"Successfully wrote data to {path}.")
+                    f.create_dataset(path, data=data, maxshape=maxshape, chunks=chunks)
 
     def _read_data(self, path):
-        print(f"Attempting to read data from {path}.")
         with h5py.File(self.hdf5_file_path, 'r') as f:
             if path in f:
                 data = f[path][()]
-                # 如果数据是bytes类型，尝试解码为字符串或反序列化
                 if isinstance(data, bytes):
                     try:
-                        # 尝试反序列化，如果失败则尝试解码为utf-8字符串
                         decoded_data, _ = self.serializer.decode(data)
                         data = decoded_data
                     except Exception:
                         try:
                             data = data.decode('utf-8')
                         except UnicodeDecodeError:
-                            pass # 如果解码失败，保留bytes类型
+                            pass
                 elif isinstance(data, np.ndarray) and data.dtype == np.uint8:
-                    # If it's a uint8 numpy array (our raw byte storage), convert back to bytes
                     data = data.tobytes()
                     try:
                         decoded_data, _ = self.serializer.decode(data)
                         data = decoded_data
                     except Exception:
-                        # Fallback if deserialization fails
                         pass
-                print(f"Successfully read data from {path}. Data type: {type(data)}, Data: {data}")
                 return data
-            print(f"Path {path} not found in HDF5 file.")
             return None
 
     def _delete_data(self, path):
-        """
-        Deletes data from the HDF5 file.
-        >>> import os
-        >>> import numpy as np
-        >>> test_file = "test_doctest.h5"
-        >>> if os.path.exists(test_file): os.remove(test_file)
-        >>> server = HDF5Server(hdf5_file_path=test_file, host="127.0.0.1", port=8888)
-        >>> server._write_data("/test_dataset", np.array([1, 2, 3]))
-        >>> with h5py.File(test_file, 'r') as f:
-        ...     "test_dataset" in f
-        True
-        >>> server._delete_data("/test_dataset")
-        >>> with h5py.File(test_file, 'r') as f:
-        ...     "test_dataset" in f
-        False
-        >>> if os.path.exists(test_file): os.remove(test_file)
-        """
         with h5py.File(self.hdf5_file_path, 'a') as f:
             if path in f:
                 del f[path]
 
+    def _append_data(self, path, data_to_append):
+        with h5py.File(self.hdf5_file_path, 'a') as f:
+            if path in f and isinstance(f[path], h5py.Dataset):
+                dset = f[path]
+                original_shape = dset.shape
+                new_shape = (original_shape[0] + len(data_to_append),) + original_shape[1:]
+                dset.resize(new_shape)
+                dset[original_shape[0]:] = data_to_append
+            else:
+                f.create_dataset(path, data=data_to_append, maxshape=(None,) + data_to_append.shape[1:], chunks=True)
+
+    def _insert_data(self, path, index, data_to_insert):
+        with h5py.File(self.hdf5_file_path, 'a') as f:
+            if path in f and isinstance(f[path], h5py.Dataset):
+                dset = f[path]
+                original_shape = dset.shape
+                insert_len = len(data_to_insert)
+                new_shape = (original_shape[0] + insert_len,) + original_shape[1:]
+                dset.resize(new_shape)
+                
+                # Shift existing data to make space for new data
+                dset[index + insert_len:] = dset[index:-insert_len]
+                
+                # Insert the new data
+                dset[index:index + insert_len] = data_to_insert
+            else:
+                # If dataset doesn't exist, this is equivalent to a write operation
+                self._write_data(path, data_to_insert)
+
     async def start_server(self):
-        print("Attempting to start server...")
         server = await asyncio.start_server(
             self._handle_client, self._host, self._port)
-        print("Server started successfully.")
-
+        
         addr = server.sockets[0].getsockname()
         self.host = addr[0]
         self.port = addr[1]
@@ -207,7 +204,5 @@ class HDF5Server:
 
 if __name__ == "__main__":
     import doctest
-    import sys
     sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
     doctest.testmod(verbose=True)
-

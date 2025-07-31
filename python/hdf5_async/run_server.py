@@ -5,29 +5,27 @@ from server.server import HDF5Server
 
 async def main():
     server = HDF5Server()
-    loop = asyncio.get_running_loop()
+    server_task = asyncio.create_task(server.start_server())
 
-    stop_event = asyncio.Event()
-
-    def signal_handler():
-        print("Ctrl+C detected. Shutting down server...")
-        stop_event.set()
-
-    loop.add_signal_handler(signal.SIGINT, signal_handler)
-
+    # Keep the server running until interrupted
     try:
-        # 启动服务器任务
-        server_task = loop.create_task(server.start_server())
-        # 等待停止事件被设置
-        await stop_event.wait()
-        # 取消服务器任务
-        server_task.cancel()
-        # 等待服务器任务完成取消
         await server_task
     except asyncio.CancelledError:
         print("Server task cancelled.")
     finally:
+        await server.stop_server()
         print("Server shutdown complete.")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    loop = asyncio.get_event_loop()
+    main_task = loop.create_task(main())
+
+    try:
+        loop.run_until_complete(main_task)
+    except KeyboardInterrupt:
+        print("\nCtrl+C detected. Shutting down server...")
+        main_task.cancel()
+        # Wait for the main_task to complete its cancellation
+        loop.run_until_complete(main_task)
+    finally:
+        loop.close()
