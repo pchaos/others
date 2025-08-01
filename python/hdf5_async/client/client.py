@@ -87,7 +87,13 @@ class HDF5Client:
         return await self._send_request("write", path, data)
 
     async def read(self, path):
-        return await self._send_request("read", path)
+        response = await self._send_request("read", path)
+        if response.get("status") == "success":
+            return response.get("data")
+        elif response.get("status") == "not_found":
+            return None
+        else:
+            raise Exception(f"Error reading from {path}: {response.get('message', 'Unknown error')}")
 
     async def update(self, path, data):
         return await self._send_request("update", path, data)

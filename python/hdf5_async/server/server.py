@@ -20,7 +20,8 @@ class HDF5Server:
         self._host = host if host is not None else config_manager.get('server', 'host', fallback='127.0.0.1')
         self._port = port if port is not None else config_manager.getint('server', 'port', fallback=8888)
         self.use_compression = config_manager.getboolean('server', 'use_compression', fallback=False)
-        print(f"Server initialized with host: {self._host}, port: {self._port}, compression: {self.use_compression}")
+        self.debug = config_manager.getboolean('server', 'debug', fallback=False)
+        print(f"Server initialized with host: {self._host}, port: {self._port}, compression: {self.use_compression}, debug: {self.debug}")
 
         self.executor = ThreadPoolExecutor(max_workers=4) # For blocking HDF5 operations
         self.serializer = get_serializer()
@@ -32,6 +33,7 @@ class HDF5Server:
         addr = writer.get_extra_info('peername')
         print(f"Client connected from {addr}")
 
+        command = None
         try:
             while True:
                 # Read message length
@@ -47,6 +49,19 @@ class HDF5Server:
                 data = request.get("data")
                 index = request.get("index")
 
+                if self.debug:
+                    log_info = {
+                        "command": command,
+                        "path": path,
+                        "data_type": str(type(data)),
+                    }
+                    if isinstance(data, np.ndarray):
+                        log_info["data_shape"] = data.shape
+                        log_info["data_dtype"] = str(data.dtype)
+                    if index is not None:
+                        log_info["index"] = index
+                    print(f"[DEBUG] Client {addr} request: {log_info}")
+
                 response = {}
                 if command == "get_config":
                     response = {"status": "success", 
@@ -59,8 +74,11 @@ class HDF5Server:
                     await self._run_blocking_io(self._write_data, path, data)
                     response = {"status": "success", "message": f"Data written to {path}"}
                 elif command == "read":
-                    read_data = await self._run_blocking_io(self._read_data, path)
-                    response = {"status": "success", "data": read_data}
+                    found, read_data = await self._run_blocking_io(self._read_data, path)
+                    if found:
+                        response = {"status": "success", "data": read_data}
+                    else:
+                        response = {"status": "not_found", "message": f"Dataset or group at path '{path}' not found."}
                 elif command == "update":
                     await self._run_blocking_io(self._write_data, path, data)
                     response = {"status": "success", "message": f"Data updated at {path}"}
@@ -76,6 +94,19 @@ class HDF5Server:
                 else:
                     response = {"status": "error", "message": "Unknown command"}
 
+                if self.debug:
+                    # To avoid printing large data, we'll summarize it
+                    response_log = response.copy()
+                    if 'data' in response_log:
+                        data = response_log['data']
+                        if isinstance(data, np.ndarray):
+                            response_log['data'] = f"<np.ndarray shape={data.shape} dtype={data.dtype}>"
+                        elif isinstance(data, bytes):
+                            response_log['data'] = f"<bytes len={len(data)}>"
+                        elif isinstance(data, list) and len(data) > 10:
+                             response_log['data'] = f"<list len={len(data)}>"
+                    print(f"[DEBUG] Server response to {addr}: {response_log}")
+
                 response_message = self.serializer.encode(response)
                 writer.write(response_message)
                 await writer.drain()
@@ -83,7 +114,11 @@ class HDF5Server:
         except asyncio.IncompleteReadError:
             print(f"Client {addr} disconnected.")
         except Exception as e:
-            print(f"Error handling client {addr}: {e}")
+            error_message = f"Error handling client {addr}"
+            if command:
+                error_message += f" during command '{command}'"
+            error_message += f": {e}"
+            print(error_message)
         finally:
             writer.close()
             await writer.wait_closed()
@@ -146,8 +181,8 @@ class HDF5Server:
                             data = decoded_data
                         except Exception:
                             pass # Keep as numpy array if deserialization fails
-                return data
-            return None
+                return (True, data)
+            return (False, None)
 
     def _delete_data(self, path):
         with h5py.File(self.hdf5_file_path, 'a') as f:
