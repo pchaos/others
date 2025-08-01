@@ -4,121 +4,103 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import asyncio
 import h5py
-import msgpack_numpy as m
 import numpy as np
+import msgpack
 from concurrent.futures import ThreadPoolExecutor
 from common.serializers import get_serializer
-import configparser
 from common.config_manager import config_manager
-
-m.patch()
 
 class HDF5Server:
     def __init__(self, hdf5_file_path=None, host=None, port=None):
-        self.hdf5_file_path = hdf5_file_path if hdf5_file_path is not None else config_manager.get('server', 'hdf5_file_path', fallback='my_async_hdf5_file.h5')
-
-        self._host = host if host is not None else config_manager.get('server', 'host', fallback='127.0.0.1')
-        self._port = port if port is not None else config_manager.getint('server', 'port', fallback=8888)
-        self.use_compression = config_manager.getboolean('server', 'use_compression', fallback=False)
-        self.debug = config_manager.getboolean('server', 'debug', fallback=False)
-        print(f"Server initialized with host: {self._host}, port: {self._port}, compression: {self.use_compression}, debug: {self.debug}")
-
-        self.executor = ThreadPoolExecutor(max_workers=4) # For blocking HDF5 operations
+        self.hdf5_file_path = hdf5_file_path or config_manager.get('server', 'hdf5_file_path')
+        self._host = host or config_manager.get('server', 'host')
+        self._port = port or config_manager.getint('server', 'port')
+        self.use_compression = config_manager.getboolean('server', 'use_compression')
+        self.debug = config_manager.getboolean('server', 'debug')
+        
+        if self.debug:
+            print(f"Server starting with config: host={self._host}, port={self._port}, compression={self.use_compression}, debug={self.debug}")
+        
+        self.executor = ThreadPoolExecutor(max_workers=4)
         self.serializer = get_serializer()
-        self.server = None # To store the server instance
-        self.host = None # Actual host after binding
-        self.port = None # Actual port after binding
+        self.server = None
+
+    def _log_debug(self, message):
+        if self.debug:
+            print(f"[DEBUG] {message}")
 
     async def _handle_client(self, reader, writer):
         addr = writer.get_extra_info('peername')
-        print(f"Client connected from {addr}")
-
-        command = None
+        self._log_debug(f"Client connected from {addr}")
+        
         try:
             while True:
-                # Read message length
-                len_bytes = await reader.readexactly(4)
-                message_len = int.from_bytes(len_bytes, 'big')
+                command = None  # Initialize command for each loop iteration
+                try:
+                    len_bytes = await reader.readexactly(4)
+                    message_len = int.from_bytes(len_bytes, 'big')
+                    message_data = await reader.readexactly(message_len)
+                    
+                    # Directly unpack the message data since we've already handled the length
+                    request = msgpack.unpackb(message_data, raw=False)
 
-                # Read message
-                message_data = await reader.readexactly(message_len)
-                request, _ = self.serializer.decode(len_bytes + message_data)
+                    command = request.get("command")
+                    path = request.get("path")
+                    data = request.get("data")
+                    index = request.get("index")
 
-                command = request.get("command")
-                path = request.get("path")
-                data = request.get("data")
-                index = request.get("index")
-
-                if self.debug:
-                    log_info = {
-                        "command": command,
-                        "path": path,
-                        "data_type": str(type(data)),
-                    }
+                    log_info = {"command": command, "path": path, "data_type": str(type(data))}
                     if isinstance(data, np.ndarray):
                         log_info["data_shape"] = data.shape
                         log_info["data_dtype"] = str(data.dtype)
                     if index is not None:
                         log_info["index"] = index
-                    print(f"[DEBUG] Client {addr} request: {log_info}")
+                    self._log_debug(f"Client {addr} request: {log_info}")
 
-                response = {}
-                if command == "get_config":
-                    response = {"status": "success", 
-                                "serialization_format": self.serializer.__class__.__name__.replace("Serializer", "").lower(),
-                                "use_compression": self.use_compression}
-                elif command == "create_group":
-                    await self._run_blocking_io(self._create_group, path)
-                    response = {"status": "success", "message": f"Group {path} created"}
-                elif command == "write":
-                    await self._run_blocking_io(self._write_data, path, data)
-                    response = {"status": "success", "message": f"Data written to {path}"}
-                elif command == "read":
-                    found, read_data = await self._run_blocking_io(self._read_data, path)
-                    if found:
-                        response = {"status": "success", "data": read_data}
+                    response = {}
+                    if command == "get_config":
+                        response = {
+                            "status": "success", 
+                            "serialization_format": config_manager.get('server', 'serialization_format'),
+                            "use_compression": self.use_compression,
+                            "debug": self.debug
+                        }
+                    elif command == "create_group":
+                        await self._run_blocking_io(self._create_group, path)
+                        response = {"status": "success"}
+                    elif command == "write":
+                        await self._run_blocking_io(self._write_data, path, data)
+                        response = {"status": "success"}
+                    elif command == "read":
+                        found, read_data = await self._run_blocking_io(self._read_data, path)
+                        response = {"status": "success", "data": read_data} if found else {"status": "not_found"}
+                    elif command == "update":
+                        await self._run_blocking_io(self._write_data, path, data)
+                        response = {"status": "success"}
+                    elif command == "delete":
+                        await self._run_blocking_io(self._delete_data, path)
+                        response = {"status": "success"}
+                    elif command == "append":
+                        await self._run_blocking_io(self._append_data, path, data)
+                        response = {"status": "success"}
+                    elif command == "insert":
+                        await self._run_blocking_io(self._insert_data, path, index, data)
+                        response = {"status": "success"}
                     else:
-                        response = {"status": "not_found", "message": f"Dataset or group at path '{path}' not found."}
-                elif command == "update":
-                    await self._run_blocking_io(self._write_data, path, data)
-                    response = {"status": "success", "message": f"Data updated at {path}"}
-                elif command == "delete":
-                    await self._run_blocking_io(self._delete_data, path)
-                    response = {"status": "success", "message": f"Data deleted from {path}"}
-                elif command == "append":
-                    await self._run_blocking_io(self._append_data, path, data)
-                    response = {"status": "success", "message": f"Data appended to {path}"}
-                elif command == "insert":
-                    await self._run_blocking_io(self._insert_data, path, index, data)
-                    response = {"status": "success", "message": f"Data inserted into {path} at index {index}"}
-                else:
-                    response = {"status": "error", "message": "Unknown command"}
+                        response = {"status": "error", "message": "Unknown command"}
 
-                if self.debug:
-                    # To avoid printing large data, we'll summarize it
-                    response_log = response.copy()
-                    if 'data' in response_log:
-                        data = response_log['data']
-                        if isinstance(data, np.ndarray):
-                            response_log['data'] = f"<np.ndarray shape={data.shape} dtype={data.dtype}>"
-                        elif isinstance(data, bytes):
-                            response_log['data'] = f"<bytes len={len(data)}>"
-                        elif isinstance(data, list) and len(data) > 10:
-                             response_log['data'] = f"<list len={len(data)}>"
-                    print(f"[DEBUG] Server response to {addr}: {response_log}")
-
-                response_message = self.serializer.encode(response)
-                writer.write(response_message)
-                await writer.drain()
-
-        except asyncio.IncompleteReadError:
-            print(f"Client {addr} disconnected.")
-        except Exception as e:
-            error_message = f"Error handling client {addr}"
-            if command:
-                error_message += f" during command '{command}'"
-            error_message += f": {e}"
-            print(error_message)
+                    response_message = self.serializer.encode(response)
+                    writer.write(response_message)
+                    await writer.drain()
+                except asyncio.IncompleteReadError:
+                    self._log_debug(f"Client {addr} disconnected.")
+                    break # Exit the loop if client disconnects
+                except Exception as e:
+                    print(f"Error handling client {addr} for command '{command}': {e}")
+                    # Send an error response to the client
+                    error_response = self.serializer.encode({"status": "error", "message": str(e)})
+                    writer.write(error_response)
+                    await writer.drain()
         finally:
             writer.close()
             await writer.wait_closed()
@@ -135,54 +117,80 @@ class HDF5Server:
         with h5py.File(self.hdf5_file_path, 'a') as f:
             if path in f:
                 del f[path]
-            
-            is_serialized = False
-            if isinstance(data, np.ndarray) and (data.dtype.kind == 'U' or data.dtype.kind == 'S'):
-                data = data.tolist()
-            
-            if not isinstance(data, (int, float, str, bytes, bool)) and not isinstance(data, np.ndarray):
-                data = self.serializer.encode(data)
-                is_serialized = True
 
-            if is_serialized:
-                if self.use_compression:
-                    f.create_dataset(path, data=np.frombuffer(data, dtype=np.uint8), compression='gzip')
+            original_data = data
+            is_scalar = isinstance(data, (int, float, str, bytes))
+
+            if is_scalar:
+                if isinstance(data, str):
+                    data = np.array([data.encode('utf-8')])
                 else:
-                    f.create_dataset(path, data=np.frombuffer(data, dtype=np.uint8))
+                    data = np.array([data])
+            elif isinstance(data, list):
+                try:
+                    data = np.array(data)
+                except (TypeError, ValueError):
+                    serialized_data = self.serializer.encode(original_data)
+                    f.create_dataset(path, data=np.frombuffer(serialized_data, dtype=np.uint8))
+                    return
+
+            if isinstance(data, np.ndarray):
+                dt = data.dtype
+                if dt.kind == 'U':
+                    # Convert numpy unicode array to a type h5py understands
+                    data = data.astype(h5py.string_dtype(encoding='utf-8'))
+                    dt = data.dtype # update dtype after conversion
+                elif h5py.check_string_dtype(dt) or dt.kind == 'S':
+                    dt = h5py.string_dtype(encoding='utf-8')
+                
+                maxshape = (None,) + data.shape[1:] if data.ndim > 0 else (None,)
+                f.create_dataset(path, data=data, dtype=dt, chunks=True, maxshape=maxshape)
             else:
-                maxshape = None
-                chunks = None
-                if hasattr(data, 'shape'):
-                    maxshape = (None,) + data.shape[1:]
-                    chunks = True
-
-                if self.use_compression and isinstance(data, (np.ndarray, list)):
-                    f.create_dataset(path, data=data, compression='gzip', maxshape=maxshape, chunks=chunks)
-                else:
-                    f.create_dataset(path, data=data, maxshape=maxshape, chunks=chunks)
+                f.create_dataset(path, data=original_data)
 
     def _read_data(self, path):
         with h5py.File(self.hdf5_file_path, 'r') as f:
-            if path in f:
-                dset = f[path]
-                data = dset[()]
+            if path not in f:
+                return (False, None)
+            dset = f[path]
+            data = dset[()]
+            
+            # Handle structured arrays by converting them to a serializable format
+            if data.dtype.names:
+                descr = []
+                for name in data.dtype.names:
+                    dt = data.dtype[name]
+                    if dt.kind == 'S':
+                        # Ensure string types are correctly described
+                        descr.append((name, f'S{dt.itemsize}'))
+                    else:
+                        descr.append((name, dt.str))
+                
+                return (True, {
+                    b'__ndarray__': data.tolist(),
+                    b'dtype': descr,
+                    b'shape': data.shape
+                })
 
-                # Decode bytes to string for individual elements or arrays
-                if isinstance(data, bytes):
+            # Check if the dataset might contain a custom serialized object
+            if dset.dtype == np.uint8:
+                try:
+                    # The data is stored as bytes, attempt to decode it using the serializer
+                    decoded_data, _ = self.serializer.decode(data.tobytes())
+                    return (True, decoded_data)
+                except Exception:
+                    # If decoding fails, it's likely just raw byte data, so we fall through
+                    pass
+
+            # Handle string data
+            if h5py.check_string_dtype(dset.dtype):
+                if isinstance(data, np.ndarray):
+                    # Decode byte strings to utf-8 for client consumption
+                    data = np.char.decode(data.astype(np.bytes_), 'utf-8')
+                elif isinstance(data, bytes):
                     data = data.decode('utf-8')
-                elif isinstance(data, np.ndarray):
-                    if dset.dtype.kind in ('O', 'S', 'U'):
-                        # Decode each element if it's bytes
-                        data = [item.decode('utf-8') if isinstance(item, bytes) else item for item in data.tolist()]
-                    elif data.dtype == np.uint8:
-                        # Handle serialized data
-                        try:
-                            decoded_data, _ = self.serializer.decode(data.tobytes())
-                            data = decoded_data
-                        except Exception:
-                            pass # Keep as numpy array if deserialization fails
-                return (True, data)
-            return (False, None)
+            
+            return (True, data)
 
     def _delete_data(self, path):
         with h5py.File(self.hdf5_file_path, 'a') as f:
@@ -191,100 +199,43 @@ class HDF5Server:
 
     def _append_data(self, path, data_to_append):
         with h5py.File(self.hdf5_file_path, 'a') as f:
-            # --- 1. Normalize data_to_append to a list ---
-            if isinstance(data_to_append, np.ndarray):
-                append_list = data_to_append.tolist()
-            elif isinstance(data_to_append, list):
-                append_list = data_to_append
-            else:  # Handles scalars (int, float, str, bytes)
-                append_list = [data_to_append]
+            if path not in f:
+                self._write_data(path, data_to_append)
+                return
+            
+            dset = f[path]
+            if not isinstance(data_to_append, (list, np.ndarray)):
+                data_to_append = [data_to_append]
+            
+            if isinstance(data_to_append, list):
+                data_to_append = np.array(data_to_append, dtype=dset.dtype)
 
-            # --- 2. Handle existing dataset ---
-            if path in f and isinstance(f[path], h5py.Dataset):
-                dset = f[path]
-                
-                # Read existing data and normalize to a list
-                if dset.shape == ():
-                    original_data = dset[()]
-                    if isinstance(original_data, bytes):
-                        original_list = [original_data.decode('utf-8')]
-                    else:
-                        original_list = [original_data]
-                else:
-                    original_list = dset[:].tolist()
-
-                # Combine the lists
-                new_data_list = original_list + append_list
-                
-                # Determine dtype for recreation
-                is_string = any(isinstance(item, (str, bytes)) for item in new_data_list)
-                
-                del f[path]
-                
-                if is_string:
-                    # Ensure all items are strings for h5py
-                    new_data_list = [item.decode() if isinstance(item, bytes) else str(item) for item in new_data_list]
-                    f.create_dataset(path, data=new_data_list, dtype=h5py.string_dtype(encoding='utf-8'), maxshape=(None,), chunks=True)
-                else:
-                    f.create_dataset(path, data=np.array(new_data_list), maxshape=(None,), chunks=True)
-
-            # --- 3. Handle new dataset ---
-            else:
-                is_string = any(isinstance(item, (str, bytes)) for item in append_list)
-                if is_string:
-                    # Ensure all items are strings for h5py
-                    new_data_list = [item.decode() if isinstance(item, bytes) else str(item) for item in append_list]
-                    f.create_dataset(path, data=new_data_list, dtype=h5py.string_dtype(encoding='utf-8'), maxshape=(None,), chunks=True)
-                else:
-                    f.create_dataset(path, data=np.array(append_list), maxshape=(None,), chunks=True)
+            dset.resize(dset.shape[0] + data_to_append.shape[0], axis=0)
+            dset[-data_to_append.shape[0]:] = data_to_append
 
     def _insert_data(self, path, index, data_to_insert):
         with h5py.File(self.hdf5_file_path, 'a') as f:
-            if path in f and isinstance(f[path], h5py.Dataset):
-                dset = f[path]
+            if path not in f:
+                self._write_data(path, data_to_insert if isinstance(data_to_insert, list) else [data_to_insert])
+                return
 
-                # --- Universal Read-Modify-Write for maximum stability ---
-                
-                # 1. Read original data into a list
-                if dset.dtype.kind in ('O', 'S', 'U'):
-                    original_list = dset.asstr()[:].tolist()
-                else:
-                    original_list = dset[:].tolist()
-                
-                if not isinstance(original_list, list):
-                    original_list = [original_list]
-
-                # 2. Normalize data_to_insert into a list
-                insert_list = data_to_insert.tolist()
-                if not isinstance(insert_list, list):
-                    insert_list = [insert_list]
-
-                # 3. Perform insertion in the Python list
-                new_data_list = original_list[:index] + insert_list + original_list[index:]
-
-                # 4. Recreate the dataset
-                del f[path]
-                
-                is_string = any(isinstance(item, str) for item in new_data_list)
-                if is_string:
-                    f.create_dataset(path, data=[str(item) for item in new_data_list], dtype=h5py.string_dtype(encoding='utf-8'), maxshape=(None,), chunks=True)
-                else:
-                    f.create_dataset(path, data=np.array(new_data_list), maxshape=(None,), chunks=True)
-
+            current_data = list(f[path][()])
+            
+            # Flatten the data to be inserted if it's a list or array
+            if isinstance(data_to_insert, (list, np.ndarray)):
+                elements_to_insert = list(data_to_insert)
             else:
-                # If dataset doesn't exist, this is equivalent to a write operation
-                self._write_data(path, data_to_insert)
+                elements_to_insert = [data_to_insert]
+            
+            new_data = current_data[:index] + elements_to_insert + current_data[index:]
+            
+            del f[path]
+            self._write_data(path, new_data)
 
     async def start_server(self):
-        server = await asyncio.start_server(
-            self._handle_client, self._host, self._port)
-        
-        addr = server.sockets[0].getsockname()
-        self.host = addr[0]
-        self.port = addr[1]
-        print(f"Serving on {self.host}:{self.port}")
-
-        self.server = server
+        self.server = await asyncio.start_server(self._handle_client, self._host, self._port)
+        addr = self.server.sockets[0].getsockname()
+        print(f"Serving on {addr[0]}:{addr[1]}")
         async with self.server:
             await self.server.serve_forever()
 
@@ -292,9 +243,16 @@ class HDF5Server:
         if self.server:
             self.server.close()
             await self.server.wait_closed()
-            print("Server stopped.")
+            self._log_debug("Server stopped.")
 
 if __name__ == "__main__":
-    import doctest
-    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-    doctest.testmod(verbose=True)
+    server = HDF5Server()
+    try:
+        asyncio.run(server.start_server())
+    except KeyboardInterrupt:
+        if server.debug:
+            print("\nServer shutting down.")
+        asyncio.run(server.stop_server())
+        server.executor.shutdown(wait=True)
+        if server.debug:
+            print("Server shutdown complete.")

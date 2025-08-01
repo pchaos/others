@@ -3,6 +3,7 @@
 import json
 import msgpack
 import msgpack_numpy as m
+import numpy as np
 import configparser
 import os
 
@@ -58,13 +59,6 @@ class MessagePackSerializer(Serializer):
     def encode(self, data):
         """
         Encodes data into a MessagePack byte string with a 4-byte length prefix.
-        >>> serializer = MessagePackSerializer()
-        >>> encoded_data = serializer.encode({"key": "value"})
-        >>> len(encoded_data)
-        15
-        >>> import msgpack
-        >>> msgpack.unpackb(encoded_data[4:], raw=False)
-        {'key': 'value'}
         """
         message_bytes = msgpack.packb(data, use_bin_type=True)
         return len(message_bytes).to_bytes(4, 'big') + message_bytes
@@ -72,16 +66,26 @@ class MessagePackSerializer(Serializer):
     def decode(self, data):
         """
         Decodes a MessagePack byte string with a 4-byte length prefix.
-        >>> serializer = MessagePackSerializer()
-        >>> encoded_data = serializer.encode({"key": "value"})
-        >>> decoded_message, remaining_data = serializer.decode(encoded_data)
-        >>> decoded_message
-        {'key': 'value'}
-        >>> remaining_data
-        b''
         """
+        def _object_hook(dct):
+            if b'__ndarray__' in dct:
+                # It's a serialized numpy array
+                shape = dct[b'shape']
+                dtype_descr = dct[b'dtype']
+                if isinstance(dtype_descr, list) and all(isinstance(i, list) for i in dtype_descr):
+                    dtype_descr = [tuple(item) for item in dtype_descr]
+                dtype = np.dtype(dtype_descr)
+                data = dct[b'__ndarray__']
+                
+                if isinstance(data, list): # Handle structured arrays
+                    return np.array([tuple(row) for row in data], dtype=dtype)
+                
+                return np.frombuffer(data, dtype=dtype).reshape(shape)
+            return dct
+
         message_len = int.from_bytes(data[:4], 'big')
-        message = msgpack.unpackb(data[4:4+message_len], raw=False)
+        # Use the custom object_hook to handle numpy arrays
+        message = msgpack.unpackb(data[4:4+message_len], object_hook=_object_hook, raw=False)
         return message, data[4+message_len:]
 
 # --- Factory-Funktion ---

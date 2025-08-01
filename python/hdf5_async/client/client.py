@@ -1,10 +1,7 @@
 import asyncio
-import msgpack_numpy as m
-import os
-from common.serializers import MessagePackSerializer, JsonSerializer
+import numpy as np
+from common.serializers import get_serializer
 from common.config_manager import config_manager
-
-m.patch()
 
 class HDF5Client:
     def __init__(self, host=None, port=None):
@@ -12,73 +9,85 @@ class HDF5Client:
         self.port = port if port is not None else config_manager.getint('server', 'port', fallback=8888)
         self.reader = None
         self.writer = None
-        self.serializer = None # Will be set after getting config from server
+        self.serializer = None
+        self.debug = False # Default value
 
-    async def connect(self, retries=5, delay=1):
-        for attempt in range(retries):
-            try:
-                self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
+    async def connect(self):
+        try:
+            self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
+            # The first request is to get the server's configuration
+            server_config = await self._send_request("get_config")
+            
+            self.debug = server_config.get('debug', False)
+            self.serializer = get_serializer()
+            
+            if self.debug:
                 print(f"Connected to HDF5 server at {self.host}:{self.port}")
+                print(f"Received server config: {server_config}")
 
-                # Request configuration from the server
-                config_response = await self._send_request("get_config", "/")
-                if config_response.get("status") == "success":
-                    serialization_format = config_response.get("serialization_format")
-                    # Dynamically set serializer based on server config
-                    if serialization_format == 'json':
-                        from common.serializers import JsonSerializer
-                        self.serializer = JsonSerializer()
-                    elif serialization_format == 'messagepack':
-                        from common.serializers import MessagePackSerializer
-                        self.serializer = MessagePackSerializer()
-                    else:
-                        raise ValueError(f"Unknown serialization format from server: {serialization_format}")
-                    print(f"Received server config: serialization_format={serialization_format}")
-                    return  # Success, exit the loop
-                else:
-                    raise Exception(f"Failed to get server config: {config_response.get('message')}")
-            except ConnectionRefusedError:
-                if attempt < retries - 1:
-                    print(f"Connection refused. Retrying in {delay} second(s)...")
-                    await asyncio.sleep(delay)
-                else:
-                    print("Connection failed after multiple retries.")
-                    raise
+        except ConnectionRefusedError:
+            print(f"Connection refused. Is the server running at {self.host}:{self.port}?")
+            raise
 
-    async def _send_request(self, command, path, data=None, index=None):
-        request = {
-            "command": command,
-            "path": path
-        }
+    def _log_debug(self, message):
+        if self.debug:
+            print(f"[DEBUG] {message}")
+
+    async def _send_request(self, command, path=None, data=None, index=None):
+        if not self.writer:
+            raise ConnectionError("Client is not connected to the server.")
+
+        request = {"command": command}
+        if path:
+            request["path"] = path
         if data is not None:
             request["data"] = data
         if index is not None:
             request["index"] = index
+        
+        self._log_debug(f"Sending request: {request}")
 
-        # Use a temporary serializer if self.serializer is not yet initialized
-        if self.serializer is None:
+        # On the first connection, the serializer is not yet set
+        if self.serializer:
+            message = self.serializer.encode(request)
+        else: # Fallback for the very first 'get_config' call
             from common.serializers import MessagePackSerializer
-            temp_serializer = MessagePackSerializer()
-            message_bytes = temp_serializer.encode(request)
-        else:
-            message_bytes = self.serializer.encode(request)
+            message = MessagePackSerializer().encode(request)
 
-        self.writer.write(message_bytes)
+        self.writer.write(message)
         await self.writer.drain()
 
-        # Read response length
         len_bytes = await self.reader.readexactly(4)
-        response_len = int.from_bytes(len_bytes, 'big')
-
-        # Read response message
-        response_message = await self.reader.readexactly(response_len)
+        message_len = int.from_bytes(len_bytes, 'big')
+        response_data = await self.reader.readexactly(message_len)
         
-        # Use a temporary serializer if self.serializer is not yet initialized
-        if self.serializer is None:
-            response, _ = temp_serializer.decode(len_bytes + response_message)
+        # The first response must be decoded with a default decoder
+        if self.serializer:
+            response, _ = self.serializer.decode(len_bytes + response_data)
         else:
-            response, _ = self.serializer.decode(len_bytes + response_message)
-        return response
+            from common.serializers import MessagePackSerializer
+            response, _ = MessagePackSerializer().decode(len_bytes + response_data)
+
+        self._log_debug(f"Received response: {response}")
+
+        if response.get("status") == "error":
+            raise RuntimeError(f"Server error: {response.get('message')}")
+        
+        # The get_config command returns the full response, not just the 'data' field
+        if command == "get_config":
+            return response
+
+        if response.get("status") == "not_found":
+            return None
+            
+        return response.get("data")
+
+    async def close(self):
+        if self.writer:
+            self.writer.close()
+            await self.writer.wait_closed()
+            if self.debug:
+                print("Connection closed.")
 
     async def create_group(self, path):
         return await self._send_request("create_group", path)
@@ -87,13 +96,7 @@ class HDF5Client:
         return await self._send_request("write", path, data)
 
     async def read(self, path):
-        response = await self._send_request("read", path)
-        if response.get("status") == "success":
-            return response.get("data")
-        elif response.get("status") == "not_found":
-            return None
-        else:
-            raise Exception(f"Error reading from {path}: {response.get('message', 'Unknown error')}")
+        return await self._send_request("read", path)
 
     async def update(self, path, data):
         return await self._send_request("update", path, data)
@@ -105,18 +108,4 @@ class HDF5Client:
         return await self._send_request("append", path, data)
 
     async def insert(self, path, index, data):
-        import numpy as np
-        # Ensure data is a numpy array before sending, with special handling for strings
-        if isinstance(data, str):
-            data = np.array([data], dtype=object)
-        elif isinstance(data, list) and all(isinstance(i, str) for i in data):
-            data = np.array(data, dtype=object)
-        elif not isinstance(data, np.ndarray):
-            data = np.array(data) if isinstance(data, list) else np.array([data])
-        return await self._send_request("insert", path, data, index=index)
-
-    async def close(self):
-        if self.writer:
-            self.writer.close()
-            await self.writer.wait_closed()
-            print("Connection closed.")
+        return await self._send_request("insert", path, data=data, index=index)
