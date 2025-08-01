@@ -1,6 +1,6 @@
 # Project Overview
 
-Modified: 2025-07-31 19:16:07
+Modified: 2025-08-01 10:05:20
 
 This project is a Python library for asynchronous HDF5 operations.
 默认使用gemini gemini-2.5-flash 模型进行代码生成。当有特殊指定时使用gemini-2.5-Pro模型;可用额度不够时，将自动切换到gemini-2.5-flash模型。
@@ -10,14 +10,17 @@ This project is a Python library for asynchronous HDF5 operations.
 
 代码注释使用中文;
 测试时,config.ini中shutdown_delay 不要超过1分钟,以免测试卡住;
+config.ini设置debug模式时,输出调试信息,包括服务端和客户端的日志信息;debug模式为false时,只输出错误信息和必要的提示信息;
 程序从config.ini读取服务端ip,端口和是否使用压缩等配置参数;
 服务端提供数据的增 删 改 查 insert append操作
+accert验证数据正确性要有详细出错说明;出错说明要包含期望的数据,实际数据;
 
 <!-- 客户端从服务端获取配置参数,并根据配置参数进行操作; -->
 
 当测试client端时，默认使用时长为1分钟,当尝过超过1分钟时，并且当前无新的提示时，将自动关闭客户端和服务端,重新根据程序输出信息修改代码;
 
-服务端可以通过"ctrl-c"终止运行;
+服务端可以通过3秒内连续按两次"ctrl-c"终止运行;防止误操作的产生;
+当config.ini debug=true时,只需要按一次"ctrl-c"终止运行;
 
 # Setup
 
