@@ -247,6 +247,12 @@ class HDF5Server:
         addr = self.server.sockets[0].getsockname()
         print(f"Serving on {addr[0]}:{addr[1]}")
 
+    def is_serving(self):
+        """Check if the server is currently serving."""
+        if self.server:
+            return self.server.is_serving()
+        return False
+
     async def serve_forever(self):
         """Starts accepting connections. This method runs forever."""
         if not self.server:
