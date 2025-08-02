@@ -32,6 +32,10 @@ class HDF5Client:
             print(f"Connection refused. Is the server running at {self.host}:{self.port}?")
             raise
 
+    def is_connected(self):
+        """Check if the client is connected."""
+        return self.writer is not None and not self.writer.is_closing()
+
     def _log_debug(self, message):
         if self.debug:
             print(f"[DEBUG] {message}")
