@@ -12,9 +12,10 @@ from common.config_manager import config_manager
 
 class HDF5Server:
     def __init__(self, hdf5_file_path=None, host=None, port=None):
+        print("[SERVER INIT]")
         self.hdf5_file_path = hdf5_file_path or config_manager.get('server', 'hdf5_file_path')
         self._host = host or config_manager.get('server', 'host')
-        self._port = port or config_manager.getint('server', 'port')
+        self._port = port if port is not None else config_manager.getint('server', 'port')
         self.use_compression = config_manager.getboolean('server', 'use_compression')
         self.debug = config_manager.getboolean('server', 'debug')
         
@@ -24,6 +25,7 @@ class HDF5Server:
         self.executor = ThreadPoolExecutor(max_workers=4)
         self.serializer = get_serializer()
         self.server = None
+        self.client_tasks = set()
 
     def _log_debug(self, message):
         if self.debug:
@@ -32,17 +34,20 @@ class HDF5Server:
     async def _handle_client(self, reader, writer):
         addr = writer.get_extra_info('peername')
         self._log_debug(f"Client connected from {addr}")
+        print(f"[SERVER HANDLE_CLIENT START] from {addr}")
+        task = asyncio.current_task()
+        self.client_tasks.add(task)
         
         try:
             while True:
-                command = None  # Initialize command for each loop iteration
+                command = None
                 try:
                     len_bytes = await reader.readexactly(4)
                     message_len = int.from_bytes(len_bytes, 'big')
                     message_data = await reader.readexactly(message_len)
                     
-                    # Directly unpack the message data since we've already handled the length
-                    request = msgpack.unpackb(message_data, raw=False)
+                    request, _ = self.serializer.decode(len_bytes + message_data)
+                    print(f"[SERVER RECV] {request}")
 
                     command = request.get("command")
                     path = request.get("path")
@@ -89,21 +94,24 @@ class HDF5Server:
                     else:
                         response = {"status": "error", "message": "Unknown command"}
 
+                    print(f"[SERVER SEND] {response}")
                     response_message = self.serializer.encode(response)
                     writer.write(response_message)
                     await writer.drain()
                 except asyncio.IncompleteReadError:
                     self._log_debug(f"Client {addr} disconnected.")
-                    break # Exit the loop if client disconnects
+                    break
                 except Exception as e:
                     print(f"Error handling client {addr} for command '{command}': {e}")
-                    # Send an error response to the client
                     error_response = self.serializer.encode({"status": "error", "message": str(e)})
                     writer.write(error_response)
                     await writer.drain()
         finally:
             writer.close()
             await writer.wait_closed()
+            self.client_tasks.remove(task)
+            self._log_debug(f"Client task for {addr} removed.")
+            print(f"[SERVER HANDLE_CLIENT END] from {addr}")
 
     async def _run_blocking_io(self, func, *args, **kwargs):
         return await asyncio.get_event_loop().run_in_executor(self.executor, func, *args, **kwargs)
@@ -137,9 +145,8 @@ class HDF5Server:
             if isinstance(data, np.ndarray):
                 dt = data.dtype
                 if dt.kind == 'U':
-                    # Convert numpy unicode array to a type h5py understands
                     data = data.astype(h5py.string_dtype(encoding='utf-8'))
-                    dt = data.dtype # update dtype after conversion
+                    dt = data.dtype
                 elif h5py.check_string_dtype(dt) or dt.kind == 'S':
                     dt = h5py.string_dtype(encoding='utf-8')
                 
@@ -155,13 +162,11 @@ class HDF5Server:
             dset = f[path]
             data = dset[()]
             
-            # Handle structured arrays by converting them to a serializable format
             if data.dtype.names:
                 descr = []
                 for name in data.dtype.names:
                     dt = data.dtype[name]
                     if dt.kind == 'S':
-                        # Ensure string types are correctly described
                         descr.append((name, f'S{dt.itemsize}'))
                     else:
                         descr.append((name, dt.str))
@@ -172,20 +177,15 @@ class HDF5Server:
                     b'shape': data.shape
                 })
 
-            # Check if the dataset might contain a custom serialized object
             if dset.dtype == np.uint8:
                 try:
-                    # The data is stored as bytes, attempt to decode it using the serializer
                     decoded_data, _ = self.serializer.decode(data.tobytes())
                     return (True, decoded_data)
                 except Exception:
-                    # If decoding fails, it's likely just raw byte data, so we fall through
                     pass
 
-            # Handle string data
             if h5py.check_string_dtype(dset.dtype):
                 if isinstance(data, np.ndarray):
-                    # Decode byte strings to utf-8 for client consumption
                     data = np.char.decode(data.astype(np.bytes_), 'utf-8')
                 elif isinstance(data, bytes):
                     data = data.decode('utf-8')
@@ -221,7 +221,6 @@ class HDF5Server:
 
             current_data = list(f[path][()])
             
-            # Flatten the data to be inserted if it's a list or array
             if isinstance(data_to_insert, (list, np.ndarray)):
                 elements_to_insert = list(data_to_insert)
             else:
@@ -232,23 +231,41 @@ class HDF5Server:
             del f[path]
             self._write_data(path, new_data)
 
-    async def start_server(self):
+    async def start(self):
+        """Initializes the server and gets it ready to accept connections."""
+        print("[SERVER START]")
         self.server = await asyncio.start_server(self._handle_client, self._host, self._port)
         addr = self.server.sockets[0].getsockname()
         print(f"Serving on {addr[0]}:{addr[1]}")
-        async with self.server:
-            await self.server.serve_forever()
+
+    async def serve_forever(self):
+        """Starts accepting connections. This method runs forever."""
+        if not self.server:
+            raise RuntimeError("Server not started. Call start() before serving.")
+        print("[SERVER SERVE_FOREVER]")
+        await self.server.serve_forever()
 
     async def stop_server(self):
         if self.server:
+            print("[SERVER STOP_SERVER]")
+            self._log_debug("Stopping server...")
+            for task in list(self.client_tasks):
+                task.cancel()
+            await asyncio.sleep(0)  # Allow cancellations to be processed
+            
             self.server.close()
             await self.server.wait_closed()
+            self.executor.shutdown(wait=True)
             self._log_debug("Server stopped.")
 
 if __name__ == "__main__":
     server = HDF5Server()
+    async def main():
+        await server.start()
+        await server.serve_forever()
+
     try:
-        asyncio.run(server.start_server())
+        asyncio.run(main())
     except KeyboardInterrupt:
         if server.debug:
             print("\nServer shutting down.")

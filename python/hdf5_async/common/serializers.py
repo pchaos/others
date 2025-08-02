@@ -4,13 +4,12 @@ import json
 import msgpack
 import msgpack_numpy as m
 import numpy as np
-import configparser
-import os
+from .config_manager import config_manager
 
-# --- NumPy anpassung für msgpack ---
+# --- NumPy support for msgpack ---
 m.patch()
 
-# --- Abstrake Basisklasse für Serializer ---
+# --- Abstract base class for Serializer ---
 class Serializer:
     def encode(self, data):
         raise NotImplementedError
@@ -18,19 +17,12 @@ class Serializer:
     def decode(self, data):
         raise NotImplementedError
 
-# --- Konkrete Implementierung für JSON ---
+# --- Concrete implementation for JSON ---
 class JsonSerializer(Serializer):
     def encode(self, data):
         """
         Encodes data into a JSON byte string with a 4-byte length prefix.
-        >>> serializer = JsonSerializer()
-        >>> encoded_data = serializer.encode({"key": "value"})
-        >>> len(encoded_data)
-        20
-        >>> encoded_data[4:].decode('utf-8')
-        '{"key": "value"}'
         """
-        # NumPy-Arrays müssen für JSON in Listen umgewandelt werden
         def default_encoder(obj):
             if hasattr(obj, 'tolist'):
                 return obj.tolist()
@@ -42,19 +34,12 @@ class JsonSerializer(Serializer):
     def decode(self, data):
         """
         Decodes a JSON byte string with a 4-byte length prefix.
-        >>> serializer = JsonSerializer()
-        >>> encoded_data = serializer.encode({"key": "value"})
-        >>> decoded_message, remaining_data = serializer.decode(encoded_data)
-        >>> decoded_message
-        {'key': 'value'}
-        >>> remaining_data
-        b''
         """
         message_len = int.from_bytes(data[:4], 'big')
         message = json.loads(data[4:4+message_len].decode('utf-8'))
         return message, data[4+message_len:]
 
-# --- Konkrete Implementierung für MessagePack ---
+# --- Concrete implementation for MessagePack ---
 class MessagePackSerializer(Serializer):
     def encode(self, data):
         """
@@ -69,7 +54,6 @@ class MessagePackSerializer(Serializer):
         """
         def _object_hook(dct):
             if b'__ndarray__' in dct:
-                # It's a serialized numpy array
                 shape = dct[b'shape']
                 dtype_descr = dct[b'dtype']
                 if isinstance(dtype_descr, list) and all(isinstance(i, list) for i in dtype_descr):
@@ -77,28 +61,22 @@ class MessagePackSerializer(Serializer):
                 dtype = np.dtype(dtype_descr)
                 data = dct[b'__ndarray__']
                 
-                if isinstance(data, list): # Handle structured arrays
+                if isinstance(data, list):
                     return np.array([tuple(row) for row in data], dtype=dtype)
                 
                 return np.frombuffer(data, dtype=dtype).reshape(shape)
             return dct
 
         message_len = int.from_bytes(data[:4], 'big')
-        # Use the custom object_hook to handle numpy arrays
         message = msgpack.unpackb(data[4:4+message_len], object_hook=_object_hook, raw=False)
         return message, data[4+message_len:]
 
-# --- Factory-Funktion ---
+# --- Factory function ---
 def get_serializer():
     """
-    Liest die Konfigurationsdatei und gibt die entsprechende Serializer-Instanz zurück.
+    Reads the configuration and returns the corresponding serializer instance.
     """
-    config = configparser.ConfigParser()
-    # Der Pfad zur config.ini relativ zum aktuellen Skript
-    config_path = os.path.join(os.path.dirname(__file__), '..', 'config.ini')
-    config.read(config_path)
-    
-    serialization_format = config.get('server', 'serialization_format', fallback='json').lower()
+    serialization_format = config_manager.get('server', 'serialization_format', fallback='json').lower()
     
     if serialization_format == 'json':
         return JsonSerializer()

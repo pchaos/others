@@ -1,6 +1,6 @@
 # Project Overview
 
-Modified: 2025-08-01 10:05:20
+Modified: 2025-08-02 13:48:49
 
 This project is a Python library for asynchronous HDF5 operations.
 默认使用gemini gemini-2.5-flash 模型进行代码生成。当有特殊指定时使用gemini-2.5-Pro模型;可用额度不够时，将自动切换到gemini-2.5-flash模型。
@@ -43,6 +43,7 @@ To set up the development environment, follow these steps:
 ## Running Tests
 
 To run the tests, use pytest:
+如果使用pytest测试时,用时超过15秒,将自动终止测试;
 
 测试代码前,前检查端口号是否被占用(以及是否有runserver.py进程),如果端口号被占用,终止该端口号对应的服务端程序。
 
