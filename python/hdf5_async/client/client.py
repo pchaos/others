@@ -36,11 +36,17 @@ class HDF5Client:
         if self.debug:
             print(f"[DEBUG] {message}")
 
-    async def _send_request(self, command, path=None, data=None, index=None):
+    async def _send_request(self, command, path=None, data=None, index=None, compression=None):
         if not self.writer:
             raise ConnectionError("Client is not connected to the server.")
 
-        request = {"command": command, "path": path, "data": data, "index": index}
+        request = {
+            "command": command,
+            "path": path,
+            "data": data,
+            "index": index,
+            "compression": compression,
+        }
         
         print(f"[CLIENT SEND] {request}")
         self._log_debug(f"Sending request: {request}")
@@ -80,20 +86,20 @@ class HDF5Client:
     async def create_group(self, path):
         return await self._send_request("create_group", path)
 
-    async def write(self, path, data):
-        return await self._send_request("write", path, data)
+    async def write(self, path, data, compression=None):
+        return await self._send_request("write", path, data, compression=compression)
 
     async def read(self, path):
         return await self._send_request("read", path)
 
-    async def update(self, path, data):
-        return await self._send_request("update", path, data)
+    async def update(self, path, data, compression=None):
+        return await self._send_request("update", path, data, compression=compression)
 
     async def delete(self, path):
         return await self._send_request("delete", path)
 
-    async def append(self, path, data):
-        return await self._send_request("append", path, data)
+    async def append(self, path, data, compression=None):
+        return await self._send_request("append", path, data, compression=compression)
 
-    async def insert(self, path, index, data):
-        return await self._send_request("insert", path, data=data, index=index)
+    async def insert(self, path, index, data, compression=None):
+        return await self._send_request("insert", path, data=data, index=index, compression=compression)

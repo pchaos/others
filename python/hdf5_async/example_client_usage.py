@@ -250,6 +250,50 @@ async def test_structured_data(client: HDF5Client):
         "Structured data verification failed.", data_to_write, read_data
     )
 
+async def test_compression(client: HDF5Client):
+    """Tests per-path compression settings."""
+    print("\n--- Testing Compression ---")
+    compressed_path = "/my_group/compressed_dataset"
+    uncompressed_path = "/my_group/uncompressed_dataset"
+    data = np.arange(1000)
+
+    # Write one dataset with gzip compression
+    await client.write(compressed_path, data, compression='gzip')
+    read_compressed_data = await client.read(compressed_path)
+    assert np.array_equal(data, read_compressed_data), format_assertion_error(
+        "Compressed data verification failed.", data, read_compressed_data
+    )
+    print("Compressed data verified successfully.")
+
+    # Write another dataset without compression
+    await client.write(uncompressed_path, data, compression=None)
+    read_uncompressed_data = await client.read(uncompressed_path)
+    assert np.array_equal(data, read_uncompressed_data), format_assertion_error(
+        "Uncompressed data verification failed.", data, read_uncompressed_data
+    )
+    print("Uncompressed data verified successfully.")
+
+    # Test append with compression
+    append_compress_path = "/my_group/append_compress_dataset"
+    await client.write(append_compress_path, np.array([1, 2]), compression='gzip')
+    await client.append(append_compress_path, np.array([3, 4]), compression='gzip')
+    read_append_compressed = await client.read(append_compress_path)
+    assert np.array_equal(read_append_compressed, np.array([1, 2, 3, 4])), format_assertion_error(
+        "Append with compression verification failed.", np.array([1, 2, 3, 4]), read_append_compressed
+    )
+    print("Append with compression verified successfully.")
+
+    # Test insert with compression
+    insert_compress_path = "/my_group/insert_compress_dataset"
+    await client.write(insert_compress_path, np.array([10, 40]), compression='gzip')
+    await client.insert(insert_compress_path, 1, np.array([20, 30]), compression='gzip')
+    read_insert_compressed = await client.read(insert_compress_path)
+    assert np.array_equal(read_insert_compressed, np.array([10, 20, 30, 40])), format_assertion_error(
+        "Insert with compression verification failed.", np.array([10, 20, 30, 40]), read_insert_compressed
+    )
+    print("Insert with compression verified successfully.")
+
+
 async def cleanup_test_data(client: HDF5Client, paths: list):
     """Deletes all data created during tests."""
     print("\n--- Cleaning up created data ---")
@@ -288,6 +332,7 @@ async def main():
         await test_append_operations(client)
         await test_insert_operations(client)
         await test_structured_data(client)
+        await test_compression(client)
     finally:
         await cleanup_test_data(client, top_level_paths_to_cleanup)
         await client.close()

@@ -53,6 +53,7 @@ class HDF5Server:
                     path = request.get("path")
                     data = request.get("data")
                     index = request.get("index")
+                    compression = request.get("compression")
 
                     log_info = {"command": command, "path": path, "data_type": str(type(data))}
                     if isinstance(data, np.ndarray):
@@ -60,6 +61,8 @@ class HDF5Server:
                         log_info["data_dtype"] = str(data.dtype)
                     if index is not None:
                         log_info["index"] = index
+                    if compression is not None:
+                        log_info["compression"] = compression
                     self._log_debug(f"Client {addr} request: {log_info}")
 
                     response = {}
@@ -74,22 +77,22 @@ class HDF5Server:
                         await self._run_blocking_io(self._create_group, path)
                         response = {"status": "success"}
                     elif command == "write":
-                        await self._run_blocking_io(self._write_data, path, data)
+                        await self._run_blocking_io(self._write_data, path, data, compression)
                         response = {"status": "success"}
                     elif command == "read":
                         found, read_data = await self._run_blocking_io(self._read_data, path)
                         response = {"status": "success", "data": read_data} if found else {"status": "not_found"}
                     elif command == "update":
-                        await self._run_blocking_io(self._write_data, path, data)
+                        await self._run_blocking_io(self._write_data, path, data, compression)
                         response = {"status": "success"}
                     elif command == "delete":
                         await self._run_blocking_io(self._delete_data, path)
                         response = {"status": "success"}
                     elif command == "append":
-                        await self._run_blocking_io(self._append_data, path, data)
+                        await self._run_blocking_io(self._append_data, path, data, compression)
                         response = {"status": "success"}
                     elif command == "insert":
-                        await self._run_blocking_io(self._insert_data, path, index, data)
+                        await self._run_blocking_io(self._insert_data, path, index, data, compression)
                         response = {"status": "success"}
                     else:
                         response = {"status": "error", "message": "Unknown command"}
@@ -121,7 +124,7 @@ class HDF5Server:
             if path not in f:
                 f.create_group(path)
 
-    def _write_data(self, path, data):
+    def _write_data(self, path, data, compression=None):
         with h5py.File(self.hdf5_file_path, 'a') as f:
             if path in f:
                 del f[path]
@@ -151,7 +154,13 @@ class HDF5Server:
                     dt = h5py.string_dtype(encoding='utf-8')
                 
                 maxshape = (None,) + data.shape[1:] if data.ndim > 0 else (None,)
-                f.create_dataset(path, data=data, dtype=dt, chunks=True, maxshape=maxshape)
+                
+                # Determine compression
+                comp_to_use = compression
+                if comp_to_use is None and self.use_compression:
+                    comp_to_use = 'gzip' # Default compression
+                
+                f.create_dataset(path, data=data, dtype=dt, chunks=True, maxshape=maxshape, compression=comp_to_use)
             else:
                 f.create_dataset(path, data=original_data)
 
@@ -197,10 +206,10 @@ class HDF5Server:
             if path in f:
                 del f[path]
 
-    def _append_data(self, path, data_to_append):
+    def _append_data(self, path, data_to_append, compression=None):
         with h5py.File(self.hdf5_file_path, 'a') as f:
             if path not in f:
-                self._write_data(path, data_to_append)
+                self._write_data(path, data_to_append, compression=compression)
                 return
             
             dset = f[path]
@@ -213,10 +222,10 @@ class HDF5Server:
             dset.resize(dset.shape[0] + data_to_append.shape[0], axis=0)
             dset[-data_to_append.shape[0]:] = data_to_append
 
-    def _insert_data(self, path, index, data_to_insert):
+    def _insert_data(self, path, index, data_to_insert, compression=None):
         with h5py.File(self.hdf5_file_path, 'a') as f:
             if path not in f:
-                self._write_data(path, data_to_insert if isinstance(data_to_insert, list) else [data_to_insert])
+                self._write_data(path, data_to_insert if isinstance(data_to_insert, list) else [data_to_insert], compression=compression)
                 return
 
             current_data = list(f[path][()])
@@ -229,7 +238,7 @@ class HDF5Server:
             new_data = current_data[:index] + elements_to_insert + current_data[index:]
             
             del f[path]
-            self._write_data(path, new_data)
+            self._write_data(path, new_data, compression=compression)
 
     async def start(self):
         """Initializes the server and gets it ready to accept connections."""
