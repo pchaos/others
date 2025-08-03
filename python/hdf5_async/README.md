@@ -1,94 +1,71 @@
-# HDF5 Async: Asynchronous HDF5 Client/Server
+# HDF5 Async: 异步 HDF5 客户端/服务器
 
-HDF5 Async provides a high-performance, asynchronous client-server framework for network-based access to HDF5 files. It is designed to solve the challenge of concurrent write access to a single HDF5 file from multiple processes or machines, a scenario that typically leads to file corruption or requires complex, slow locking mechanisms.
+HDF5 Async 提供了一个高性能、异步的客户端-服务器框架，用于通过网络访问 HDF5 文件。它旨在解决多个进程或机器并发写入单个 HDF5 文件时面临的挑战——这种情况通常会导致文件损坏或需要复杂且缓慢的锁定机制。
 
-This project is ideal for distributed systems, such as data acquisition pipelines, scientific computing clusters, or parallel simulations, where multiple data sources need to stream results into a central HDF5 file efficiently and safely.
-
----
-
-## Table of Contents
-
-- [Core Features](#core-features)
-- [System Architecture](#system-architecture)
-  - [Server](#server)
-  - [Client](#client)
-  - [Serialization](#serialization)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Configuration (`config.ini`)](#configuration-configini)
-- [Running the Server](#running-the-server)
-- [Client API Usage](#client-api-usage)
-  - [Connecting and Disconnecting](#connecting-and-disconnecting)
-  - [API Reference](#api-reference)
-  - [Code Examples](#code-examples)
-- [Running Tests](#running-tests)
-- [How to Contribute](#how-to-contribute)
+本项目非常适合分布式系统，例如数据采集管道、科学计算集群或并行模拟，在这些场景下，多个数据源需要高效、安全地将结果流式传输到中心的 HDF5 文件中。
 
 ---
 
-## Core Features
+## 目录
 
-- **Asynchronous I/O:** Built on Python's `asyncio` to handle thousands of concurrent client connections with minimal overhead.
-- **Safe Concurrency:** A single server manages all file I/O, serializing write operations to prevent data corruption from simultaneous access.
-- **Non-Blocking Architecture:** The server uses a `ThreadPoolExecutor` to delegate blocking HDF5 file operations, ensuring the main network event loop remains responsive.
-- **Efficient Serialization:** Uses **MessagePack** for fast, compact, binary serialization. It includes robust, built-in support for complex **NumPy arrays** (including structured arrays), which are handled transparently.
-- **Flexible Per-Operation Compression:** Clients can specify a compression algorithm (e.g., `gzip`, `lzf`) for each individual `write`, `update`, `append`, or `insert` operation. This allows for fine-grained control over the trade-off between storage space and write speed.
-- **Rich Data Type Support:** Natively handles Python scalars (`int`, `float`, `str`), lists, and a wide variety of NumPy array dtypes.
-- **Comprehensive API:** The client supports `create_group`, `read`, `write`, `update`, `delete`, `append`, and `insert` operations.
+- [项目概述](#项目概述)
+- [核心功能](#核心功能)
+- [系统架构](#系统架构)
+- [安装与配置](#安装与配置)
+- [如何运行](#如何运行)
+- [客户端用法示例](#客户端用法示例)
+- [运行测试](#运行测试)
+- [贡献](#贡献)
 
-## System Architecture
+---
 
-The system consists of a central server that manages the HDF5 file and multiple clients that connect to it over the network.
+## 项目概述
 
-### Server
-The server (`server/server.py`) is the core of the application.
-1.  It listens for TCP connections on a configurable host and port.
-2.  It uses `asyncio` to manage client connections efficiently.
-3.  When a request arrives, it is decoded using the `MessagePackSerializer`.
-4.  Because HDF5 file I/O is inherently blocking, the server immediately offloads the file operation to a worker thread in a `ThreadPoolExecutor`.
-5.  This prevents the main `asyncio` event loop from stalling, allowing the server to remain responsive to other clients while the file operation completes.
-6.  Once the operation is done, the result is sent back to the client.
+本项目是一个用于 HDF5 文件的异步操作库。它支持多进程和多线程操作，旨在提高 HDF5 文件的读写效率。服务器端提供了数据压缩选项（默认不压缩），并支持多种数据类型的存储和读取。
 
-### Client
-The client (`client/client.py`) provides a user-friendly, asynchronous API that abstracts away all network communication.
-1.  It connects to the server and sends requests encoded with MessagePack.
-2.  Methods like `write()`, `read()`, etc., are `async` functions, so they can be easily integrated into modern Python applications.
-3.  It handles the encoding and decoding of data, including complex NumPy arrays, automatically.
+## 核心功能
 
-### Serialization
-Data is serialized using **MessagePack**, a binary format that is faster and more compact than JSON. We extend it with `msgpack-numpy`, which provides a highly efficient mechanism for serializing NumPy arrays, including their shape and data type. This ensures that what you send from the client is exactly what gets written to the HDF5 file and what you get back when you read it.
+- **异步 I/O**: 基于 Python 的 `asyncio` 构建，以最小的开销处理数千个并发客户端连接。
+- **安全的并发访问**: 单一服务器管理所有文件 I/O，序列化写操作以防止并发访问导致的数据损坏。
+- **非阻塞架构**: 服务器使用 `ThreadPoolExecutor` 来处理阻塞的 HDF5 文件操作，确保主网络事件循环保持响应。
+- **高效的序列化**: 使用 **MessagePack** 进行快速、紧凑的二进制序列化，并内置了对复杂 **NumPy 数组**（包括结构化数组）的强大支持。
+- **灵活的压缩选项**: 客户端可以为每个独立的 `write`、`update`、`append` 或 `insert` 操作指定压缩算法（例如 `gzip`）。
+- **丰富的数据类型支持**: 原生处理 Python 标量（`int`, `float`, `str`）、列表以及多种 NumPy 数组数据类型。
+- **全面的 API**: 客户端支持 `create_group`、`read`、`write`、`update`、`delete`、`append` 和 `insert` 操作。
 
-## Getting Started
+## 系统架构
 
-### Prerequisites
+系统由一个管理 HDF5 文件的中央服务器和多个通过网络连接到它的客户端组成。
 
-- Python 3.8 or newer
-- A C compiler (required by `h5py` for building its dependencies)
-- The HDF5 C library (on Debian/Ubuntu, install with `sudo apt-get install libhdf5-dev`)
+- **服务器**: 监听 TCP 连接，使用 `asyncio` 高效管理客户端。它将阻塞的 HDF5 文件操作卸载到工作线程中，以保持主事件循环的响应性。
+- **客户端**: 提供一个用户友好的异步 API，封装了所有网络通信细节。`write()`、`read()` 等方法都是 `async` 函数，易于集成。
+- **序列化**: 数据使用 **MessagePack** 进行序列化，它比 JSON 更快、更紧凑。通过 `msgpack-numpy` 扩展，可以高效处理 NumPy 数组。
 
-### Installation
+## 安装与配置
 
-1.  **Clone the repository:**
+### 安装
+
+1.  **克隆仓库**:
     ```bash
     git clone https://github.com/phaos/hdf5_async.git
     cd hdf5_async
     ```
 
-2.  **Create and activate a virtual environment:**
+2.  **创建并激活虚拟环境**:
     ```bash
     python -m venv venv
     source venv/bin/activate
     ```
 
-3.  **Install the required dependencies:**
+3.  **安装依赖**:
+    *   **注意**: `h5py` 需要 HDF5 C 库。在 Debian/Ubuntu 上，可以通过 `sudo apt-get install libhdf5-dev` 安装。
     ```bash
     pip install -r requirements.txt
     ```
 
-## Configuration (`config.ini`)
+### 配置 (`config.ini`)
 
-The behavior of the server and client is controlled by `config.ini`.
+服务器和客户端的行为由 `config.ini` 控制。
 
 ```ini
 [server]
@@ -98,49 +75,84 @@ hdf5_file_path = data.h5
 use_compression = false
 debug = false
 serialization_format = messagepack
-
-[client]
-# This section is for client-specific settings if any were needed.
-# Currently, the client reads the [server] section for connection info.
 ```
 
-**Server Settings:**
+- `host`: 服务器监听的 IP 地址。`0.0.0.0` 表示监听所有网络接口。
+- `port`: 服务器监听的端口。
+- `hdf5_file_path`: 服务器管理的 HDF5 文件的路径。
+- `use_compression`: 是否默认启用压缩（`gzip`）。客户端可以在每次请求中覆盖此设置。
+- `debug`: 是否启用详细的调试日志。
+- `serialization_format`: 序列化格式，推荐使用 `messagepack`。
 
-| Key | Description | Default |
-| :--- | :--- | :--- |
-| `host` | The IP address for the server to listen on. `0.0.0.0` listens on all available interfaces. | `0.0.0.0` |
-| `port` | The port for the server to listen on. | `8888` |
-| `hdf5_file_path` | The path to the HDF5 file the server will manage. | `data.h5` |
-| `use_compression`| The default compression to use if a client does not specify one. Set to `true` to enable `gzip` by default. | `false` |
-| `debug` | If `true`, enables verbose logging on the server and client. | `false` |
-| `serialization_format` | The serialization format to use. `messagepack` is recommended. | `messagepack`|
+## 如何运行
 
-## Running the Server
+### 启动服务器
 
-To start the server, run the `run_server.py` script from the project's root directory:
+在项目根目录运行 `run_server.py` 脚本：
 
 ```bash
 python run_server.py
 ```
 
-The server will start and listen for connections based on the settings in `config.ini`.
+服务器将根据 `config.ini` 中的设置启动并监听连接。
 
-## Client API Usage
+### 客户端用法示例
 
-### Connecting and Disconnecting
-
-All interactions must be wrapped in a `connect()` and `close()` block.
+以下是一个全面的客户端用法示例，演示了大部分核心功能。
 
 ```python
 import asyncio
+import numpy as np
 from client.client import HDF5Client
 
 async def main():
+    """主函数，运行所有 HDF5 客户端测试。"""
     client = HDF5Client()
     await client.connect()
+
     try:
-        # ... perform operations here ...
-        pass
+        # 1. 测试基本 CRUD 操作
+        print("\n--- 测试基本 CRUD 操作 ---")
+        await client.create_group("/my_group")
+        data_to_write = np.array([1, 2, 3, 4, 5])
+        await client.write("/my_group/my_dataset", data_to_write)
+        read_data = await client.read("/my_group/my_dataset")
+        assert np.array_equal(data_to_write, read_data)
+        print("基本 CRUD 操作验证成功。")
+
+        # 2. 测试不同的数据类型
+        print("\n--- 测试不同的数据类型 ---")
+        await client.write("/my_group/string_data", "Hello HDF5!")
+        read_str = await client.read("/my_group/string_data")
+        assert read_str[0] == "Hello HDF5!"
+        print("字符串数据验证成功。")
+
+        # 3. 测试追加和插入操作
+        print("\n--- 测试追加和插入操作 ---")
+        await client.append("/my_group/my_dataset", np.array([6, 7]))
+        read_appended = await client.read("/my_group/my_dataset")
+        assert np.array_equal(read_appended, [1, 2, 3, 4, 5, 6, 7])
+        print("追加操作验证成功。")
+
+        await client.insert("/my_group/my_dataset", 2, np.array([98, 99]))
+        read_inserted = await client.read("/my_group/my_dataset")
+        assert np.array_equal(read_inserted, [1, 2, 98, 99, 3, 4, 5, 6, 7])
+        print("插入操作验证成功。")
+
+        # 4. 测试压缩
+        print("\n--- 测试压缩 ---")
+        large_data = np.random.rand(500)
+        await client.write("/my_group/compressed_data", large_data, compression="gzip")
+        read_compressed = await client.read("/my_group/compressed_data")
+        assert np.array_equal(large_data, read_compressed)
+        print("压缩数据写入和读取验证成功。")
+
+        # 5. 清理数据
+        print("\n--- 清理数据 ---")
+        await client.delete("/my_group")
+        assert await client.read("/my_group") is None
+        print("清理验证成功。")
+
     finally:
         await client.close()
 
@@ -148,97 +160,16 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### API Reference
+## 运行测试
 
-All methods are `async` and must be awaited.
-
-- `client.create_group(path: str)`
-  Creates a new group at the specified path if it doesn't exist.
-
-- `client.write(path: str, data, compression: str = None)`
-  Writes data to a dataset at `path`. If the dataset exists, it is overwritten.
-  - `data`: Can be a scalar, list, or NumPy array.
-  - `compression`: Optional. Can be `'gzip'`, `'lzf'`, or `None`. If `None`, the server's default is used.
-
-- `client.read(path: str)`
-  Reads and returns the data from the dataset at `path`. Decompression is handled automatically by the server.
-
-- `client.update(path: str, data, compression: str = None)`
-  An alias for `write`. Overwrites the dataset at `path`.
-
-- `client.append(path: str, data, compression: str = None)`
-  Appends data to an existing dataset along the first axis. If the dataset doesn't exist, it is created.
-  - `compression` is only applied if the dataset is being created for the first time.
-
-- `client.insert(path: str, index: int, data, compression: str = None)`
-  Inserts data into an existing dataset at a specific `index` along the first axis. This is an expensive operation as it requires a full rewrite of the dataset.
-  - `compression` is applied to the newly rewritten dataset.
-
-- `client.delete(path: str)`
-  Deletes the group or dataset at the specified path.
-
-### Code Examples
-
-**Example 1: Basic Operations**
-```python
-import asyncio
-import numpy as np
-from client.client import HDF5Client
-
-async def main():
-    client = HDF5Client()
-    await client.connect()
-    try:
-        await client.create_group("/my_group")
-        data_to_write = np.array([1, 2, 3, 4, 5])
-        await client.write("/my_group/my_dataset", data_to_write)
-        read_data = await client.read("/my_group/my_dataset")
-        print(f"Read data: {read_data}")
-    finally:
-        await client.close()
-
-asyncio.run(main())
-```
-
-**Example 2: Using Compression**
-```python
-import asyncio
-import numpy as np
-from client.client import HDF5Client
-
-async def main():
-    client = HDF5Client()
-    await client.connect()
-    try:
-        # Write large data with gzip compression
-        large_data = np.random.rand(1000)
-        await client.write("/my_group/compressed_data", large_data, compression="gzip")
-        print("Wrote data with compression.")
-
-        # Write small data without compression
-        small_data = np.array([1, 2, 3])
-        await client.write("/my_group/uncompressed_data", small_data, compression=None)
-        print("Wrote data without compression.")
-
-        # Decompression is automatic on read
-        read_compressed = await client.read("/my_group/compressed_data")
-        print(f"Successfully read compressed data of shape: {read_compressed.shape}")
-    finally:
-        await client.close()
-
-asyncio.run(main())
-```
-
-## Running Tests
-
-To run the integration tests, ensure the server is **not** running, then execute `pytest` from the project root:
+要运行集成测试，请确保服务器**未在运行**，然后在项目根目录执行 `pytest`：
 
 ```bash
 pytest
 ```
 
-The test suite automatically manages starting and stopping a server instance for its tests.
+测试套件会自动管理用于测试的服务器实例的启动和关闭。
 
-## How to Contribute
+## 贡献
 
-Contributions are welcome! If you have ideas for improvements, new features, or find any issues, please feel free to open an issue or submit a pull request.
+欢迎贡献！如果您有改进的想法、新功能建议或发现任何问题，请随时创建 Issue 或提交 Pull Request。

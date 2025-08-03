@@ -107,3 +107,25 @@ class HDF5Client:
 
     async def insert(self, path, index, data, compression=None):
         return await self._send_request("insert", path, data=data, index=index, compression=compression)
+
+    async def request(self, request_dict):
+        if not self.writer:
+            raise ConnectionError("Client is not connected to the server.")
+
+        print(f"[CLIENT SEND] {request_dict}")
+        self._log_debug(f"Sending request: {request_dict}")
+
+        message = self.serializer.encode(request_dict)
+        self.writer.write(message)
+        await self.writer.drain()
+
+        len_bytes = await self.reader.readexactly(4)
+        message_len = int.from_bytes(len_bytes, 'big')
+        response_data = await self.reader.readexactly(message_len)
+        
+        response, _ = self.serializer.decode(response_data)
+        print(f"[CLIENT RECV] {response}")
+
+        self._log_debug(f"Received response: {response}")
+        
+        return response

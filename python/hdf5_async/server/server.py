@@ -225,17 +225,15 @@ class HDF5Server:
     def _insert_data(self, path, index, data_to_insert, compression=None):
         with h5py.File(self.hdf5_file_path, 'a') as f:
             if path not in f:
-                self._write_data(path, data_to_insert if isinstance(data_to_insert, list) else [data_to_insert], compression=compression)
+                self._write_data(path, data_to_insert, compression=compression)
                 return
 
-            current_data = list(f[path][()])
+            current_data = f[path][()]
             
-            if isinstance(data_to_insert, (list, np.ndarray)):
-                elements_to_insert = list(data_to_insert)
-            else:
-                elements_to_insert = [data_to_insert]
-            
-            new_data = current_data[:index] + elements_to_insert + current_data[index:]
+            if not isinstance(data_to_insert, np.ndarray):
+                data_to_insert = np.array(data_to_insert, dtype=current_data.dtype)
+
+            new_data = np.insert(current_data, index, data_to_insert)
             
             del f[path]
             self._write_data(path, new_data, compression=compression)
@@ -243,6 +241,10 @@ class HDF5Server:
     async def start(self):
         """Initializes the server and gets it ready to accept connections."""
         print("[SERVER START]")
+        # Ensure the HDF5 file exists before starting the server
+        with h5py.File(self.hdf5_file_path, 'a') as f:
+            self._log_debug(f"HDF5 file '{self.hdf5_file_path}' ensured to exist.")
+            
         self.server = await asyncio.start_server(self._handle_client, self._host, self._port)
         addr = self.server.sockets[0].getsockname()
         print(f"Serving on {addr[0]}:{addr[1]}")
