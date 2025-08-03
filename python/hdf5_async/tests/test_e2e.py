@@ -3,6 +3,7 @@ import pytest
 import numpy as np
 import asyncio
 from client.client import HDF5Client
+from tests.custom_objects import Json
 
 @pytest.fixture
 def test_path(request):
@@ -138,6 +139,28 @@ async def test_structured_data(client, test_path):
     await client.write(dataset_path, data_to_write)
     read_data = await client.read(dataset_path)
     assert np.array_equal(read_data, data_to_write)
+
+@pytest.mark.asyncio
+async def test_json_object(client, test_path):
+    """Tests writing and reading of a JSON object."""
+    dataset_path = f"{test_path}/json_object"
+    
+    json_data = {
+        "name": "John Doe",
+        "age": 30,
+        "isStudent": False,
+        "courses": [
+            {"title": "History", "credits": 3},
+            {"title": "Math", "credits": 4}
+        ]
+    }
+    json_obj = Json(json_data)
+    
+    await client.write(dataset_path, json_obj.to_json_string())
+    read_data = await client.read(dataset_path)
+    
+    read_json_obj = Json.from_json_string(read_data[0])
+    assert json_obj == read_json_obj
 
 @pytest.mark.asyncio
 async def test_compression(client, test_path):

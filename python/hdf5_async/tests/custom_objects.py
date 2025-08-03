@@ -1,3 +1,5 @@
+import json
+
 class Person:
     def __init__(self, name: str, age: int, city: str = "Unknown"):
         self.name = name
@@ -23,3 +25,19 @@ class Person:
         if not isinstance(other, Person):
             return NotImplemented
         return self.name == other.name and self.age == other.age and self.city == other.city
+
+class Json:
+    def __init__(self, data):
+        self.data = data
+
+    def to_json_string(self):
+        return json.dumps(self.data)
+
+    @classmethod
+    def from_json_string(cls, json_string):
+        return cls(json.loads(json_string))
+
+    def __eq__(self, other):
+        if not isinstance(other, Json):
+            return NotImplemented
+        return self.data == other.data
