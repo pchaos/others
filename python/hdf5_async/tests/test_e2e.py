@@ -69,6 +69,17 @@ async def test_nested_groups(client, test_path):
     assert np.array_equal(read_nested_data, nested_data)
 
 @pytest.mark.asyncio
+async def test_direct_write(client, test_path):
+    """Tests writing to a dataset without explicit group creation."""
+    dataset_path = f"{test_path}/direct_dataset"
+    direct_data = np.array([99, 88, 77])
+
+    # The server should handle creating the dataset and any parent groups implicitly
+    await client.write(dataset_path, direct_data)
+    read_direct_data = await client.read(dataset_path)
+    assert np.array_equal(read_direct_data, direct_data)
+
+@pytest.mark.asyncio
 async def test_numpy_types(client, test_path):
     """Tests various NumPy data types."""
     test_cases = [
