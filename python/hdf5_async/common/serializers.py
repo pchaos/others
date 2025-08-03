@@ -50,7 +50,7 @@ class MessagePackSerializer(Serializer):
 
     def decode(self, data):
         """
-        Decodes a MessagePack byte string with a 4-byte length prefix.
+        Decodes a MessagePack byte string. Assumes the length prefix has already been handled.
         """
         def _object_hook(dct):
             if b'__ndarray__' in dct:
@@ -67,9 +67,8 @@ class MessagePackSerializer(Serializer):
                 return np.frombuffer(data, dtype=dtype).reshape(shape)
             return dct
 
-        message_len = int.from_bytes(data[:4], 'big')
-        message = msgpack.unpackb(data[4:4+message_len], object_hook=_object_hook, raw=False)
-        return message, data[4+message_len:]
+        message = msgpack.unpackb(data, object_hook=_object_hook, raw=False)
+        return message, b''
 
 # --- Factory function ---
 def get_serializer():

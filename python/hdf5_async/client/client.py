@@ -63,7 +63,7 @@ class HDF5Client:
         message_len = int.from_bytes(len_bytes, 'big')
         response_data = await self.reader.readexactly(message_len)
         
-        response, _ = self.serializer.decode(len_bytes + response_data)
+        response, _ = self.serializer.decode(response_data)
         print(f"[CLIENT RECV] {response}")
 
         self._log_debug(f"Received response: {response}")

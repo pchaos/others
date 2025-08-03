@@ -45,7 +45,8 @@ async def kill_existing_servers():
 
 
 
-@pytest_asyncio.fixture(scope="module")
+
+@pytest_asyncio.fixture(scope="function")
 async def hdf5_server():
     """
     Pytest fixture to set up and tear down the HDF5 server for a test module.

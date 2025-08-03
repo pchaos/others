@@ -46,7 +46,7 @@ class HDF5Server:
                     message_len = int.from_bytes(len_bytes, 'big')
                     message_data = await reader.readexactly(message_len)
                     
-                    request, _ = self.serializer.decode(len_bytes + message_data)
+                    request, _ = self.serializer.decode(message_data)
                     print(f"[SERVER RECV] {request}")
 
                     command = request.get("command")
