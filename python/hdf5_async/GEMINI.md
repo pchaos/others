@@ -1,9 +1,9 @@
 # Project Overview
 
-Modified: 2025-08-03 13:01:57
+Modified: 2025-08-04 13:23:00
 
 This project is a Python library for asynchronous HDF5 operations.
-默认使用gemini gemini-2.5-flash 模型进行代码生成。当有特殊指定时使用gemini-2.5-Pro模型;可用额度不够时，将自动切换到gemini-2.5-flash模型。
+默认使用gemini gemini-2.5-flash 模型进行代码生成。当有特殊指定(比如:连续三次修改一个错误都不能完成修改)时使用gemini-2.5-Pro模型;可用额度不够时，将自动切换到gemini-2.5-flash模型。
 提供HDF5文件的异步操作功能。支持多进程和多线程操作，旨在提高HDF5文件的读写效率。
 服务端提供保存数据是否使用压缩的选项(默认不压缩)，支持多种数据类型的存储和读取。
 压缩选项和支持的数据类型是独立的选项,不要混在一起使用。
