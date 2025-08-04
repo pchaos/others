@@ -32,6 +32,7 @@ HDF5 Async 提供了一个高性能、异步的客户端-服务器框架，用�
 - **灵活的压缩选项**: 客户端可以为每个独立的 `write`、`update`、`append` 或 `insert` 操作指定压缩算法（例如 `gzip`）。
 - **丰富的数据类型支持**: 原生处理 Python 标量（`int`, `float`, `str`）、列表以及多种 NumPy 数组数据类型。
 - **全面的 API**: 客户端支持 `create_group`、`read`、`write`、`update`、`delete`、`append` 和 `insert` 操作。
+- **智能去重**: 在追加数据时，可选择性地对结构化数组按指定字段（如 `timestamp`）进行去重，确保数据唯一性。
 
 ## 系统架构
 
@@ -147,7 +148,28 @@ async def main():
         assert np.array_equal(large_data, read_compressed)
         print("压缩数据写入和读取验证成功。")
 
-        # 5. 清理数据
+        # 5. 测试带去重功能的追加（适用于结构化数据）
+        print("\n--- 测试带去重功能的追加 ---")
+        # 创建一个结构化数组（类似于 pandas DataFrame）
+        stock_dtype = np.dtype([('timestamp', np.int64), ('price', np.float32)])
+        initial_stock_data = np.array([(1672531200, 150.0), (1672617600, 151.5)], dtype=stock_dtype)
+        
+        await client.write("/my_group/stocks", initial_stock_data)
+        
+        # 准备包含重复时间戳的新数据
+        new_stock_data = np.array([(1672617600, 152.0), (1672704000, 153.0)], dtype=stock_dtype)
+        
+        # 使用 'timestamp' 字段去重追加
+        await client.append("/my_group/stocks", new_stock_data, deduplicate_on='timestamp')
+        
+        read_deduped = await client.read("/my_group/stocks")
+        
+        # 验证：重复的时间戳被更新，新时间戳被添加
+        expected_data = np.array([(1672531200, 150.0), (1672617600, 152.0), (1672704000, 153.0)], dtype=stock_dtype)
+        assert np.array_equal(read_deduped, expected_data)
+        print("带去重功能的追加操作验证成功。")
+
+        # 6. 清理数据
         print("\n--- 清理数据 ---")
         await client.delete("/my_group")
         assert await client.read("/my_group") is None
