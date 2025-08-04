@@ -54,6 +54,7 @@ class HDF5Server:
                     data = request.get("data")
                     index = request.get("index")
                     compression = request.get("compression")
+                    deduplicate_on = request.get("deduplicate_on")
 
                     log_info = {"command": command, "path": path, "data_type": str(type(data))}
                     if isinstance(data, np.ndarray):
@@ -89,7 +90,7 @@ class HDF5Server:
                         await self._run_blocking_io(self._delete_data, path)
                         response = {"status": "success"}
                     elif command == "append":
-                        await self._run_blocking_io(self._append_data, path, data, compression)
+                        await self._run_blocking_io(self._append_data, path, data, compression, deduplicate_on)
                         response = {"status": "success"}
                     elif command == "insert":
                         await self._run_blocking_io(self._insert_data, path, index, data, compression)
@@ -206,21 +207,46 @@ class HDF5Server:
             if path in f:
                 del f[path]
 
-    def _append_data(self, path, data_to_append, compression=None):
+    def _append_data(self, path, data_to_append, compression=None, deduplicate_on=None):
         with h5py.File(self.hdf5_file_path, 'a') as f:
             if path not in f:
                 self._write_data(path, data_to_append, compression=compression)
                 return
-            
-            dset = f[path]
-            if not isinstance(data_to_append, (list, np.ndarray)):
-                data_to_append = [data_to_append]
-            
-            if isinstance(data_to_append, list):
-                data_to_append = np.array(data_to_append, dtype=dset.dtype)
 
-            dset.resize(dset.shape[0] + data_to_append.shape[0], axis=0)
-            dset[-data_to_append.shape[0]:] = data_to_append
+            if deduplicate_on:
+                # This logic is for structured arrays (like stock data)
+                existing_data = f[path][()]
+                
+                if not isinstance(data_to_append, np.ndarray) or not data_to_append.dtype.names:
+                     raise ValueError("Deduplication only works with structured NumPy arrays.")
+
+                # Combine old and new data
+                combined_data = np.concatenate((existing_data, data_to_append))
+
+                # Deduplicate, keeping the LAST entry. np.unique keeps the first,
+                # so we reverse the array, find unique elements, and then reverse back.
+                _, unique_indices = np.unique(combined_data[deduplicate_on][::-1], return_index=True)
+                # The indices are from the reversed array, so we adjust them for the original array
+                unique_data = combined_data[len(combined_data) - 1 - unique_indices]
+                
+                # Sort by the deduplication key to ensure final order
+                unique_data = np.sort(unique_data, order=deduplicate_on)
+
+                # Delete the old dataset and write the new, deduplicated one
+                del f[path]
+                self._write_data(path, unique_data, compression=compression)
+
+            else:
+                # Original append logic for non-structured or non-deduplicated data
+                dset = f[path]
+                if not isinstance(data_to_append, (list, np.ndarray)):
+                    data_to_append = [data_to_append]
+                
+                if isinstance(data_to_append, list):
+                    data_to_append = np.array(data_to_append, dtype=dset.dtype)
+
+                dset.resize(dset.shape[0] + data_to_append.shape[0], axis=0)
+                dset[-data_to_append.shape[0]:] = data_to_append
 
     def _insert_data(self, path, index, data_to_insert, compression=None):
         with h5py.File(self.hdf5_file_path, 'a') as f:

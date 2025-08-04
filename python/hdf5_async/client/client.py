@@ -40,7 +40,7 @@ class HDF5Client:
         if self.debug:
             print(f"[DEBUG] {message}")
 
-    async def _send_request(self, command, path=None, data=None, index=None, compression=None):
+    async def _send_request(self, command, path=None, data=None, index=None, compression=None, deduplicate_on=None):
         if not self.writer:
             raise ConnectionError("Client is not connected to the server.")
 
@@ -50,6 +50,7 @@ class HDF5Client:
             "data": data,
             "index": index,
             "compression": compression,
+            "deduplicate_on": deduplicate_on,
         }
         
         print(f"[CLIENT SEND] {request}")
@@ -102,8 +103,8 @@ class HDF5Client:
     async def delete(self, path):
         return await self._send_request("delete", path)
 
-    async def append(self, path, data, compression=None):
-        return await self._send_request("append", path, data, compression=compression)
+    async def append(self, path, data, compression=None, deduplicate_on=None):
+        return await self._send_request("append", path, data, compression=compression, deduplicate_on=deduplicate_on)
 
     async def insert(self, path, index, data, compression=None):
         return await self._send_request("insert", path, data=data, index=index, compression=compression)

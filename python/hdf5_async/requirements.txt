@@ -3,3 +3,5 @@ msgpack
 msgpack-numpy
 pytest
 pytest-asyncio
+pandas
+numpy
