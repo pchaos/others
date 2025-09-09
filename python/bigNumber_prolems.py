@@ -1,6 +1,6 @@
 import random
 
-# Modified: 2025-09-09 21:05:58
+# Modified: 2025-09-09 21:26:43
 """程序概述
 这是一个专门为小学数学教育设计的自动出题程序，能够生成大数计算题目并将题目和答案分别保存到Word文档中。
 
@@ -559,12 +559,12 @@ class LargeNumberMathGenerator:
 
         # 确定保存目录
         save_dir = filepath or tempfile.gettempdir()
-        if not os.path.exists(save_dir):
+        if not path.exists(save_dir):
             os.makedirs(save_dir)
 
         # 生成文件名
-        problems_filename = os.path.join(save_dir, f"Large_Numbers_Math_Problems_{timestamp}.docx")
-        answers_filename = os.path.join(save_dir, f"Large_Numbers_Math_Answers_{timestamp}.docx")
+        problems_filename = path.join(save_dir, f"Large_Numbers_Math_Problems_{timestamp}.docx")
+        answers_filename = path.join(save_dir, f"Large_Numbers_Math_Answers_{timestamp}.docx")
 
         # 创建并保存题目文档 (2栏)
         doc_problems = self._setup_document('大数计算', is_answer=False, num_columns=2)
@@ -600,7 +600,7 @@ if __name__ == "__main__":
 
     # # 示例3：保存到桌面（包含harder难度）
     # print("\n示例3：保存到桌面（包含harder难度）")
-    # desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+    # desktop_path = path.join(path.expanduser("~"), "Desktop")
     # generator.generate_problems(count=25, difficulty=["hard", "harder"])
     # problems_file3, answers_file3 = generator.save_to_word(filepath=desktop_path)
 
