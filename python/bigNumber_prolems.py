@@ -1,6 +1,6 @@
 import random
 
-# Modified: 2025-09-09 21:26:43
+# Modified: 2025-09-10 11:50:05
 """程序概述
 这是一个专门为小学数学教育设计的自动出题程序，能够生成大数计算题目并将题目和答案分别保存到Word文档中。
 
@@ -68,8 +68,11 @@ except ImportError:
     print("The 'python-docx' library is required to run this script.")
     print("Please install it using\n pip install python-docx")
     exit(1)
+import argparse
+import math
 import os
 import random
+import sys
 import tempfile
 from datetime import datetime
 from os import path
@@ -201,8 +204,7 @@ class LargeNumberMathGenerator:
                             answer = part1 + num3
                             problem = f"{num1} {op1} {num2} {op2} {num3} "
                             return problem, answer, difficulty
-                        else:
-                            # 确保减法结果为正数且有合理的范围
+                        else:  # 确保减法结果为正数且有合理的范围
                             if part1 > 1000:
                                 num3 = random.randint(1000, part1 - 100)
                                 answer = part1 - num3
@@ -226,8 +228,7 @@ class LargeNumberMathGenerator:
                             answer = num1 + part2
                             problem = f"{num1} {op1} {num2} {op2} {num3} "
                             return problem, answer, difficulty
-                        else:
-                            # 确保减法结果为正数
+                        else:  # 确保减法结果为正数
                             if num1 > part2:
                                 answer = num1 - part2
                                 problem = f"{num1} {op1} {num2} {op2} {num3} "
@@ -270,16 +271,32 @@ class LargeNumberMathGenerator:
         problem = f"{num1} + {num2} × 10 + {num3} "
         return problem, answer, difficulty
 
-    def generate_problems(self, count=30, difficulty="random"):
+    def generate_problems(self, count=30, difficulty="random", auto_adjust_count=False):
         """生成指定数量和难度的题目
 
         Args:
             count (int): 题目数量
-            difficulty (str or list): 难度级别，可以是:
-                - "random": 随机选择所有难度
-                - "easy"/"medium"/"hard"/"harder": 单个难度
-                - ["easy", "hard"]：难度列表，从列表中随机选择
+            difficulty (str or list): 难度级别
+            auto_adjust_count (bool): 是否自动调整题目数量以优化分页
         """
+        if auto_adjust_count:
+            first_page_count = 50
+            standard_page_count = 56
+            min_fill_ratio = 0.99
+
+            if count > first_page_count:
+                min_last_page_count = math.ceil(standard_page_count * min_fill_ratio)
+
+                remaining_problems = count - first_page_count
+                last_page_problems = remaining_problems % standard_page_count
+
+                if 0 < last_page_problems < min_last_page_count:
+                    problems_to_add = min_last_page_count - last_page_problems
+                    adjusted_count = count + problems_to_add
+                    print(f"提示：原题目数 {count} 会导致最后一页填充不足。")
+                    print(f"      为优化分页，已自动调整为 {adjusted_count} 题。")
+                    count = adjusted_count
+
         self.problems = []
         self.answers = []
 
@@ -584,35 +601,82 @@ class LargeNumberMathGenerator:
         return problems_filename, answers_filename
 
 
+def parse_arguments():
+    """解析命令行参数，支持难度等级的数字别名。"""
+    # --- 命令行参数预处理 ---
+    difficulty_map = {
+        "1": "easy",
+        "2": "medium",
+        "3": "hard",
+        "4": "harder",
+        "5": "random",
+    }
+    # 遍历sys.argv[1:]，跳过脚本名称本身
+    for i in range(1, len(sys.argv)):
+        if sys.argv[i] in difficulty_map:
+            sys.argv[i] = difficulty_map[sys.argv[i]]
+    # --- 预处理结束 ---
+
+    parser = argparse.ArgumentParser(
+        description="生成大数计算题库Word文档。", formatter_class=argparse.RawTextHelpFormatter  # 保持帮助信息格式
+    )
+    parser.add_argument(
+        "-c",
+        "--count",
+        type=int,
+        default=600,
+        help="要生成的题目数量 (默认: 600)",
+    )
+    parser.add_argument(
+        "-d",
+        "--difficulty",
+        nargs="+",
+        default=["hard", "medium"],
+        choices=["easy", "medium", "hard", "harder", "random"],
+        help='''难度级别，可多选 (默认: hard medium)。
+可选: "easy", "medium", "hard", "harder", "random"。
+支持数字别名: 1=easy, 2=medium, 3=hard, 4=harder, 5=random''',
+    )
+    parser.add_argument(
+        "--no-adjust",
+        action="store_true",
+        help="禁用自动调整题目数量以优化分页的功能",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        default=None,
+        help="输出Word文档的目录路径 (默认: 系统临时目录)",
+    )
+
+    return parser.parse_args()
+
+
 # 使用示例
 if __name__ == "__main__":
+    args = parse_arguments()
+
     generator = LargeNumberMathGenerator()
 
-    # 示例1：默认保存到临时目录
-    print("示例1：默认保存到系统临时目录")
-    generator.generate_problems(count=600, difficulty=["easy", "medium"])
-    problems_file1, answers_file1 = generator.save_to_word()
+    # 根据命令行参数生成题目
+    print("--- 开始生成题目 ---")
+    generator.generate_problems(
+        count=args.count,
+        difficulty=args.difficulty,
+        auto_adjust_count=not args.no_adjust,
+    )
 
-    # 示例2：保存到指定目录
-    # print("\n示例2：保存到指定目录")
-    # generator.generate_problems(count=15, difficulty="hard")
-    # problems_file2, answers_file2 = generator.save_to_word(filepath="./custom_directory")
+    # 保存文件
+    problems_file, answers_file = generator.save_to_word(filepath=args.output)
 
-    # # 示例3：保存到桌面（包含harder难度）
-    # print("\n示例3：保存到桌面（包含harder难度）")
-    # desktop_path = path.join(path.expanduser("~"), "Desktop")
-    # generator.generate_problems(count=25, difficulty=["hard", "harder"])
-    # problems_file3, answers_file3 = generator.save_to_word(filepath=desktop_path)
-
-    print(f"\n生成的Word文档:")
-    print(f"- 临时目录: {problems_file1}")
-    # print(f"- 指定目录: {problems_file2}")
-    # print(f"- 桌面目录: {problems_file3}")
+    print("\n--- 生成完毕 ---")
+    print(f"题目文档已保存至: {problems_file}")
+    print(f"答案文档已保存至: {answers_file}")
 
     print("\n文档特点:")
     print("- 页眉: Large Numbers Math Problems / Large Numbers Math Answers")
     print("- 页脚: 英文格式的生成时间")
-    print("- 默认保存到系统临时目录")
     print("- 题目序号小数点对齐")
     print("- 等号使用不同灰度表示难度")
 
