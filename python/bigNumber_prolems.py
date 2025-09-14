@@ -1,60 +1,55 @@
 import random
 
-# Modified: 2025-09-10 11:50:05
-"""程序概述
-这是一个专门为小学数学教育设计的自动出题程序，能够生成大数计算题目并将题目和答案分别保存到Word文档中。
+# Modified: 2025-09-11 19:31:57
+"""
+程序概述
+========
+这是一个专为小学生设计的数学练习题自动生成器。它能够创建大数（千位至百万位）的
+加、减、乘、除及混合运算题目，并生成格式精美、可直接打印的Word文档。
 
 核心功能
-1. 题目生成功能
-四种运算类型：加法、减法、乘法、除法
+========
+1. 题目生成
+   - **运算类型**: 支持加法、减法、乘法、除法以及两步混合运算。
+   - **难度分级**:
+     - `Easy` (简单): 千位数的基本运算。
+     - `Medium` (中等): 万位数的基本运算。
+     - `Hard` (困难): 十万位数的基本运算。
+     - `Harder` (更难): 百万位数的混合运算。
+   - **智能分页**: 自动调整题目总数，避免最后一页题目过少，节约纸张。
 
-三种难度级别：
+2. Word文档输出
+   - **专业排版**: 题目文档采用双栏布局，答案文档采用四栏布局，优化空间利用率。
+   - **题目与答案分离**: 生成两个独立的Word文件，一份用于学生练习，一份用于家长/教师校对。
+   - **精美页眉页脚**:
+     - 页眉包含标题、难度星级（*至****）和日期占位符。
+     - 页脚包含生成时间、页码（当前页/总页数）和难度图例。
+   - **格式清晰**:
+     - 题号采用小数点对齐，视觉上整洁美观。
+     - 通过不同灰度的“=”符号或答案颜色来区分难度，一目了然。
 
-Easy：千位数计算
+3. 高度可定制
+   - **命令行接口**: 提供丰富的命令行参数，可轻松定制题目数量、难度和输出路径。
+   - **灵活的难度选择**:
+     - 可选择一个或多个难度级别混合出题。
+     - 支持 `random` 模式，随机混合所有难度。
+     - 支持数字别名（1-5）快速指定难度，简化输入。
 
-Medium：万位数计算
+使用方法
+========
+通过命令行运行脚本，并使用参数进行配置。
 
-Hard：十万位数计算
+# 示例 1: 生成20道简单题目
+python bigNumber_prolems.py -c 20 -d easy -o ./output
 
-随机难度模式：自动混合不同难度的题目
+# 示例 2: 生成30道简单和困难混合题目
+python bigNumber_prolems.py -c 30 -d easy hard -o ./output
 
-2. 文件输出功能
-Word文档输出：使用python-docx库生成格式良好的文档
+# 示例 3: 使用数字别名生成40道中等和更难的题目
+python bigNumber_prolems.py -c 40 -d 2 4 -o ./output
 
-两栏布局：优化页面布局，提高纸张利用率
-
-英文命名：文件名为Large_Numbers_Math_Problems_时间戳.docx格式
-
-双语界面：中英文标题和提示信息
-
-3. 格式美化功能
-题目编号：清晰的题目序号
-
-难度标识：每个题目标注难度级别
-
-时间戳：文件包含生成时间信息
-
-专业排版：合适的字体大小和间距
-
-# 示例1：单个难度
-    print("示例1：只生成简单题目")
-    generator.generate_problems(count=20, difficulty="easy")
-    problems_file1, answers_file1 = generator.save_to_word(filepath="./easy_problems")
-    
-    # 示例2：多个难度组合
-    print("\n示例2：生成简单和困难题目")
-    generator.generate_problems(count=30, difficulty=["easy", "hard"])
-    problems_file2, answers_file2 = generator.save_to_word(filepath="./mixed_problems")
-    
-    # 示例3：所有难度
-    print("\n示例3：生成所有难度题目")
-    generator.generate_problems(count=40, difficulty=["easy", "medium", "hard", "harder"])
-    problems_file3, answers_file3 = generator.save_to_word(filepath="./all_difficulties")
-    
-    # 示例4：随机难度
-    print("\n示例4：完全随机难度")
-    generator.generate_problems(count=25, difficulty="random")
-    problems_file4, answers_file4 = generator.save_to_word(filepath="./random_difficulties")
+# 示例 4: 生成25道随机难度的题目
+python bigNumber_prolems.py -c 25 -d random -o ./output
 """
 
 try:
@@ -82,6 +77,19 @@ class LargeNumberMathGenerator:
     def __init__(self):
         self.problems = []
         self.answers = []
+        self.selected_difficulty = []
+        self.available_fonts = [
+            'Calibri',
+            'Times New Roman',
+            'Arial',
+            'Consolas',
+            'Cambria',  # 常规字体
+            'Segoe Print',
+            'Comic Sans MS',
+            'Segoe Script',
+            'Bradley Hand ITC',
+            'Ink Free',  # 手写字体
+        ]
         self.difficulty_colors = {
             "easy": RGBColor(192, 192, 192),  # 浅灰色 - 简单
             "medium": RGBColor(128, 128, 128),  # 中灰色 - 中等
@@ -280,15 +288,17 @@ class LargeNumberMathGenerator:
             auto_adjust_count (bool): 是否自动调整题目数量以优化分页
         """
         if auto_adjust_count:
-            first_page_count = 50
+            first_page_count = 52
+            # (616-52)/10 = 56.4
             standard_page_count = 56
-            min_fill_ratio = 0.99
+            # min_fill_ratio = 0.98
+            min_fill_ratio = 1
 
             if count > first_page_count:
                 min_last_page_count = math.ceil(standard_page_count * min_fill_ratio)
 
                 remaining_problems = count - first_page_count
-                last_page_problems = remaining_problems % standard_page_count
+                last_page_problems = remaining_problems % math.floor(standard_page_count)
 
                 if 0 < last_page_problems < min_last_page_count:
                     problems_to_add = min_last_page_count - last_page_problems
@@ -299,6 +309,7 @@ class LargeNumberMathGenerator:
 
         self.problems = []
         self.answers = []
+        self.selected_difficulty = difficulty if isinstance(difficulty, list) else [difficulty]
 
         operations = [
             self.generate_addition,
@@ -372,7 +383,7 @@ class LargeNumberMathGenerator:
         )
         sect_pr.append(cols_xml)
 
-    def add_header_footer(self, doc, is_answer=False):
+    def add_header_footer(self, doc, is_answer=False, difficulty=None):
         """添加页眉和页脚"""
         # --- 添加页眉 ---
         header = doc.sections[0].header
@@ -415,6 +426,22 @@ class LargeNumberMathGenerator:
         p_format_right.space_before = Pt(0)
         p_format_right.space_after = Pt(0)
         right_text = "Large Numbers Math Problems" if not is_answer else "Large Numbers Math Answers"
+
+        # --- 添加难度等级 ---
+        if difficulty:
+            difficulty_map = {"easy": "*", "medium": "**", "hard": "***", "harder": "****"}
+            difficulty_order = ["easy", "medium", "hard", "harder"]
+
+            actual_difficulties = set(difficulty)
+            if "random" in actual_difficulties:
+                actual_difficulties.update(difficulty_order)
+
+            present_difficulties = [d for d in difficulty_order if d in actual_difficulties]
+            if present_difficulties:
+                star_strings = [difficulty_map.get(d, "") for d in present_difficulties]
+                stars = " ".join(star_strings)
+                right_text += f" {stars}"
+
         right_run = right_paragraph.add_run(right_text)
         right_run.font.size = Pt(9)
 
@@ -502,12 +529,12 @@ class LargeNumberMathGenerator:
         run.font.color.rgb = RGBColor(170, 170, 170)  # 设置题号为浅灰色
 
         # 添加题目和灰度等号
-        run = paragraph.add_run(f" {problem_text}")
+        run = paragraph.add_run(f"  {problem_text}")
         equal_run = paragraph.add_run("= ")
         equal_run.font.color.rgb = self.difficulty_colors[difficulty]
         equal_run.bold = True
 
-    def _setup_document(self, title_text, is_answer=False, num_columns=2):
+    def _setup_document(self, title_text, is_answer=False, num_columns=2, difficulty=None):
         """初始化Word文档，包含标准格式设置"""
         doc = Document()
         # 设置页面边距
@@ -518,12 +545,12 @@ class LargeNumberMathGenerator:
             section.right_margin = Inches(0.5)
 
         # 添加页眉和页脚
-        self.add_header_footer(doc, is_answer=is_answer)
+        self.add_header_footer(doc, is_answer=is_answer, difficulty=difficulty)
 
         # 设置标题
         title = doc.add_heading(title_text, 0)
         title.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        doc.add_paragraph()  # 空行
+        # doc.add_paragraph()  # 空行
 
         # 创建多栏布局
         self.create_columns(doc, num_columns)
@@ -545,26 +572,57 @@ class LargeNumberMathGenerator:
     def _populate_answers_document(self, doc):
         """向文档中填充所有答案"""
         total_problems = len(self.problems)
+        answer_font_name = 'Calibri'  # 为所有答案指定统一字体
+
         for i, (answer, (problem, _, difficulty)) in enumerate(zip(self.answers, self.problems), 1):
             p = doc.add_paragraph()
-            p.paragraph_format.space_after = Pt(6)
+            p.paragraph_format.space_after = Pt(5)
 
             # 添加格式化后的题号
             formatted_number = self.format_number_with_dot_alignment(i, len(str(total_problems)))
             run = p.add_run(formatted_number)
             run.bold = True
+            run.font.size = Pt(10.5)
+            run.font.name = answer_font_name
 
             # 添加答案
-            symbol_run = p.add_run(" = ")
-            symbol_run.bold = True
+            p.add_run("  ")  # 添加一些空格
             answer_run = p.add_run(str(answer))
             answer_run.font.color.rgb = self.difficulty_colors[difficulty]
             answer_run.bold = True
+            answer_run.font.size = Pt(10.5)
+            answer_run.font.name = answer_font_name
 
             # 每10题添加一个较大的空行作为分组分隔
             if i % 10 == 0 and i < total_problems:
                 separator = doc.add_paragraph()
                 separator.paragraph_format.space_after = Pt(9)
+
+    def _populate_problems_and_answers_document(self, doc):
+        """向文档中填充所有题目，并在新页面上以四栏格式附加答案"""
+        # 1. 填充所有题目 (在默认的双栏布局中)
+        self._populate_problems_document(doc)
+
+        # 2. 添加一个分页分节符，以便为答案设置新的布局
+        doc.add_section(WD_SECTION.NEW_PAGE)
+
+        # 3. 为新的答案部分设置四栏布局
+        section = doc.sections[-1]
+        sect_pr = section._sectPr
+        from docx.oxml import parse_xml
+
+        space = "360"  # 4栏使用较小的间距
+        cols_xml = parse_xml(
+            f'<w:cols xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" w:num="4" w:space="{space}"/>'
+        )
+        sect_pr.append(cols_xml)
+
+        # 4. 添加答案部分的标题
+        answer_title = doc.add_heading('答案', level=1)
+        answer_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+        # 5. 填充所有答案 (将在新的四栏布局中)
+        self._populate_answers_document(doc)
 
     def save_to_word(self, filepath=None):
         """将题目和答案保存到Word文档（两栏布局，英文命名）
@@ -582,23 +640,37 @@ class LargeNumberMathGenerator:
         # 生成文件名
         problems_filename = path.join(save_dir, f"Large_Numbers_Math_Problems_{timestamp}.docx")
         answers_filename = path.join(save_dir, f"Large_Numbers_Math_Answers_{timestamp}.docx")
+        problems_and_answers_filename = path.join(save_dir, f"Large_Numbers_Math_Problems_and_Answers_{timestamp}.docx")
 
         # 创建并保存题目文档 (2栏)
-        doc_problems = self._setup_document('大数计算', is_answer=False, num_columns=2)
+        doc_problems = self._setup_document(
+            '大数计算', is_answer=False, num_columns=2, difficulty=self.selected_difficulty
+        )
         self._populate_problems_document(doc_problems)
         doc_problems.save(problems_filename)
 
         # 创建并保存答案文档 (4栏)
-        doc_answers = self._setup_document('大数计算答案', is_answer=True, num_columns=4)
+        doc_answers = self._setup_document(
+            '大数计算答案', is_answer=True, num_columns=4, difficulty=self.selected_difficulty
+        )
         self._populate_answers_document(doc_answers)
         doc_answers.save(answers_filename)
 
+        # 创建并保存题目与答案合并文档 (2栏)
+        doc_problems_and_answers = self._setup_document(
+            '大数计算 (含答案)', is_answer=False, num_columns=2, difficulty=self.selected_difficulty
+        )
+        self._populate_problems_and_answers_document(doc_problems_and_answers)
+        doc_problems_and_answers.save(problems_and_answers_filename)
+
         print(f"Problems saved to: {problems_filename}")
         print(f"Answers saved to: {answers_filename}")
+        print(f"Problems and Answers saved to: {problems_and_answers_filename}")
         print(f"题目已保存到: {problems_filename}")
         print(f"答案已保存到: {answers_filename}")
+        print(f"题目和答案已保存到: {problems_and_answers_filename}")
 
-        return problems_filename, answers_filename
+        return problems_filename, answers_filename, problems_and_answers_filename
 
 
 def parse_arguments():
@@ -624,14 +696,15 @@ def parse_arguments():
         "-c",
         "--count",
         type=int,
-        default=600,
-        help="要生成的题目数量 (默认: 600)",
+        default=660,
+        help="要生成的题目数量 (默认: 660)",
     )
     parser.add_argument(
         "-d",
         "--difficulty",
         nargs="+",
-        default=["hard", "medium"],
+        # default=["hard", "medium"],
+        default=["easy", "medium"],
         choices=["easy", "medium", "hard", "harder", "random"],
         help='''难度级别，可多选 (默认: hard medium)。
 可选: "easy", "medium", "hard", "harder", "random"。
@@ -668,11 +741,12 @@ if __name__ == "__main__":
     )
 
     # 保存文件
-    problems_file, answers_file = generator.save_to_word(filepath=args.output)
+    problems_file, answers_file, problems_and_answers_file = generator.save_to_word(filepath=args.output)
 
     print("\n--- 生成完毕 ---")
     print(f"题目文档已保存至: {problems_file}")
     print(f"答案文档已保存至: {answers_file}")
+    print(f"题目和答案文档已保存至: {problems_and_answers_file}")
 
     print("\n文档特点:")
     print("- 页眉: Large Numbers Math Problems / Large Numbers Math Answers")
@@ -680,8 +754,8 @@ if __name__ == "__main__":
     print("- 题目序号小数点对齐")
     print("- 等号使用不同灰度表示难度")
 
-    print("\n难度灰度说明:")
-    print("浅灰色等号 = 简单题目")
-    print("中灰色等号 = 中等题目")
-    print("深灰色等号 = 困难题目")
+    print("\n难度说明:")
+    print("- 题目文档: 彩色'='表示难度")
+    print("- 答案文档: 彩色答案表示难度")
+    print("- 颜色对应: 浅灰色=简单, 中灰色=中等, 深灰色=困难, 黑色=更难（四则混合）")
     print("黑色等号   = 更难题目（四则混合运算）")
