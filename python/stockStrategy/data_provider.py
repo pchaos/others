@@ -1,6 +1,6 @@
 # -*- coding=utf-8 -*-
 
-# Modified: 2025-10-07 12:51:25
+# Modified: 2025-10-07 13:37:03
 
 import warnings
 from abc import ABC, abstractmethod
@@ -60,12 +60,13 @@ class AkshareDataProvider(DataProvider):
             else:
                 market_prefix = 'sh'  # 沪市
 
-            df = ak.fund_etf_hist_sina(symbol=f"{market_prefix}{symbol}", start_date=start_date, end_date=end_date)
+            df = ak.stock_zh_a_hist(symbol="159915", period="daily", start_date=start_date, end_date=end_date)
 
             if not df.empty:
                 # 标准化列名
                 df.columns = [
                     '日期',
+                    '股票代码',
                     '开盘',
                     '最高',
                     '最低',
@@ -92,6 +93,7 @@ class AkshareDataProvider(DataProvider):
 
         except Exception as e:
             print(f"Akshare数据获取失败: {e}")
+            print(f"{df[:-5]=}")
             # 返回模拟数据作为备选
             return self._create_fallback_data(symbol, start_date, end_date)
 
