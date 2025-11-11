@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """登录justhost cloud，重启vps
-Last Modified: 2025-07-12 16:21:26
+Last Modified: 2025-11-11 18:57:52
 """
 
 import os
@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from seleniumbase import BaseCase
 
 #  import pytest
+base_url = "https://justhost.ru"
 
 
 #  @pytest.mark.marker_test_suite
@@ -60,9 +61,9 @@ class JUSTHOSTTest(BaseCase):
         """
         if isRestart > 0:
             try:
-                #  self.open("https://justhost.asia/tickets")
-                self.open("https://justhost.asia/billing/active")
-                self.open("https://justhost.asia/auth/login")
+                #  self.open(f"{base_url}/tickets")
+                self.open(f"{base_url}/billing/active")
+                self.open(f"{base_url}/auth/login")
                 self.assert_text("ID")
                 #  self.assert_text("div#formActiveServices")
                 #  self._print(f"formActiveServices exists")
@@ -75,7 +76,7 @@ class JUSTHOSTTest(BaseCase):
                 self.assert_text("VPS kvm", timeout=5)
                 self._print(f"Ready to restart vps")
                 url = self.get_current_url()
-                url = f'https://justhost.asia/vps_service/vpsReset/{url.split("/")[-1]}'
+                url = f'{base_url}/vps_service/vpsReset/{url.split("/")[-1]}'
                 self._print(f"open {url}\nclick vps reset")
                 #  self.open(url)
                 self.click('a[href*="/vps_service/vpsReset"]')
@@ -100,9 +101,9 @@ class JUSTHOSTTest(BaseCase):
 
     #  @pytest.mark.marker1
     def test_basic(self):
-        url = "https://justhost.asia/billing/active"
+        url = f"{base_url}/billing/active"
         try:
-            self.open("https://justhost.asia/")
+            self.open(f"{base_url}/en")
             #  self.asscert_text("VPS")
             self.wait_for_element_present('a[href="/optimal-plan/"]', timeout=5)
         except Exception as e:
@@ -114,7 +115,7 @@ class JUSTHOSTTest(BaseCase):
             time.sleep(1)
             #  self.wait_for_element_present('a[href="/services/vps"]', timeout=10)
 
-        self.assert_element('a[href="https://justhost.asia/services/vps"]')
+        self.assert_element(f'a[href="{base_url}/services/vps"]')
         #  self.assert_title("IBM Cloud")
         self.login(self.email, self.password)
         #  time.sleep(1)
