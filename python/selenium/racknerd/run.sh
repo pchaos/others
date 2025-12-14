@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Last Modified: 2025-08-18 10:51:33
+# Last Modified: 2025-11-20 17:55:58
 # pip install pytest
 
 # python racknerd.py &
@@ -15,3 +15,5 @@ proxy=socks5://127.0.0.1:1081
 
 # chromium 114
 pytest -v --binary-location="${HOME}/install/chrome-linux/chrome" --pdb -s --incognito --gui --proxy=${proxy} racknerd.py
+
+ssh racknerd "sudo shutdown -r now"
