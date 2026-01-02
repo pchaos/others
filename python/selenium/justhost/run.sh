@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Last Modified: 2025-11-21 12:33:50
+# Last Modified: 2025-12-23 13:10:23
 # conda install pytest
 # python justhost.selenium.py &
 
@@ -20,4 +20,4 @@ proxy=socks5://127.0.0.1:1081
 pytest --binary-location="${HOME}/install/chrome-linux/chrome" --pdb -s --incognito --headed --proxy=${proxy} justhost.py
 ssh justhost "nohup shutdown -r now"
 
-ssh justhost "sudo shutdown -r now"
+ssh justhost "sudo shutdown -r now" || echo 0
