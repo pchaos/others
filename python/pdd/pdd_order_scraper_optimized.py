@@ -1260,9 +1260,30 @@ def main():
     print("   - 登录检测进一步优化（仅需4秒）")
     print()
 
-    phone = os.getenv("PDD_PHONE")
+    # 加载配置
+    config_file = "pdd_config.json"
+    config = {}
+    if os.path.exists(config_file):
+        try:
+            with open(config_file, "r", encoding="utf-8") as f:
+                config = json.load(f)
+        except:
+            config = {}
+    
+    # 获取手机号
+    phone = os.getenv("PDD_PHONE") or config.get("phone")
     if not phone:
         phone = input("请输入手机号: ").strip()
+        # 保存手机号到配置
+        config["phone"] = phone
+        try:
+            with open(config_file, "w", encoding="utf-8") as f:
+                json.dump(config, f, ensure_ascii=False, indent=2)
+            print(f"✅ 手机号已保存到 {config_file}，下次运行将自动使用")
+        except Exception as e:
+            print(f"⚠️ 保存手机号失败: {e}")
+    
+    # 获取登录类型偏好
     login_type = input("请选择登录方式 (1=短信, 2=扫码, 默认2): ").strip()
     login_type = "sms" if login_type == "1" else "qr"
 
