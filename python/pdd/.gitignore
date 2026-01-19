@@ -32,3 +32,4 @@ pdd_full_orders_*.html
 # 临时文件
 *.tmp
 *~
+pdd_config.json
