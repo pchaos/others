@@ -28,9 +28,6 @@ class PinduoduoLogin:
         self.cookie_file = cookie_file
         self.display_mode = "unknown"
         self.is_already_on_orders_page = False
-        self.driver = driver
-        self.display_mode = "unknown"
-        self.is_already_on_orders_page = False
 
     def smart_wait(self, seconds_range=(2, 4)):
         """智能等待随机时间"""
