@@ -1,0 +1,34 @@
+# 敏感文件和凭据
+.pdd_cookies.json
+*.cookies.json
+.env
+.env.*
+
+# Python 缓存文件
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# 日志文件
+*.log
+logs/
+
+# 下载的文件
+downloaded_files/
+
+# HTML 调试文件
+*.html
+order_links_search_*.txt
+valid_order_report_*.txt
+pdd_full_orders_*.html
+
+# 临时文件
+*.tmp
+*~
