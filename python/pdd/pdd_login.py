@@ -267,9 +267,15 @@ class PinduoduoLogin:
         print("=" * 50 + "\n")
         input("APP确认登录后，按回车继续...")
 
-        print("✅ 扫码登录完成")
-        time.sleep(2)
-        return True
+        print("验证登录状态...")
+        # 验证登录是否真的成功
+        if self.check_login_status_fast():
+            print("✅ 扫码登录完成")
+            time.sleep(2)
+            return True
+        else:
+            print("❌ 扫码登录失败，未能检测到登录状态")
+            return False
 
     def login_via_personal_center(self, phone=None, login_type="sms"):
         """
