@@ -431,6 +431,8 @@ class PinduoduoOrderScraper:
         if success:
             print("✅ 登录成功！")
 
+            # 保存cookies供下次使用
+            self.login_module.save_cookies()
             # 🎯 登录成功后不立即进行页面操作，让主流程处理
             print("📋 登录流程完成，等待后续页面分析...")
             time.sleep(2)  # 让页面稳定

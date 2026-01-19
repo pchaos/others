@@ -18,15 +18,16 @@ from selenium.webdriver.support import expected_conditions as EC
 class PinduoduoLogin:
     def __init__(self, driver, cookie_file="pdd_cookies.json"):
         """
-        Args:
-            driver: Selenium WebDriver实例
-            cookie_file (str): Cookie文件路径，默认为"pdd_cookies.json"
         初始化登录模块
 
         Args:
             driver: Selenium WebDriver实例
-        self.cookie_file = cookie_file
+            cookie_file (str): Cookie文件路径，默认为"pdd_cookies.json"
         """
+        self.driver = driver
+        self.cookie_file = cookie_file
+        self.display_mode = "unknown"
+        self.is_already_on_orders_page = False
         self.driver = driver
         self.display_mode = "unknown"
         self.is_already_on_orders_page = False
