@@ -804,15 +804,10 @@ def main():
             
             found_links, clickable_elements = scraper.search_order_links_on_current_page()
             
-            # 询问用户是否继续
-            print("\n" + "="*60)
-            user_input = input("链接搜索完成！按回车继续，输入'click'直接点击'查看全部' ").strip()
-
-            # 如果用户输入'click'，直接点击'查看全部'
-            if user_input.lower() == 'click':
-                print("\n🎯 开始点击'查看全部'...")
-                
-                try:
+            # 自动点击"查看全部"进入完整订单列表
+            print("\n🎯 自动点击查看全部进入完整订单列表...")
+            
+            try:
                     # 查找并点击'查看全部'元素
                     view_all_elements = scraper.driver.find_elements(By.CSS_SELECTOR, "div.others")
                     clicked = False
@@ -962,7 +957,7 @@ def main():
                     else:
                         print("⚠️ 页面可能未完全跳转，仍显示概览页面")
                         
-                except Exception as e:
+            except Exception as e:
                     print(f"❌ 点击'查看全部'失败: {e}")
                 
             
