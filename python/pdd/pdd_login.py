@@ -110,7 +110,7 @@ class PinduoduoLogin:
                     continue
             
             # 再次访问个人中心页面
-            self.driver.get("https://mobile.pinduoduo.com")
+            self.driver.get("https://mobile.pinduoduo.com/personal.html")
             self.smart_wait((3, 5))
             
             # 检查登录状态
