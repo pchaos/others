@@ -1342,15 +1342,39 @@ def main():
                     time.sleep(2)
 
                     # 尝试关闭可能的外部打开文件弹窗
-                    # 方法1: 查找关闭按钮
+                    # 方法1: 查找关闭按钮（修复版 - 避免误点击订单操作按钮）
+                    
+                    # 订单操作按钮关键词（禁止点击）
+                    forbidden_keywords = [
+                        "取消订单",
+                        "申请退款",
+                        "确认收货",
+                        "查看物流",
+                        "删除订单",
+                        "再次拼单",
+                        "追加评价",
+                        "评价",
+                        "晒单",
+                        "去支付",
+                        "立即支付"
+                    ]
+
+                    # 弹窗关闭按钮选择器（更精确）
                     close_selectors = [
-                        "//*[contains(text(), '取消')]",
-                        "//*[contains(text(), '关闭')]",
+                        # 精确的关闭按钮（排除订单操作）
+                        "//*[contains(text(), '关闭') and not(contains(text(), '订单')) and not(contains(text(), '退款'))]",
                         "//*[contains(text(), '稍后')]",
                         "//*[contains(text(), '不再提醒')]",
-                        ".close-btn",
-                        ".cancel-btn",
-                        "[class*='close']",
+                        "//*[contains(text(), '知道了')]",
+                        # 标准关闭按钮类名
+                        ".modal-close",
+                        ".dialog-close",
+                        ".popup-close",
+                        "[aria-label='Close']",
+                        "[class*='close-btn']",
+                        "[class*='modal-close']",
+                        "[class*='dialog-close']",
+                        "[class*='popup-close']",
                     ]
 
                     for selector in close_selectors:
@@ -1367,14 +1391,42 @@ def main():
                             for elem in elements:
                                 if elem.is_displayed():
                                     elem_text = elem.text.strip()
-                                    print(
-                                        f"  🔧 找到可能的弹窗按钮: '{elem_text}' ({selector})"
-                                    )
-                                    scraper.driver.execute_script(
-                                        "arguments[0].click();", elem
-                                    )
+                                    
+                                    # 检查是否为订单操作按钮（禁止点击）
+                                    is_forbidden = any(keyword in elem_text for keyword in forbidden_keywords)
+                                    if is_forbidden:
+                                        print(f"  ⏭️ 跳过订单操作按钮: {elem_text}")
+                                        continue  # 跳过订单操作按钮
+                                    
+                                    # 检查按钮位置（排除订单容器内的按钮）
+                                    try:
+                                        parent = elem.find_element(By.XPATH, "..")
+                                        parent_classes = parent.get_attribute("class") or ""
+                                        parent_id = parent.get_attribute("id") or ""
+                                        
+                                        order_related_containers = [
+                                            "order-item",
+                                            "goods-item",
+                                            "order-action",
+                                            "order-operate",
+                                            "action-btns",
+                                            "order-list",
+                                            "my-order"
+                                        ]
+                                        
+                                        is_in_order_container = any(c in parent_classes.lower() or c in parent_id.lower() for c in order_related_containers)
+                                        if is_in_order_container:
+                                            print(f"  ⏭️ 跳过订单容器内的按钮: {elem_text}")
+                                            continue
+                                            
+                                    except:
+                                        pass
+                                    
+                                    # 认为是合法的弹窗关闭按钮
+                                    print(f"  🔧 找到弹窗关闭按钮: '{elem_text}' ({selector})")
+                                    scraper.driver.execute_script("arguments[0].click();", elem)
                                     time.sleep(1)
-                                    print("  ✅ 已点击关闭弹窗")
+                                    print("  ✅ 已关闭弹窗")
                                     break
                         except:
                             continue
