@@ -1218,51 +1218,51 @@ def main():
 
                 print(f"📍 跳转后URL: {new_url}")
 
-                # 🚨 处理可能的弹窗
-                try:
-                    # 等待一下看是否有弹窗出现
-                    time.sleep(2)
+                # 🚨 处理可能的弹窗 - 已注释掉以避免混乱的拦截逻辑
+                # try:
+                #     # 等待一下看是否有弹窗出现
+                #     time.sleep(2)
 
-                    # 尝试关闭可能的外部打开文件弹窗
-                    # 方法1: 查找关闭按钮
-                    close_selectors = [
-                        "//*[contains(text(), '取消')]",
-                        "//*[contains(text(), '关闭')]",
-                        "//*[contains(text(), '稍后')]",
-                        "//*[contains(text(), '不再提醒')]",
-                        ".close-btn",
-                        ".cancel-btn",
-                        "[class*='close']",
-                    ]
+                #     # 尝试关闭可能的外部打开文件弹窗
+                #     # 方法1: 查找关闭按钮
+                #     close_selectors = [
+                #         "//*[contains(text(), '取消')]",
+                #         "//*[contains(text(), '关闭')]",
+                #         "//*[contains(text(), '稍后')]",
+                #         "//*[contains(text(), '不再提醒')]",
+                #         ".close-btn",
+                #         ".cancel-btn",
+                #         "[class*='close']",
+                #     ]
 
-                    for selector in close_selectors:
-                        try:
-                            if selector.startswith("//"):
-                                elements = scraper.driver.find_elements(
-                                    By.XPATH, selector
-                                )
-                            else:
-                                elements = scraper.driver.find_elements(
-                                    By.CSS_SELECTOR, selector
-                                )
+                #     for selector in close_selectors:
+                #         try:
+                #             if selector.startswith("//"):
+                #                 elements = scraper.driver.find_elements(
+                #                     By.XPATH, selector
+                #                 )
+                #             else:
+                #                 elements = scraper.driver.find_elements(
+                #                     By.CSS_SELECTOR, selector
+                #                 )
 
-                            for elem in elements:
-                                if elem.is_displayed():
-                                    elem_text = elem.text.strip()
-                                    print(
-                                        f"  🔧 找到可能的弹窗按钮: '{elem_text}' ({selector})"
-                                    )
-                                    scraper.driver.execute_script(
-                                        "arguments[0].click();", elem
-                                    )
-                                    time.sleep(1)
-                                    print("  ✅ 已点击关闭弹窗")
-                                    break
-                        except:
-                            continue
+                #             for elem in elements:
+                #                 if elem.is_displayed():
+                #                     elem_text = elem.text.strip()
+                #                     print(
+                #                         f"  🔧 找到可能的弹窗按钮: '{elem_text}' ({selector})"
+                #                     )
+                #                     scraper.driver.execute_script(
+                #                         "arguments[0].click();", elem
+                #                     )
+                #                     time.sleep(1)
+                #                     print("  ✅ 已点击关闭弹窗")
+                #                     break
+                #         except:
+                #             continue
 
-                except Exception as e:
-                    print(f"  ⚠️ 处理弹窗时出错: {e}")
+                # except Exception as e:
+                #     print(f"  ⚠️ 处理弹窗时出错: {e}")
 
                 # 再次等待页面稳定
                 time.sleep(3)
