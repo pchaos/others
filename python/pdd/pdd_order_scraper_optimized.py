@@ -477,6 +477,195 @@ class PinduoduoOrderScraper:
         else:
             print("⚠️ 未检测到标准订单页面")
             return False
+            return True
+        else:
+            print("⚠️ 未检测到标准订单页面")
+            return False
+    
+    def smart_scroll_to_load_orders(self, initial_scrolls=50, max_scrolls=100):
+        """
+        智能滚动加载订单，直到找到符合时间要求的订单
+
+        工作流程:
+        1. 先PageDown 50次
+        2. 点击最后一个订单检查时间
+        3. 如果不满足，继续PageDown
+        4. 重复直到满足或达到最大次数
+
+        Args:
+            initial_scrolls: 初始PageDown次数
+            max_scrolls: 最大总滚动次数
+
+        Returns:
+            bool: 是否成功找到符合要求的订单
+        """
+        print(f"\n📦 开始智能加载订单 (范围: {self.days}天内)...")
+        print(f"   初始滚动: {initial_scrolls}次, 最大滚动: {max_scrolls}次")
+
+        total_scrolls = 0
+        check_count = 0
+
+        while total_scrolls < max_scrolls:
+            check_count += 1
+            print(f"\n{'=' * 60}")
+            print(f"🔍 第{check_count}轮检查")
+
+            # 1. 如果是第一次，先PageDown 50次
+            if total_scrolls == 0:
+                scrolls_this_round = initial_scrolls
+            else:
+                scrolls_this_round = 10  # 后续每次10次
+
+            # 2. 滚动页面
+            scrolls_done = self.scroll_page_down_times(scrolls_this_round)
+
+            # 3. 点击最后一个订单检查时间
+            print(f"\n📋 检查当前页面最后一个订单...")
+            is_within_days, order_sn, order_date = (
+                self.click_last_order_and_check_date()
+            )
+
+            # 4. 判断是否满足时间要求
+            if is_within_days:
+                print(f"\n✅ 成功！找到的订单在{self.days}天内")
+                print(f"   最后检查的订单日期: {order_date.strftime('%Y-%m-%d')}")
+                print(f"   总共滚动次数: {total_scrolls}")
+                return True
+            else:
+                # 订单超出时间范围，说明已经加载了足够的历史订单
+                if order_date:
+                    print(f"\n🛑 停止检查：订单超出{self.days}天范围")
+                    print(f"   最旧订单日期: {order_date.strftime('%Y-%m-%d')}")
+                    print(f"   总共滚动次数: {total_scrolls}")
+                    print(f"   💡 说明：已加载完所有在{self.days}天内的订单")
+                return True
+                else:
+                    print(f"\n⚠️ 订单日期解析失败，继续检查")
+            return False
+        """
+        智能滚动加载订单，直到找到符合时间要求的订单
+
+        工作流程:
+        1. 先PageDown 50次
+        2. 点击最后一个订单检查时间
+        3. 如果不满足，继续PageDown
+        4. 重复直到满足或达到最大次数
+
+        Args:
+            initial_scrolls: 初始PageDown次数
+            max_scrolls: 最大总滚动次数
+
+        Returns:
+            bool: 是否成功找到符合要求的订单
+        """
+        print(f"\n📦 开始智能加载订单 (范围: {self.days}天内)")
+        print(f"   初始滚动: {initial_scrolls}次, 最大滚动: {max_scrolls}次")
+
+        total_scrolls = 0
+        check_count = 0
+
+        while total_scrolls < max_scrolls:
+            check_count += 1
+            print(f"\n{'=' * 60}")
+            print(f"🔍 第{check_count}轮检查")
+
+            # 1. 如果是第一次，先PageDown 50次
+            if total_scrolls == 0:
+                scrolls_this_round = initial_scrolls
+            else:
+                scrolls_this_round = 10  # 后续每次10次
+
+            # 2. 滚动
+            if scrolls_this_round > 0:
+                scrolls_done = self.scroll_page_down_times(scrolls_this_round)
+                total_scrolls += scrolls_done
+
+            # 3. 点击最后一个订单检查时间
+            print(f"\n📋 检查当前页面最后一个订单...")
+            is_within_days, order_sn, order_date = (
+                self.click_last_order_and_check_date()
+            )
+
+            # 4. 判断是否满足时间要求
+            if is_within_days:
+                print(f"\n✅ 成功！找到的订单在{self.days}天内")
+                print(f"   最后检查的订单日期: {order_date.strftime('%Y-%m-%d')}")
+                print(f"   总共滚动次数: {total_scrolls}")
+                return True
+            else:
+                # 订单超出时间范围，说明已经加载了足够的历史订单
+                if order_date:
+                    print(f"\n🛑 停止检查：订单超出{self.days}天范围")
+                    print(f"   最旧订单日期: {order_date.strftime('%Y-%m-%d')}")
+                    print(f"   总共滚动次数: {total_scrolls}")
+                    print(f"   💡 说明：已加载完所有在{self.days}天内的订单")
+                return True
+                return False
+            else:
+                print(f"\n⚠️ 订单日期解析失败，继续检查")
+            return False
+            print(f"\n❌ 未能完成订单检查")
+            return False, None, None
+    
+    def smart_scroll_to_load_orders(self, initial_scrolls=50, max_scrolls=100):
+        """
+        智能滚动加载订单，直到找到符合时间要求的订单
+
+        工作流程:
+        1. 先PageDown 50次
+        2. 点击最后一个订单检查时间
+        3. 如果不满足，继续PageDown
+        4. 重复直到满足或达到最大次数
+
+        Args:
+            initial_scrolls: 初始PageDown次数
+            max_scrolls: 最大总滚动次数
+
+        Returns:
+            bool: 是否成功找到符合要求的订单
+        """
+        print(f"\n📦 开始智能加载订单 (范围: {self.days}天内)...")
+        print(f"   初始滚动: {initial_scrolls}次, 最大滚动: {max_scrolls}次")
+
+        total_scrolls = 0
+        check_count = 0
+
+        while total_scrolls < max_scrolls:
+            check_count += 1
+            print(f"\n{'=' * 60}")
+            print(f"🔍 第{check_count}轮检查")
+
+            # 1. 如果是第一次，先PageDown 50次
+            if total_scrolls == 0:
+                scrolls_this_round = initial_scrolls
+            else:
+                scrolls_this_round = 10  # 后续每次10次
+
+            # 2. 滚动页面
+            scrolls_done = self.scroll_page_down_times(scrolls_this_round)
+
+            # 3. 点击最后一个订单检查时间
+            print(f"\n📋 检查当前页面最后一个订单...")
+            is_within_days, order_sn, order_date = (
+                self.click_last_order_and_check_date()
+            )
+
+            # 4. 判断是否满足时间要求
+            if is_within_days:
+                print(f"\n✅ 成功！找到的订单在{self.days}天内")
+                print(f"   最后检查的订单日期: {order_date.strftime('%Y-%m-%d')}")
+                print(f"   总共滚动次数: {total_scrolls}")
+                return True
+            else:
+                # 订单超出时间范围，说明已经加载了足够的历史订单
+                if order_date:
+                    print(f"\n🛑 停止检查：订单超出{self.days}天范围")
+                    print(f"   最旧订单日期: {order_date.strftime('%Y-%m-%d')}")
+                    print(f"   💡 说明：已加载完所有在{self.days}天内的订单")
+                return True
+                else:
+                    print(f"\n⚠️ 订单日期解析失败，继续检查")
+            return False
 
         """通过个人中心入口登录 - 使用登录模块"""
         success = self.login_module.login_via_personal_center(phone, login_type)
