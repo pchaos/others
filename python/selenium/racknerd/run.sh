@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# Last Modified: 2025-12-23 13:51:04
+# Last Modified: 2026-02-02 12:28:28
 # pip install pytest
 
 # python racknerd.py &
 
-proxy=socks5://127.0.0.1:1081
+proxy=socks5://127.0.0.1:1091
 # Activate Debug Mode on failures ("c" to continue)
 # pytest  --pdb -s --headed --proxy=socks5://127.0.0.1:1081 racknerd.py
 # pytest --pdb -s --incognito --headed --proxy=socks5://127.0.0.1:1081 racknerd.py
