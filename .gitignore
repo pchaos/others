@@ -136,3 +136,5 @@ dmypy.json
 tmp*.png
 *~
 .xmake
+
+.sisyphus/
