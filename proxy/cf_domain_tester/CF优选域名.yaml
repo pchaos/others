@@ -1,6 +1,6 @@
 
 CF优选域名:
-  - Modified: 2026-03-10 22:47:47
+  - Modified: 2026-03-11 15:16:33
   - name: CF优选域名
     type: http
     domain: cf.yundongyundong.com
@@ -95,3 +95,7 @@ CF优选域名:
       - www.d-555.com
       - fbi.gov
       - "*.cloudflare.182682.xyz"
+      - www.greenmangaming.com
+      - api.greenmangaming.com
+      - images.greenmangaming.com
+      - media.greenmangaming.com
