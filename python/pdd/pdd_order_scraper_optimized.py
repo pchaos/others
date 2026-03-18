@@ -7,20 +7,63 @@
 4. 改进翻页逻辑：先PageDown到底部，点击最后一个订单检查时间
 """
 
-import os
-import sys
+import argparse
 import json
-import time
+import os
+import queue
 import random
 import re
-import argparse
+import sys
+import threading
+import time
 from datetime import datetime, timedelta
-from seleniumbase import Driver
+
+from pdd_login import PinduoduoLogin
+from pdd_order_processor import PddOrderProcessor
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from pdd_login import PinduoduoLogin
+from selenium.webdriver.support.ui import WebDriverWait
+from seleniumbase import Driver
+
+
+def input_with_timeout(prompt, timeout=20, default=""):
+    """
+    带超时的输入函数
+
+    Args:
+        prompt: 提示信息
+        timeout: 超时时间(秒)
+        default: 超时后使用的默认值
+
+    Returns:
+        str: 用户输入或默认值
+    """
+    result_queue = queue.Queue()
+
+    def get_input():
+        try:
+            result = input(prompt)
+            result_queue.put(result)
+        except (EOFError, AttributeError):
+            result_queue.put(default)
+
+    thread = threading.Thread(target=get_input)
+    thread.daemon = True
+    thread.start()
+
+    # 倒计时显示
+    for remaining in range(timeout, 0, -1):
+        print(f"\r{prompt}[剩余 {remaining} 秒]...", end="", flush=True)
+        try:
+            result = result_queue.get(timeout=1)
+            print(f"\r{prompt}{result}")
+            return result
+        except queue.Empty:
+            pass
+
+    print(f"\r{prompt}超时，使用默认值 {default}")
+    return default
 
 
 class PinduoduoOrderScraper:
@@ -48,6 +91,8 @@ class PinduoduoOrderScraper:
         self.driver.set_window_size(1280, 1920)  # 宽度1280，高度1920
         # 初始化登录模块
         self.login_module = PinduoduoLogin(self.driver, ".pdd_cookies.json")
+        # 初始化订单处理器
+        self.order_processor = PddOrderProcessor(self.driver)
         print(f"浏览器启动成功 (1280x1920 移动端优化, 订单范围: {self.days}天内)")
         return self
 
@@ -179,9 +224,7 @@ class PinduoduoOrderScraper:
                                 return self.order_link
                             return None
 
-                    mock_elements.append(
-                        MockElement(order["order_sn"], order["order_link"])
-                    )
+                    mock_elements.append(MockElement(order["order_sn"], order["order_link"]))
 
                 return mock_elements
 
@@ -249,9 +292,7 @@ class PinduoduoOrderScraper:
                 print(f"  🎯 检查最后一个订单:")
                 print(f"     订单号: {order_sn}")
                 print(f"     订单日期: {order_date.strftime('%Y-%m-%d')}")
-                print(
-                    f"     是否在{self.days}天内: {'✅ 是' if is_within else '❌ 否'}"
-                )
+                print(f"     是否在{self.days}天内: {'✅ 是' if is_within else '❌ 否'}")
 
                 return is_within, order_sn, order_date
             else:
@@ -286,11 +327,7 @@ class PinduoduoOrderScraper:
             for pattern in patterns:
                 match = re.search(pattern, url, re.IGNORECASE)
                 if match:
-                    order_sn = (
-                        match.group(1)
-                        if match.lastindex == 0
-                        else match.group(match.lastindex)
-                    )
+                    order_sn = match.group(1) if match.lastindex == 0 else match.group(match.lastindex)
                     if order_sn and len(order_sn) > 10:
                         return order_sn
 
@@ -316,11 +353,7 @@ class PinduoduoOrderScraper:
             for pattern in patterns:
                 match = re.search(pattern, page_text, re.IGNORECASE)
                 if match:
-                    order_sn = (
-                        match.group(1)
-                        if match.lastindex == 0
-                        else match.group(match.lastindex)
-                    )
+                    order_sn = match.group(1) if match.lastindex == 0 else match.group(match.lastindex)
                     if order_sn and len(order_sn) > 10:
                         return order_sn
 
@@ -388,18 +421,14 @@ class PinduoduoOrderScraper:
             loading_texts = ["加载中", "正在加载", "loading", "加载更多"]
 
             for text in loading_texts:
-                elements = self.driver.find_elements(
-                    By.XPATH, f"//*[contains(text(), '{text}')]"
-                )
+                elements = self.driver.find_elements(By.XPATH, f"//*[contains(text(), '{text}')]")
                 if elements:
                     for elem in elements:
                         if elem.is_displayed():
                             return True
 
             # 查找加载动画
-            loading_elements = self.driver.find_elements(
-                By.CSS_SELECTOR, ".loading, [class*='loading'], .spinner"
-            )
+            loading_elements = self.driver.find_elements(By.CSS_SELECTOR, ".loading, [class*='loading'], .spinner")
             for elem in loading_elements:
                 if elem.is_displayed():
                     return True
@@ -454,9 +483,7 @@ class PinduoduoOrderScraper:
 
             # 2. 点击最后一个订单检查时间
             print(f"\n📋 检查当前页面最后一个订单...")
-            is_within_days, order_sn, order_date = (
-                self.click_last_order_and_check_date()
-            )
+            is_within_days, order_sn, order_date = self.click_last_order_and_check_date()
 
             if order_sn is None:
                 print("  ❌ 无法获取订单信息，停止检查")
@@ -504,19 +531,13 @@ class PinduoduoOrderScraper:
             "goods-item" in page_text_lower,
             "list-item" in page_text_lower,
             # 检查是否有多个订单状态
-            page_text_lower.count("待付款")
-            + page_text_lower.count("待发货")
-            + page_text_lower.count("待收货")
-            >= 3,
+            page_text_lower.count("待付款") + page_text_lower.count("待发货") + page_text_lower.count("待收货") >= 3,
             # 检查是否有价格信息
             page_text_lower.count("¥") >= 5,
             # 检查是否有订单号
             bool(re.search(r"\d{10,20}", page_text)),
             # 检查是否有商品信息
-            any(
-                keyword in page_text_lower
-                for keyword in ["商品", "购买", "购买记录", "订单详情"]
-            ),
+            any(keyword in page_text_lower for keyword in ["商品", "购买", "购买记录", "订单详情"]),
         ]
 
         if sum(full_list_indicators) >= 3:
@@ -553,9 +574,7 @@ class PinduoduoOrderScraper:
             print(f"找到 {len(footer_items)} 个 footer-item 元素")
             for i, item in enumerate(footer_items):
                 try:
-                    text_elem = item.find_element(
-                        By.CSS_SELECTOR, "div.footer-item-text"
-                    )
+                    text_elem = item.find_element(By.CSS_SELECTOR, "div.footer-item-text")
                     text = text_elem.text
                     print(f"  第{i + 1}个: {text}")
                     if "个人中心" in text:
@@ -612,9 +631,7 @@ class PinduoduoOrderScraper:
             self.smart_wait((5, 10))
             code = input("请输入收到的验证码（6位数字）: ").strip()
             print("输入验证码...")
-            code_input = self.safe_find(
-                "//input[@type='tel' and contains(@placeholder, '验证码')]"
-            )
+            code_input = self.safe_find("//input[@type='tel' and contains(@placeholder, '验证码')]")
             if not code_input:
                 all_inputs = self.driver.find_elements(By.XPATH, "//input[@type='tel']")
                 if len(all_inputs) >= 2:
@@ -665,9 +682,7 @@ class PinduoduoOrderScraper:
 
     def safe_find(self, xpath, timeout=15):
         try:
-            return WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_element_located((By.XPATH, xpath))
-            )
+            return WebDriverWait(self.driver, timeout).until(EC.presence_of_element_located((By.XPATH, xpath)))
         except:
             return None
 
@@ -731,9 +746,7 @@ class PinduoduoOrderScraper:
 
                 found_count = sum(1 for elem in required_structure if elem in page_text)
                 match_rate = found_count / len(required_structure)
-                print(
-                    f"   ✓ 结构匹配度: {found_count}/{len(required_structure)} ({match_rate * 100:.0f}%)"
-                )
+                print(f"   ✓ 结构匹配度: {found_count}/{len(required_structure)} ({match_rate * 100:.0f}%)")
 
                 if match_rate >= 0.8:  # 80%以上匹配度
                     print("   ✓ 🎯 确认登录成功！这是包含订单信息的页面")
@@ -754,6 +767,7 @@ class PinduoduoOrderScraper:
             "待发货",
             "待收货",
             "评价",
+            "待评价",
             "待分享",
             "order-menu",
             "order-title",
@@ -811,9 +825,7 @@ class PinduoduoOrderScraper:
                     print(f"  第{i + 1}个: '{text}'")
                     if "查看全部" in text:
                         print(f"✅ 找到查看全部（第{i + 1}个）")
-                        self.driver.execute_script(
-                            "arguments[0].scrollIntoView(true);", elem
-                        )
+                        self.driver.execute_script("arguments[0].scrollIntoView(true);", elem)
                         time.sleep(1)
                         self.driver.execute_script("arguments[0].click();", elem)
                         self.smart_wait((3, 5))
@@ -827,16 +839,12 @@ class PinduoduoOrderScraper:
 
         # 方法2: 备用XPATH查找
         try:
-            text_elements = self.driver.find_elements(
-                By.XPATH, "//*[contains(text(), '查看全部')]"
-            )
+            text_elements = self.driver.find_elements(By.XPATH, "//*[contains(text(), '查看全部')]")
             print(f"找到 {len(text_elements)} 个包含'查看全部'的元素")
             for i, elem in enumerate(text_elements):
                 try:
                     print(f"  第{i + 1}个元素，点击...")
-                    self.driver.execute_script(
-                        "arguments[0].scrollIntoView(true);", elem
-                    )
+                    self.driver.execute_script("arguments[0].scrollIntoView(true);", elem)
                     time.sleep(1)
                     self.driver.execute_script("arguments[0].click();", elem)
                     print("✅ 通过XPATH找到查看全部")
@@ -864,9 +872,7 @@ class PinduoduoOrderScraper:
                     print(f"  第{i + 1}个: '{text}'")
                     if "查看全部" in text:
                         print(f"✅ 找到查看全部（第{i + 1}个）")
-                        self.driver.execute_script(
-                            "arguments[0].scrollIntoView(true);", elem
-                        )
+                        self.driver.execute_script("arguments[0].scrollIntoView(true);", elem)
                         time.sleep(1)
                         self.driver.execute_script("arguments[0].click();", elem)
                         self.smart_wait((3, 5))
@@ -878,16 +884,12 @@ class PinduoduoOrderScraper:
 
         # 方法2: 通过XPATH查找
         try:
-            text_elements = self.driver.find_elements(
-                By.XPATH, "//*[contains(text(), '查看全部')]"
-            )
+            text_elements = self.driver.find_elements(By.XPATH, "//*[contains(text(), '查看全部')]")
             print(f"找到 {len(text_elements)} 个包含'查看全部'的元素")
             for i, elem in enumerate(text_elements):
                 try:
                     print(f"  第{i + 1}个元素，点击...")
-                    self.driver.execute_script(
-                        "arguments[0].scrollIntoView(true);", elem
-                    )
+                    self.driver.execute_script("arguments[0].scrollIntoView(true);", elem)
                     time.sleep(1)
                     self.driver.execute_script("arguments[0].click();", elem)
                     return True
@@ -982,16 +984,12 @@ class PinduoduoOrderScraper:
 
         for keyword in order_keywords:
             try:
-                elements = self.driver.find_elements(
-                    By.XPATH, f"//*[contains(text(), '{keyword}')]"
-                )
+                elements = self.driver.find_elements(By.XPATH, f"//*[contains(text(), '{keyword}')]")
                 for elem in elements:
                     try:
                         tag_name = elem.tag_name.lower()
                         if tag_name in ["a", "button", "div"]:
-                            href = elem.get_attribute("href") or elem.get_attribute(
-                                "data-href"
-                            )
+                            href = elem.get_attribute("href") or elem.get_attribute("data-href")
                             text = elem.text.strip()
 
                             if text and len(text) > 0:
@@ -1121,9 +1119,7 @@ def main():
     print("=" * 50)
     print("✨ 新增功能:")
     print(f"   - 命令行参数控制: -d/--days (当前: {args.days}天)")
-    print(
-        f"   - 智能PageDown滚动 (初始{args.initial_scrolls}次，最大{args.max_scrolls}次)"
-    )
+    print(f"   - 智能PageDown滚动 (初始{args.initial_scrolls}次，最大{args.max_scrolls}次)")
     print("   - 根据订单号前6位判断日期范围")
     print("   - 改进翻页逻辑：先PageDown到底部，点击最后一个订单检查")
     print()
@@ -1173,31 +1169,23 @@ def main():
             print("🔍 开始在当前页面搜索订单跳转链接...")
             print("=" * 60 + "\n")
 
-            found_links, clickable_elements = (
-                scraper.search_order_links_on_current_page()
-            )
+            found_links, clickable_elements = scraper.search_order_links_on_current_page()
 
             # 自动点击"查看全部"进入完整订单列表
             print("\n🎯 自动点击查看全部进入完整订单列表...")
 
             try:
                 # 查找并点击'查看全部'元素
-                view_all_elements = scraper.driver.find_elements(
-                    By.CSS_SELECTOR, "div.others"
-                )
+                view_all_elements = scraper.driver.find_elements(By.CSS_SELECTOR, "div.others")
                 clicked = False
 
                 for i, elem in enumerate(view_all_elements):
                     text = elem.text.strip()
                     if "查看全部" in text:
-                        print(
-                            f"✅ 找到'查看全部'按钮（第{i + 1}个），类名: {elem.get_attribute('class')}"
-                        )
+                        print(f"✅ 找到'查看全部'按钮（第{i + 1}个），类名: {elem.get_attribute('class')}")
 
                         # 滚动到元素位置
-                        scraper.driver.execute_script(
-                            "arguments[0].scrollIntoView(true);", elem
-                        )
+                        scraper.driver.execute_script("arguments[0].scrollIntoView(true);", elem)
                         time.sleep(1)
 
                         # 点击元素
@@ -1312,9 +1300,7 @@ def main():
 
                     for selector in test_selectors:
                         try:
-                            elements = scraper.driver.find_elements(
-                                By.CSS_SELECTOR, selector
-                            )
+                            elements = scraper.driver.find_elements(By.CSS_SELECTOR, selector)
                             if elements:
                                 print(f"  {selector}: {len(elements)} 个元素")
 
@@ -1336,9 +1322,7 @@ def main():
 
                     if best_selector:
                         print(f"\n🎯 完整订单页面分析完成！")
-                        print(
-                            f"🏆 推荐的订单选择器: {best_selector} (找到 {max_elements} 个元素)"
-                        )
+                        print(f"🏆 推荐的订单选择器: {best_selector} (找到 {max_elements} 个元素)")
                         print(f"\n💡 可以用这个选择器优化订单提取逻辑")
                     else:
                         print("\n⚠️ 完整订单页面未找到明确的订单选择器")
@@ -1352,11 +1336,11 @@ def main():
             scraper.is_already_on_orders_page = True
 
         if scraper.navigate_to_orders():
-            max_pages = input("请输入最大页数 (默认10): ").strip()
+            max_pages = input_with_timeout("请输入最大页数 (默认10): ", 20, "10")
             max_pages = int(max_pages) if max_pages else 10
             orders = scraper.order_processor.scrape_orders(max_pages=max_pages)
             print(f"\n共获取 {len(orders)} 个订单")
-            scraper.save_orders()
+            scraper.order_processor.save_orders()
             scraper.order_processor.generate_report()
 
     except KeyboardInterrupt:
