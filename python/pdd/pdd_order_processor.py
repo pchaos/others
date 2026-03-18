@@ -196,8 +196,57 @@ class PddOrderProcessor:
                 if match:
                     goods_price = match.group(1)
 
-            # 提取商品名称（第一行通常是店铺/商品名称）
-            goods_name = text.split("\n")[0].strip()[:50]
+            # 提取商品名称 - 跳过第一行(店铺名)，跳过状态行，找商品行
+            lines = text.split("\n")
+            store_keywords = [
+                "旗舰店",
+                "专卖店",
+                "专营店",
+                "官方",
+                "小店",
+                "旗舰店",
+                "企业店",
+            ]
+            status_keywords_for_skip = [
+                "待收货",
+                "待发货",
+                "待付款",
+                "已签收",
+                "已确认收货",
+                "交易成功",
+                "已完成",
+                "确认收货",
+                "评价",
+            ]
+            goods_name = "未知商品"
+
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+                # 跳过店铺名
+                if any(sk in line for sk in store_keywords) and len(line) < 20:
+                    continue
+                # 跳过状态行
+                if line in status_keywords_for_skip:
+                    continue
+                # 如果是价格行(￥开头)或数量行(×开头)，跳过
+                if (
+                    line.startswith("￥")
+                    or line.startswith("×")
+                    or line.startswith("x")
+                ):
+                    continue
+                # 跳过保障、运费等说明行
+                if any(
+                    kw in line
+                    for kw in ["运费", "退货", "保障", "包赔", "送货", "无理由", "免费"]
+                ):
+                    continue
+                # 找到商品名称 (通常是较长的一行)
+                if len(line) >= 5:
+                    goods_name = line[:50]
+                    break
 
             return {
                 "goods_name": goods_name,
