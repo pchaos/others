@@ -25,10 +25,12 @@
 import logging
 import re
 import sys
+import time
 import unittest
 
 from seleniumbase import BaseCase
 from dns_check import check_dns_availability
+import dns.resolver as dns_resolver
 
 # 配置日志
 logging.basicConfig(
@@ -158,6 +160,101 @@ class DnsTestClass(BaseCase):
             available_dns = check_dns_availability(test_dns_servers)
             logger.info(f"可用的DNS IP地址: {available_dns}")
 
+    def test_country_dns_speed_sort(self):
+        """
+        测试指定国家(CN, US, HK, SG, RU)的DNS服务器，并按响应速度排序。
+
+        此测试将：
+        1. 从dns.supfree.net抓取每个国家的DNS服务器（如遇500错误回退到ipshu.com）
+        2. 测量每个DNS服务器的响应时间（限制前10个以加快测试）
+        3. 按响应时间从快到慢排序
+        4. 验证前5个最快的DNS服务器的可用性
+        """
+        target_countries = ["CN", "US", "HK", "SG", "RU"]
+        country_dns_data = []  # 存储 (ip, country, response_time) 元组
+
+        for country in target_countries:
+            base_url = f"https://dns.supfree.net/mabi.asp?id={country}"
+            fallback_url = f"https://zh-hans.ipshu.com/dns-country/{country}"
+            dns_servers = []
+
+            logger.info(f"开始处理 {country} 国家的DNS服务器...")
+
+            self.open(base_url)
+            self.wait_for_element_present("body")
+            page_source = self.get_page_source()
+
+            if "500 - 内部服务器错误" in page_source:
+                logger.warning(
+                    f"dns.supfree.net 对 {country} 返回 500，回退到 ipshu.com"
+                )
+                self.open(fallback_url)
+                self.wait_for_element_present("body")
+                html_content = self.get_page_source()
+                dns_servers = extract_dns_ips_ipshu(html_content)
+            else:
+                for url, page in self.iterate_pages(base_url):
+                    html_content = self.get_html_content(url)
+                    self.sleep(0.5)
+                    if self.headless:
+                        self.execute_script(
+                            "window.scrollTo(0, document.body.scrollHeight);"
+                        )
+                    else:
+                        self.scroll_to_bottom()
+                    self.sleep(0.5)
+
+                    logger.debug(f"HTML Content for {country}: {html_content}")
+                    tbody_content = extract_tbody(html_content)
+                    page_dns_servers = extract_dns_ips(tbody_content)
+                    dns_servers.extend(page_dns_servers)
+                    logger.info(f"{country} 当前页面的DNS IP地址:")
+                    for ip in page_dns_servers:
+                        logger.info(ip)
+                    logger.info(
+                        f"{country} 当前页面的DNS IP地址总数: {len(page_dns_servers)}"
+                    )
+
+            unique_dns_servers = list(dict.fromkeys(dns_servers))
+            logger.info(
+                f"{country} 所有页面的唯一DNS IP地址总数: {len(unique_dns_servers)}"
+            )
+
+            # 限制处理的DNS数量以加快测试（取前10个）
+            test_dns_servers = unique_dns_servers[:10]
+            logger.info(
+                f"{country} 将测试前 {len(test_dns_servers)} 个DNS服务器（共{len(unique_dns_servers)}个）"
+            )
+
+            # 测量每个DNS服务器的响应时间
+            for dns_ip in test_dns_servers:
+                response_time = measure_dns_response_time(dns_ip)
+                country_dns_data.append((dns_ip, country, response_time))
+                logger.info(
+                    f"DNS {dns_ip} ({country}) 响应时间: {response_time:.2f} ms"
+                )
+
+        # 按响应时间排序（最快的在前）
+        country_dns_data.sort(key=lambda x: x[2])
+
+        logger.info("按响应速度排序的DNS服务器列表:")
+        for ip, country, response_time in country_dns_data:
+            if response_time == float("inf"):
+                logger.info(f"{ip} ({country}): 超时或不可达")
+            else:
+                logger.info(f"{ip} ({country}): {response_time:.2f} ms")
+
+        # 取前5个最快的DNS服务器进行可用性验证
+        top_5_dns = [item[0] for item in country_dns_data[:5]]
+        logger.info(f"选取前5个最快的DNS服务器进行可用性测试: {top_5_dns}")
+
+        if top_5_dns:
+            available_dns = check_dns_availability(top_5_dns)
+            logger.info(f"可用的DNS IP地址: {available_dns}")
+
+            # 验证至少有一些DNS是可用的
+            self.assertGreater(len(available_dns), 0, "至少应该有一些DNS服务器是可用的")
+
     def get_html_content(self, url):
         self.open(url)
         self.wait_for_element_present("body")
@@ -209,6 +306,37 @@ def extract_tbody(html_content):
     tbody_pattern = r"<tbody.*?>(.*?)</tbody>"
     match = re.search(tbody_pattern, html_content, re.DOTALL)
     return match.group(1) if match else ""
+
+
+def measure_dns_response_time(dns_server, qname="www.dnspython.org"):
+    """
+    测量DNS服务器的响应时间（毫秒）。
+
+    参数:
+    dns_server (str): DNS服务器IP地址
+    qname (str): 要查询的域名，默认为www.dnspython.org
+
+    返回:
+    float: 响应时间（毫秒），如果超时或出错则返回无穷大
+    """
+    try:
+        res = dns_resolver.Resolver(configure=False)
+        res.nameservers = [dns_server]
+        res.timeout = 5  # 5秒超时
+        res.lifetime = 5
+
+        start_time = time.time()
+        res.try_ddr()
+        answers = res.resolve(qname, "A", tcp=True)
+        end_time = time.time()
+
+        if answers:
+            response_time = (end_time - start_time) * 1000  # 转换为毫秒
+            return response_time
+        else:
+            return float("inf")
+    except Exception:
+        return float("inf")  # 返回无穷大表示超时或失败
 
 
 if __name__ == "__main__":
