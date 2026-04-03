@@ -26,11 +26,12 @@ import logging
 import re
 import sys
 import time
+import concurrent.futures
 import unittest
 
-from seleniumbase import BaseCase
-from dns_check import check_dns_availability
 import dns.resolver as dns_resolver
+from dns_check import check_dns_availability
+from seleniumbase import BaseCase
 
 # 配置日志
 logging.basicConfig(
@@ -170,7 +171,7 @@ class DnsTestClass(BaseCase):
         3. 按响应时间从快到慢排序
         4. 验证前5个最快的DNS服务器的可用性
         """
-        target_countries = ["CN", "US", "HK", "SG", "RU"]
+        target_countries = ["CN", "US", "HK", "SG", "RU", "JP"]
         country_dns_data = []  # 存储 (ip, country, response_time) 元组
 
         for country in target_countries:
@@ -226,13 +227,34 @@ class DnsTestClass(BaseCase):
                 f"{country} 将测试前 {len(test_dns_servers)} 个DNS服务器（共{len(unique_dns_servers)}个）"
             )
 
-            # 测量每个DNS服务器的响应时间
-            for dns_ip in test_dns_servers:
+            # 并发测量DNS服务器的响应时间以提高性能
+            def measure_single_dns(dns_ip):
                 response_time = measure_dns_response_time(dns_ip)
-                country_dns_data.append((dns_ip, country, response_time))
                 logger.info(
                     f"DNS {dns_ip} ({country}) 响应时间: {response_time:.2f} ms"
                 )
+                return (dns_ip, country, response_time)
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+                # 提交所有DNS测量任务
+                future_to_dns = {
+                    executor.submit(measure_single_dns, dns_ip): dns_ip
+                    for dns_ip in test_dns_servers
+                }
+
+                # 收集结果
+                for future in concurrent.futures.as_completed(future_to_dns):
+                    try:
+                        result = future.result(timeout=10)  # 10秒超时
+                        country_dns_data.append(result)
+                    except concurrent.futures.TimeoutError:
+                        dns_ip = future_to_dns[future]
+                        logger.warning(f"DNS {dns_ip} ({country}) 测量超时")
+                        country_dns_data.append((dns_ip, country, float("inf")))
+                    except Exception as e:
+                        dns_ip = future_to_dns[future]
+                        logger.warning(f"DNS {dns_ip} ({country}) 测量出错: {e}")
+                        country_dns_data.append((dns_ip, country, float("inf")))
 
         # 按响应时间排序（最快的在前）
         country_dns_data.sort(key=lambda x: x[2])
