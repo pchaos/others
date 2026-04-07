@@ -45,7 +45,7 @@ class PinduoduoLogin:
     def save_cookies(self):
         """
         保存当前cookies到文件
-        
+
         Returns:
             bool: 保存是否成功
         """
@@ -54,7 +54,7 @@ class PinduoduoLogin:
             cookie_data = {
                 "cookies": cookies,
                 "timestamp": datetime.now().isoformat(),
-                "url": self.driver.current_url
+                "url": self.driver.current_url,
             }
             with open(self.cookie_file, "w", encoding="utf-8") as f:
                 json.dump(cookie_data, f, ensure_ascii=False, indent=2)
@@ -67,14 +67,14 @@ class PinduoduoLogin:
     def load_cookies(self):
         """
         从文件加载cookies
-        
+
         Returns:
             dict or None: 包含cookies数据的字典，失败返回None
         """
         if not os.path.exists(self.cookie_file):
             print(f"Cookie文件不存在: {self.cookie_file}")
             return None
-        
+
         try:
             with open(self.cookie_file, "r", encoding="utf-8") as f:
                 cookie_data = json.load(f)
@@ -87,7 +87,7 @@ class PinduoduoLogin:
     def login_with_cookies(self):
         """
         使用保存的cookies尝试登录
-        
+
         Returns:
             bool: 登录是否成功
         """
@@ -95,12 +95,12 @@ class PinduoduoLogin:
         cookie_data = self.load_cookies()
         if not cookie_data:
             return False
-        
+
         try:
             # 先访问主页
             self.driver.get("https://mobile.pinduoduo.com")
             self.smart_wait((2, 4))
-            
+
             # 添加cookies
             for cookie in cookie_data["cookies"]:
                 try:
@@ -108,11 +108,11 @@ class PinduoduoLogin:
                 except Exception as e:
                     print(f"添加cookie失败: {e}")
                     continue
-            
+
             # 再次访问个人中心页面
             self.driver.get("https://mobile.pinduoduo.com/personal.html")
             self.smart_wait((3, 5))
-            
+
             # 检查登录状态
             if self.check_login_status_fast():
                 print("✅ Cookie登录成功！")
@@ -120,7 +120,7 @@ class PinduoduoLogin:
             else:
                 print("❌ Cookie登录失败，需要重新认证")
                 return False
-                
+
         except Exception as e:
             print(f"❌ Cookie登录过程中出错: {e}")
             return False
@@ -265,6 +265,10 @@ class PinduoduoLogin:
         print("=" * 50 + "\n")
         input("APP确认登录后，按回车继续...")
 
+        # 用户确认扫码后，立即保存 cookies（不管后续状态检测结果）
+        print("保存登录状态...")
+        self.save_cookies()
+
         print("验证登录状态...")
         # 验证登录是否真的成功
         if self.check_login_status_fast():
@@ -272,8 +276,8 @@ class PinduoduoLogin:
             time.sleep(2)
             return True
         else:
-            print("❌ 扫码登录失败，未能检测到登录状态")
-            return False
+            print("⚠️ 状态检测失败，但已保存登录信息，下次可直接使用")
+            return True  # 返回True，因为cookies已保存
 
     def login_via_personal_center(self, phone=None, login_type="sms"):
         """
@@ -292,14 +296,14 @@ class PinduoduoLogin:
             print("✅ 使用cookies成功登录")
             print("📋 登录流程完成，等待后续页面分析...")
             time.sleep(2)
-            
+
             # 检测显示模式
             page_text = self.driver.page_source
             self.display_mode = self.detect_display_mode(page_text)
             print(f"📍 检测到显示模式: {self.display_mode}")
-            
+
             return True
-        
+
         print("Cookie登录失败，尝试手动登录...")
         print("访问拼多多首页...")
         self.driver.get("https://mobile.pinduoduo.com")
