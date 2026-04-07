@@ -364,33 +364,45 @@ class PddOrderProcessor:
 
     def generate_report(self):
         # 🎯过滤有效订单（排除已取消/退款的）
+        # 分离有效订单和已取消订单
         valid_orders = []
-        excluded_orders = []
+        cancelled_orders = []
+        refunded_orders = []
 
         for order in self.orders:
             status = order.get("order_status", "")
 
-            if any(
-                exclude in status
-                for exclude in ["交易已取消", "已退款", "退款中", "退款处理中"]
+            if "交易已取消" in status or "已取消" in status:
+                cancelled_orders.append(order)
+            elif any(
+                exclude in status for exclude in ["已退款", "退款中", "退款处理中"]
             ):
-                excluded_orders.append(order)
-                continue
+                refunded_orders.append(order)
+            else:
+                valid_orders.append(order)
 
-            valid_orders.append(order)
+        # 统计所有订单
+        total_all = len(self.orders)
+        total_valid = len(valid_orders)
+        total_cancelled = len(cancelled_orders)
+        total_refunded = len(refunded_orders)
 
-        total = len(valid_orders)
-        if total == 0:
-            print("暂无有效订单数据")
+        if total_all == 0:
+            print("暂无订单数据")
             return
 
-        # 优先使用 display_amount (JavaScript提取)，fallback到 goods_price (DOM提取)
+        # 计算金额
         def get_price(order):
             return float(order.get("display_amount", 0)) or float(
                 order.get("goods_price", 0)
             )
 
-        spent = sum(get_price(o) for o in valid_orders)
+        spent_valid = sum(get_price(o) for o in valid_orders)
+        spent_cancelled = sum(get_price(o) for o in cancelled_orders)
+        spent_refunded = sum(get_price(o) for o in refunded_orders)
+        spent_total = spent_valid + spent_cancelled + spent_refunded
+
+        # 统计收货状态
         received = len(
             [
                 o
@@ -399,75 +411,104 @@ class PddOrderProcessor:
                 or "已确认收货" in o.get("order_status", "")
             ]
         )
+        pending = len(
+            [o for o in valid_orders if "待收货" in o.get("order_status", "")]
+        )
 
-        print(f"\n{'=' * 50}")
-        print("📊 有效订单分析报告")
-        print(f"📋 订单过滤: 已排除取消/退款订单")
-        print(f"{'=' * 50}")
-        print(f"总有效订单数: {total}")
-        print(f"总消费额: ¥{spent:.2f}")
+        # ============ 输出完整报告 ============
+        print(f"\n{'=' * 55}")
+        print("📊 拼多多订单分析报告 (完整版)")
+        print(f"{'=' * 55}")
 
-        if total > 0:
-            print(f"平均客单价: ¥{spent / total:.2f}")
-            print(f"已收货: {received} ({received / total * 100:.1f}%)")
+        # 整体统计
+        print(f"\n📈 整体概览:")
+        print(f"  总订单数: {total_all} 个")
+        print(f"  总消费(含取消): ¥{spent_total:.2f}")
+
+        # 有效订单统计
+        print(f"\n✅ 有效订单 ({total_valid}个):")
+        print(f"  消费金额: ¥{spent_valid:.2f}")
+        if total_valid > 0:
+            print(f"  平均客单价: ¥{spent_valid / total_valid:.2f}")
+            print(f"  已收货: {received}个 ({received / total_valid * 100:.1f}%)")
+            print(f"  待收货: {pending}个 ({pending / total_valid * 100:.1f}%)")
+
+        # 已取消订单统计
+        if total_cancelled > 0:
+            print(f"\n❌ 已取消订单 ({total_cancelled}个):")
+            print(f"  取消金额: ¥{spent_cancelled:.2f}")
+
+        # 已退款订单统计
+        if total_refunded > 0:
+            print(f"\n🔙 已退款订单 ({total_refunded}个):")
+            print(f"  退款金额: ¥{spent_refunded:.2f}")
+
+        # 订单状态分布
+        print(f"\n📊 订单状态分布:")
+        if total_valid > 0:
+            print(f"  有效订单: {total_valid}个 ({total_valid / total_all * 100:.1f}%)")
+        if total_cancelled > 0:
             print(
-                f"待收货: {total - received} ({(total - received) / total * 100:.1f}%)"
+                f"  已取消: {total_cancelled}个 ({total_cancelled / total_all * 100:.1f}%)"
+            )
+        if total_refunded > 0:
+            print(
+                f"  已退款: {total_refunded}个 ({total_refunded / total_all * 100:.1f}%)"
             )
 
-        # 统计无效订单
-        excluded_count = len(self.orders) - total
-        if excluded_count > 0:
-            print(f"\n📈 无效订单统计:")
-            print(f"已排除订单数: {excluded_count}")
-
-            excluded_statuses = {}
-            for order in self.orders:
-                status = order.get("order_status", "")
-                if any(
-                    exclude in status
-                    for exclude in ["交易已取消", "已退款", "退款中", "退款处理中"]
-                ):
-                    if status not in excluded_statuses:
-                        excluded_statuses[status] = 0
-                    excluded_statuses[status] += 1
-
-            print("排除原因统计:")
-            for status, count in excluded_statuses.items():
-                print(f"  {status}: {count} 个订单")
-
-            ratio = (
-                excluded_count / (total + excluded_count) * 100
-                if (total + excluded_count) > 0
-                else 0
-            )
-            print(f"排除比例: {ratio:.1f}%")
-
-        # 保存有效订单到文件
+        # 保存完整报告到文件
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        report_file = f"pdd_valid_orders_{timestamp}.txt"
+        report_file = f"pdd_orders_report_{timestamp}.txt"
 
         try:
             with open(report_file, "w", encoding="utf-8") as f:
-                f.write(f"{'=' * 50}\n")
-                f.write("📊 有效订单分析报告\n")
-                f.write(f"📋 订单过滤: 已排除取消/退款订单\n")
-                f.write(f"{'=' * 50}\n")
-                f.write(f"总有效订单数: {total}\n")
-                f.write(f"总消费额: ¥{spent:.2f}\n")
-                if total > 0:
-                    f.write(f"平均客单价: ¥{spent / total:.2f}\n")
-                    f.write(f"已收货: {received} ({received / total * 100:.1f}%)\n")
+                f.write(f"{'=' * 55}\n")
+                f.write("📊 拼多多订单分析报告 (完整版)\n")
+                f.write(f"{'=' * 55}\n\n")
+
+                # 整体统计
+                f.write("📈 整体概览:\n")
+                f.write(f"  总订单数: {total_all} 个\n")
+                f.write(f"  总消费(含取消): ¥{spent_total:.2f}\n\n")
+
+                # 有效订单
+                f.write(f"✅ 有效订单 ({total_valid}个):\n")
+                f.write(f"  消费金额: ¥{spent_valid:.2f}\n")
+                if total_valid > 0:
+                    f.write(f"  平均客单价: ¥{spent_valid / total_valid:.2f}\n")
                     f.write(
-                        f"待收货: {total - received} ({(total - received) / total * 100:.1f}%)\n"
+                        f"  已收货: {received}个 ({received / total_valid * 100:.1f}%)\n"
+                    )
+                    f.write(
+                        f"  待收货: {pending}个 ({pending / total_valid * 100:.1f}%)\n"
                     )
 
-                # 写入无效订单统计
-                if excluded_count > 0:
-                    f.write(f"\n无效订单数: {excluded_count}\n")
-                    for status, count in excluded_statuses.items():
-                        f.write(f"{status}: {count} 个订单\n")
+                # 已取消
+                if total_cancelled > 0:
+                    f.write(f"\n❌ 已取消订单 ({total_cancelled}个):\n")
+                    f.write(f"  取消金额: ¥{spent_cancelled:.2f}\n")
 
-            print(f"📄 有效订单报告已保存: {report_file}")
+                # 已退款
+                if total_refunded > 0:
+                    f.write(f"\n🔙 已退款订单 ({total_refunded}个):\n")
+                    f.write(f"  退款金额: ¥{spent_refunded:.2f}\n")
+
+                # 状态分布
+                f.write(f"\n📊 订单状态分布:\n")
+                if total_valid > 0:
+                    f.write(
+                        f"  有效订单: {total_valid}个 ({total_valid / total_all * 100:.1f}%)\n"
+                    )
+                if total_cancelled > 0:
+                    f.write(
+                        f"  已取消: {total_cancelled}个 ({total_cancelled / total_all * 100:.1f}%)\n"
+                    )
+                if total_refunded > 0:
+                    f.write(
+                        f"  已退款: {total_refunded}个 ({total_refunded / total_all * 100:.1f}%)\n"
+                    )
+
+            print(f"📄 订单报告已保存: {report_file}")
         except Exception as e:
             print(f"保存报告失败: {e}")
 
