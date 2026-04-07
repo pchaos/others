@@ -338,9 +338,7 @@ class PddOrderProcessor:
                 excluded_orders.append(order)
                 continue
 
-            valid_orders.extend(
-                order for order in self.orders if (order not in excluded_orders)
-            )
+            valid_orders.append(order)
 
         # 过滤完成
         print(f"\n📊 订单过滤统计:")
