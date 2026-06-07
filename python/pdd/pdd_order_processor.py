@@ -69,6 +69,8 @@ class PddOrderProcessor:
 
                 # 提取每个订单
                 valid_orders_count = 0
+                skipped_count = 0
+                short_count = 0
                 for i, elem in enumerate(elements):
                     try:
                         text = elem.text.strip()
@@ -102,16 +104,18 @@ class PddOrderProcessor:
                                 else:
                                     print(f"    ❌ 解析订单失败")
                             else:
-                                print(
-                                    f"    ⚠️ 订单{i + 1}: 特征不足 ({has_features}/2) - {text[:30]}..."
-                                )
+                                skipped_count += 1
                         else:
-                            print(f"    ⚠️ 订单{i + 1}: 长度异常 ({len(text)}字符)")
+                            short_count += 1
 
                     except Exception as e:
                         print(f"    ❌ 处理订单{i + 1}时出错: {e}")
                         continue
 
+                if skipped_count:
+                    print(f"  ⏭️ 已跳过 {skipped_count} 个非订单元素")
+                if short_count:
+                    print(f"  ⚠️ 已跳过 {short_count} 个内容异常的元素")
                 print(
                     f"\n✅ 第{retry + 1}次尝试完成，提取到 {valid_orders_count} 个有效订单"
                 )
@@ -166,6 +170,7 @@ class PddOrderProcessor:
                 "已取消",
                 "交易成功",
                 "已完成",
+                "退款成功",
                 "退款中",
                 "退款处理中",
             ]
@@ -196,51 +201,50 @@ class PddOrderProcessor:
                 if match:
                     goods_price = match.group(1)
 
-            # 提取商品名称 - 跳过第一行(店铺名)，跳过状态行，找商品行
+            # 提取商品名称 - 利用固定行结构: [0]=店铺名, [1]=状态, [2+]=商品/规格/价格
             lines = text.split("\n")
+            lines = [l.strip() for l in lines if l.strip()]
+
+            # 跳过已知店铺后缀关键词
             store_keywords = [
-                "旗舰店",
-                "专卖店",
-                "专营店",
-                "官方",
-                "小店",
-                "旗舰店",
-                "企业店",
+                "旗舰店", "专卖店", "专营店",
+                "官方", "小店", "企业店",
             ]
-            status_keywords_for_skip = [
-                "待收货",
-                "待发货",
-                "待付款",
-                "已签收",
-                "已确认收货",
-                "交易成功",
-                "已完成",
-                "确认收货",
-                "评价",
-            ]
+            # 状态/按钮行 - 完全匹配时跳过
+            status_keywords_for_skip = {
+                "待收货", "待发货", "待付款", "待分享",
+                "已签收", "已确认收货", "交易成功", "交易已取消",
+                "已完成", "退款成功", "退款中", "退款处理中",
+                "确认收货", "评价", "追加评价", "再次开药",
+            }
+            # 快递追踪行 - 包含这些关键词时跳过
+            delivery_keywords = ["快递", "快件", "已签收 ", "签收", "投递", "取件码"]
+
             goods_name = "未知商品"
 
-            for line in lines:
-                line = line.strip()
-                if not line:
+            for idx, line in enumerate(lines):
+                # 第0行永远是店铺名 → 跳过
+                if idx == 0:
                     continue
-                # 跳过店铺名
+                # 第1行永远是状态 → 跳过
+                if idx == 1:
+                    continue
+                # 跳过店铺名（含关键词且较短的行）
                 if any(sk in line for sk in store_keywords) and len(line) < 20:
                     continue
-                # 跳过状态行
+                # 跳过状态/按钮行（完全匹配）
                 if line in status_keywords_for_skip:
                     continue
-                # 如果是价格行(￥开头)或数量行(×开头)，跳过
-                if (
-                    line.startswith("￥")
-                    or line.startswith("×")
-                    or line.startswith("x")
-                ):
+                # 跳过追踪信息（快递相关）
+                if any(kw in line for kw in delivery_keywords):
                     continue
-                # 跳过保障、运费等说明行
+                # 跳过价格行(￥/×开头) 和 数量行
+                if line.startswith("￥") or line.startswith("×") or line.startswith("x"):
+                    continue
+                # 跳过运费/退货/包赔/免费等说明行（精确匹配，不包含"保障"避免误杀商品名）
                 if any(
                     kw in line
-                    for kw in ["运费", "退货", "保障", "包赔", "送货", "无理由", "免费"]
+                    for kw in ["运费", "退货", "包赔", "送货", "无理由", "免费"]
                 ):
                     continue
                 # 找到商品名称 (通常是较长的一行)

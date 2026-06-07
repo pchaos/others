@@ -20,11 +20,13 @@ from datetime import datetime, timedelta
 
 from pdd_login import PinduoduoLogin
 from pdd_order_processor import PddOrderProcessor
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from seleniumbase import Driver
 
 
 def input_with_timeout(prompt, timeout=20, default=""):
@@ -78,17 +80,32 @@ class PinduoduoOrderScraper:
 
     def start_browser(self):
         print("启动浏览器...")
-        self.driver = Driver(
-            browser="chrome",
-            headless=self.headless,
-            uc=True,
-            incognito=True,
-        )
+        chrome_options = Options()
+        # 使用系统Chrome安装
+        chrome_options.binary_location = "/opt/google/chrome/chrome"
+        # 无头模式
+        if self.headless:
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--ozone-platform=headless")
+        else:
+            # 有头模式 - Wayland下使用X11
+            chrome_options.add_argument("--ozone-platform=x11")
+        # 基本选项
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--incognito")
+        chrome_options.add_argument("--window-size=1280,1920")
+
+        # 使用已安装的chromedriver
+        driver_path = "/home/user/software/python3rd/anaconda/envs/ab/lib/python3.12/site-packages/seleniumbase/drivers/chromedriver"
+        service = Service(executable_path=driver_path)
+        self.driver = webdriver.Chrome(service=service, options=chrome_options)
+
         self.driver.set_page_load_timeout(60)
         self.driver.implicitly_wait(10)
 
         # ⭐ Chrome窗口设置为1280x1920 (移动端优化)
-        self.driver.set_window_size(1280, 1920)  # 宽度1280，高度1920
+        self.driver.set_window_size(1280, 1920)
         # 初始化登录模块
         self.login_module = PinduoduoLogin(self.driver, ".pdd_cookies.json")
         # 初始化订单处理器
@@ -196,52 +213,17 @@ class PinduoduoOrderScraper:
         return successful_scrolls
 
     def get_all_order_links(self):
-        """
-        获取页面上所有订单的链接
-
-        Returns:
-            list: 订单链接元素列表
-        """
+        """获取页面上所有订单的DOM链接元素"""
         try:
-            # 方法1: 优先使用 JavaScript 提取
-            print("🔍 尝试从 window.rawData 提取订单链接...")
-            orders_data = self.extract_orders_from_raw_data()
-
-            if orders_data:
-                print(f"  ✅ 使用 JavaScript 提取到 {len(orders_data)} 个订单")
-
-                # 创建模拟元素对象以兼容现有代码
-                mock_elements = []
-                for order in orders_data:
-
-                    class MockElement:
-                        def __init__(self, order_sn, order_link):
-                            self.order_sn = order_sn
-                            self.order_link = order_link
-
-                        def get_attribute(self, attr):
-                            if attr == "href":
-                                return self.order_link
-                            return None
-
-                    mock_elements.append(MockElement(order["order_sn"], order["order_link"]))
-
-                return mock_elements
-
-            # 方法2: 回退到 DOM 提取
-            print("  ⚠️ JavaScript 提取失败，尝试 DOM 提取...")
             order_links = self.driver.find_elements(
                 By.XPATH,
                 "//a[contains(@href, 'order.html') or contains(@href, 'order_sn')]",
             )
-
             if order_links:
                 print(f"  ✅ 使用 DOM 提取到 {len(order_links)} 个订单链接")
             else:
-                print("  ❌ DOM 提取也未能找到订单链接")
-
+                print("  ⚠️ DOM 未找到订单链接")
             return order_links
-
         except Exception as e:
             print(f"  ❌ 获取订单链接失败: {e}")
             return []
@@ -266,22 +248,13 @@ class PinduoduoOrderScraper:
             # 获取最后一个订单链接
             last_order = order_links[-1]
 
-            # 尝试获取订单号 - 兼容两种元素类型
+            # 从 DOM 元素提取订单号
             order_sn = None
+            href = last_order.get_attribute("href") or ""
+            order_sn = self.extract_order_sn_from_url(href)
 
-            # 检查是否为 MockElement (来自 JavaScript 提取)
-            if hasattr(last_order, "order_sn"):
-                print("  📋 处理 MockElement (JavaScript 提取)")
-                order_sn = last_order.order_sn
-            else:
-                print("  📋 处理 DOM 元素 (传统提取)")
-                # 传统 DOM 元素处理
-                href = last_order.get_attribute("href") or ""
-                order_sn = self.extract_order_sn_from_url(href)
-
-                if not order_sn:
-                    # 尝试从链接文本或其他属性提取
-                    order_sn = self.extract_order_sn_from_page()
+            if not order_sn:
+                order_sn = self.extract_order_sn_from_page()
 
             # 获取订单日期
             order_date = self.parse_order_date_from_sn(order_sn)
@@ -360,54 +333,6 @@ class PinduoduoOrderScraper:
             return None
         except:
             return None
-
-    def extract_orders_from_raw_data(self):
-        """
-        从 window.rawData JavaScript 对象提取订单数据
-
-        Returns:
-            list: 订单字典列表，包含 order_sn, order_link, order_amount, status
-        """
-        try:
-            print("🔍 尝试从 window.rawData 提取订单数据...")
-
-            # 执行 JavaScript 获取订单数据
-            orders_data = self.driver.execute_script("return window.rawData.orders;")
-
-            if not orders_data:
-                print("  ❌ window.rawData.orders 为空或不存在")
-                return []
-
-            print(f"  ✅ 从 window.rawData 找到 {len(orders_data)} 个订单")
-
-            extracted_orders = []
-            for order in orders_data:
-                try:
-                    order_sn = order.get("orderSn", "")
-                    order_link = order.get("orderLinkUrl", "")
-                    order_amount = order.get("orderAmount", "0")
-                    status = order.get("status", 0)
-
-                    if order_sn:
-                        extracted_orders.append(
-                            {
-                                "order_sn": order_sn,
-                                "order_link": order_link,
-                                "order_amount": order_amount,
-                                "status": status,
-                                "goods": order.get("orderGoods", []),
-                            }
-                        )
-                except Exception as e:
-                    print(f"  ⚠️ 处理订单数据时出错: {e}")
-                    continue
-
-            print(f"  ✅ 成功提取 {len(extracted_orders)} 个订单")
-            return extracted_orders
-
-        except Exception as e:
-            print(f"  ❌ 从 window.rawData 提取订单失败: {e}")
-            return []
 
     def check_loading_indicator(self):
         """
@@ -1342,6 +1267,14 @@ def main():
             print(f"\n共获取 {len(orders)} 个订单")
             scraper.order_processor.save_orders()
             scraper.order_processor.generate_report()
+
+            # 提取完成后保存完整 HTML（此时订单已全部加载）
+            from datetime import datetime
+            post_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            post_html_file = f"pdd_full_orders_{post_timestamp}.html"
+            with open(post_html_file, "w", encoding="utf-8") as f:
+                f.write(scraper.driver.page_source)
+            print(f"💾 提取完成后的完整页面已保存: {post_html_file}")
 
     except KeyboardInterrupt:
         print("\n用户中断")
