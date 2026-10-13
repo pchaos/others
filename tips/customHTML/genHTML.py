@@ -84,14 +84,20 @@ class genHTML:
         for a in alist:
             try:
                 item = {"caption": "", "href": ""}
-                t, h = a.split("||")
+                parts = a.split("||")
+                if len(parts) < 2:
+                    # 无分隔符的行，走空行填充逻辑
+                    raise ValueError("no separator")
+                t = parts[0]
                 if t.startswith(";"):
                     # 该行为注释
                     continue
                 item["caption"] = t
-                item["href"] = h
-                lh, lt = len(h), len(t)
-                if (lh + lt) > 0 and (lh == 0 or lt == 0):
+                item["href"] = parts[1]
+                if len(parts) > 2:
+                    # 第二个"||"之后的内容作为 hints 列表显示
+                    item["hints"] = parts[2:]
+                if (len(item["href"]) + len(t)) > 0 and (len(item["href"]) == 0 or len(t) == 0):
                     # 非空行，转换后其中一个长度为零
                     print("warning !! {} 不能转换为dictionary, 忽略".format(a))
                     continue

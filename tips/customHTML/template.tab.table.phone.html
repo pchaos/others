@@ -13,6 +13,7 @@
                   {% if '://' not in item.href %} {# 判断是否本地文件 #}
                    id="local"
                   {% endif %}
+                  {% if item.get('hints') %} title="{{ item.get('hints')|join('\n') }}" data-hints="{{ item.get('hints')|join(' · ') }}" {% endif %}
                 >
                     {{ item.caption }}</a></td>
         {%- if loop.index0 % numPerLine == numPerLine -1 or loop.last %}

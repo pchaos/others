@@ -197,6 +197,36 @@ td:hover {
   font-weight: bold;
 }
 
+/* hints 提示:手机端 title 不触发,用 data-hints 伪元素 tooltip */
+a[data-hints] {
+  position: relative;
+}
+
+a[data-hints]::after {
+  content: attr(data-hints);
+  position: absolute;
+  left: 50%;
+  bottom: 120%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  max-width: none;
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+a[data-hints]:hover::after,
+a[data-hints]:active::after,
+a[data-hints]:focus::after {
+  opacity: 1;
+}
+
 .changeFontSize {
   display: flex; /* 使用 flexbox 布局 */
   align-items: center; /* 垂直居中对齐 */

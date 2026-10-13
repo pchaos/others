@@ -64,6 +64,10 @@ class TestGenTABHTML(TestCase):
         gh.save("main.htm", saveText)
         print("输出文件完成 {}".format(render))
         print(f"{flist} saved in main.htm")
+        # 多 "||" 行:caption||href1||hint1||hint2 → hints 列表渲染为 title
+        self.assertIn('title="https://www.youtube.com/watch?v=fIOAuhNVVUk"', saveText)
+        self.assertIn('href="https://ccp.bitsflow.cloud"', saveText)
+        self.assertIn('data-hints="https://www.youtube.com/watch?v=fIOAuhNVVUk"', saveText)
 
 
 class TestGenPchaosGitIo(TestCase):

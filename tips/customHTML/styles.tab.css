@@ -105,6 +105,36 @@ table td {
   color: orangered;
 }
 
+/* hints 提示:title 语义 + data-hints 伪元素 tooltip,手机端可用 */
+a[data-hints] {
+  position: relative;
+}
+
+a[data-hints]::after {
+  content: attr(data-hints);
+  position: absolute;
+  left: 50%;
+  bottom: 120%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  max-width: none;
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+a[data-hints]:hover::after,
+a[data-hints]:active::after,
+a[data-hints]:focus::after {
+  opacity: 1;
+}
+
 a {
   text-decoration: none;
   color: inherit;
